@@ -6,4 +6,8 @@ public interface Handler extends Runnable{
     default void run(){
         System.out.println("Hi");
     }
+
+    public static String help() {
+        return null;
+    }
 }

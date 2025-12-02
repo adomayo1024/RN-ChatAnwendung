@@ -8,7 +8,6 @@ import java.util.concurrent.CompletableFuture;
 public class InputHandlerImple implements InputHandler {
     @Override
     public void handle(String stdIn) {
-        String command = stdIn.split(" ")[0];
-        CompletableFuture.runAsync(HandlerFactory.getHandler(command), Storage.getInstance().getThreadPool());
+        CompletableFuture.runAsync(HandlerFactory.getHandler(stdIn), Storage.getInstance().getThreadPool());
     }
 }

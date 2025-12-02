@@ -2,11 +2,14 @@ package ChatAnwendung.Impl;
 
 public enum PacketTypes {
 
-    HELLO,
-    MESSAGE,
     FILE_INIT,
+    File_End,
+    MESSAGE,
     FILE_DATE,
-    ACK,
+    RESENDREQUEST,
+    ROUTINGTABLE,
+    HELLO,
+    WELCOME,
     GOODBYE,
     HEARTBEAT;
 }

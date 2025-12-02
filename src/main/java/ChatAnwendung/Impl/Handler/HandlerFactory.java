@@ -5,27 +5,48 @@ import ChatAnwendung.Api.Handler;
 
 public class HandlerFactory {
 
-    public static Handler getHandler(String command) {
-        Handler handler = null;
+    public static Handler getHandler(String stdIn) {
+
+        String[] split = splitInput(stdIn);
+        String command = split[0];
+
+        Handler handler;
+
 
         switch (command) {
             case "exit":
-                Thread.currentThread().interrupt();
+                handler = new ExitHandler(Thread.currentThread(), split);
                 break;
             case "send":
-                handler = new HelloHanlder();
+                handler = new MessageHandler(split);
                 break;
             case "file":
-                handler = new FileHandler();
+                handler = new FileHandler(split);
                 break;
             case "bye":
-                handler = new GoodbyeHandler();
+                handler = new GoodbyeHandler(split);
                 break;
             case "hello":
-                handler = new ExitHandler();
+                handler = new HelloHandler(split);
+                break;
+            case "help":
+                handler = new HelpHandler(split);
+                break;
+            default:
+                handler = new WrongCommandHandler(split);
                 break;
         }
         return handler;
     }
+
+    private static String[] splitInput(String stdIn){
+        String[] split = stdIn.split(" (?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
+        for (int i = 0; i < split.length; i++) {
+            split[i] = split[i].replaceAll("^\"|\"$", "");
+        }
+
+        return split;
+    }
+
 
 }
