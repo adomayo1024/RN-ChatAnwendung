@@ -9,7 +9,7 @@ public interface RoutingTable {
 
     public void add(RoutingEntryImpl entry);
 
-    boolean isUIDavailable();
+    boolean isUIDavailable(long uid);
 
     List<RoutingEntry> getAllEntries();
 
@@ -17,5 +17,7 @@ public interface RoutingTable {
 
     void removeUID(long uID);
 
-    int getNextHopPortFroUID(long uID);
+    int getNextHopPortForUID(long uID);
+
+    List<RoutingEntry> getAllDirectNeighbours();
 }

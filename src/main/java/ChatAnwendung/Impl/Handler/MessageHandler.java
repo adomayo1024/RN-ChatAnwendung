@@ -3,6 +3,7 @@ package ChatAnwendung.Impl.Handler;
 import ChatAnwendung.Impl.Exceptions.InvalidMessageException;
 import ChatAnwendung.Impl.Exceptions.UnknowUIDException;
 import ChatAnwendung.Impl.PacketTypes;
+import ChatAnwendung.Impl.RoutingTableImpl;
 import ChatAnwendung.Impl.Storage;
 
 import java.net.DatagramPacket;
@@ -39,19 +40,19 @@ public class MessageHandler extends AbstractHandler {
         }
 
         byte[] payload = msg.getBytes(StandardCharsets.UTF_8);
-        InetAddress adress = Storage.getInstance().getnextHopAdressForUid(uID);
-        int port = Storage.getInstance().getNextHopPortForUID(uID);
+        InetAddress adress = RoutingTableImpl.getInstance().getNextHopAdressForUID(uID);
+        int port = RoutingTableImpl.getInstance().getNextHopPortForUID(uID);
 
         DatagramPacket packet = makeDatagramPackage(PacketTypes.MESSAGE, uID, 0, 0, payload, adress, port);
 
         logger.log(Level.INFO, "Message will be send");
 
-        Storage.getInstance().addSendPackage(packet);
+        MessageQueue.getInstance().push(packet);
     }
 
 
     private boolean validUID(Long uID) {
-        return Storage.getInstance().isUIDavailable(uID);
+        return RoutingTableImpl.getInstance().isUIDavailable(uID);
     }
 
     private boolean validMessage(String msg){

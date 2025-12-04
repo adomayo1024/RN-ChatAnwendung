@@ -21,18 +21,16 @@ public class InputReaderImpl implements InputReader, Runnable {
     @Override
     public void run() {
 
-        inputHandler.handle("hello");
+        //inputHandler.handle("hello");
 
         try(BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
+            Storage.getInstance().setReader(reader);
             String stdIn;
             while ((stdIn = reader.readLine()) != null && !Thread.currentThread().isInterrupted()) {
-                logger.log(Level.INFO, stdIn);
                 inputHandler.handle(stdIn);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.log(Level.INFO, "Input Reader is terminated");
         }
-
-        logger.log(Level.INFO, "Input Reader is terminated");
     }
 }

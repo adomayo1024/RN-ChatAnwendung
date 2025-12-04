@@ -13,7 +13,10 @@ public class FileHandler extends AbstractHandler {
     }
 
     public static String help(){
-        return "file:\n";
+
+        return "file: Verschickt eine Datei die angegeben ist an einen bestimmten User\n" +
+                "\tAufbau: file [absoluter Datei Pfad] [User Id]\n" +
+                "\tFehler: Die angegeben Datei gibt es nicht, der angegeben User ist nicht bekannt. \n";
     }
 
 }

@@ -15,11 +15,20 @@ import java.util.concurrent.TimeUnit;
 
 public class RoutingTableImpl implements RoutingTable {
 
-    private static Map<Long, RoutingEntryImpl> entries;
+    private  Map<Long, RoutingEntryImpl> entries;
 
-    public RoutingTableImpl() {
+    private static RoutingTable INSTANCE;
+
+    private RoutingTableImpl() {
         entries = new HashMap<>();
         add(new RoutingEntryImpl(0, InetAddress.getLoopbackAddress(), 8080, 1, System.currentTimeMillis()));
+    }
+
+    public static RoutingTable getInstance(){
+        if(INSTANCE == null) {
+            INSTANCE = new RoutingTableImpl();
+        }
+        return INSTANCE;
     }
 
     @Override
@@ -40,7 +49,7 @@ public class RoutingTableImpl implements RoutingTable {
     }
 
     @Override
-    public boolean isUIDavailable() {
+    public boolean isUIDavailable(long uid) {
         return true;
     }
 
@@ -67,7 +76,22 @@ public class RoutingTableImpl implements RoutingTable {
     }
 
     @Override
-    public int getNextHopPortFroUID(long uID) {
+    public int getNextHopPortForUID(long uID) {
         return entries.get(uID).getPort();
+    }
+
+    @Override
+    public List<RoutingEntry> getAllDirectNeighbours() {
+
+        List<RoutingEntry> result = new ArrayList<>();
+
+        for(long key: entries.keySet()){
+            RoutingEntry entry = entries.get(key);
+            if(entry.getHops() == 1) {
+                result.add(entry);
+            }
+        }
+
+        return result;
     }
 }

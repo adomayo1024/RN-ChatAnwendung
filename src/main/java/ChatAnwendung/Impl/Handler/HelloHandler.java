@@ -1,11 +1,13 @@
 package ChatAnwendung.Impl.Handler;
 
+import ChatAnwendung.Impl.Exceptions.LoginException;
 import ChatAnwendung.Impl.PacketTypes;
 import ChatAnwendung.Impl.Storage;
 
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.concurrent.CompletableFuture;
 
 public class HelloHandler extends AbstractHandler {
 
@@ -15,17 +17,26 @@ public class HelloHandler extends AbstractHandler {
 
     @Override
     public void run() {
+        if(Storage.getInstance().isLogin()){
+            try {
+                throw new LoginException();
+            } catch (LoginException e) {
+                 CompletableFuture.runAsync(new ExceptionHandler(e, this.getClass()));
+                 return;
+            }
+        }
+        Storage.getInstance().login();
 
         try {
             InetAddress adress = InetAddress.getByAddress(new byte[] {(byte)255, (byte)255, (byte)255, (byte)255});
 
             for(int i = 1024; i < Math.pow(2, 16); i++){
                 byte[] payload = new byte[0];
-                DatagramPacket packet = makeDatagramPackage(PacketTypes.HELLO, -1, 0, 0, payload, adress, i);
-                Storage.getInstance().addSendPackage(packet);
+                DatagramPacket packet = makeDatagramPackage(PacketTypes.HELLO, Storage.getInstance().getBroadCastId(), 0, 0, payload, adress, i);
+                MessageQueue.getInstance().push(packet);
             }
         } catch (UnknownHostException e) {
-            throw new RuntimeException(e);
+            CompletableFuture.runAsync(new ExceptionHandler(e, this.getClass()));
         }
     }
 

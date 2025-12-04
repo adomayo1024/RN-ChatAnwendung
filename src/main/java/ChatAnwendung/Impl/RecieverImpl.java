@@ -27,6 +27,8 @@ public class RecieverImpl implements Runnable, Reciever {
     @Override
     public void run() {
 
+        while (!Thread.currentThread().isInterrupted()) {
+
         try {
             DatagramPacket request = new DatagramPacket(new byte[1400], 1400);
 
@@ -35,10 +37,12 @@ public class RecieverImpl implements Runnable, Reciever {
 
 
         } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (CancellationException e) {
-            logger.log(Level.INFO, "Reciever turned down");
+            Thread.currentThread().interrupt();
+            logger.log(Level.INFO, "Reciever got Interrupted");
         }
+            }
+
+        logger.log(Level.INFO, "Reciever turned down");
 
     }
 }

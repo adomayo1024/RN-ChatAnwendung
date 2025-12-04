@@ -11,11 +11,9 @@ public class HandlerFactory {
         String command = split[0];
 
         Handler handler;
-
-
         switch (command) {
             case "exit":
-                handler = new ExitHandler(Thread.currentThread(), split);
+                handler = new ExitHandler(split);
                 break;
             case "send":
                 handler = new MessageHandler(split);
