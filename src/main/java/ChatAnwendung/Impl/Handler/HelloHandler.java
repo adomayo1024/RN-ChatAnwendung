@@ -18,22 +18,20 @@ public class HelloHandler extends AbstractHandler {
     @Override
     public void run() {
         if(Storage.getInstance().isLogin()){
-            try {
-                throw new LoginException();
-            } catch (LoginException e) {
-                 CompletableFuture.runAsync(new ExceptionHandler(e, this.getClass()));
-                 return;
-            }
+             CompletableFuture.runAsync(new ExceptionHandler(new LoginException(), this.getClass()));
+             return;
         }
         Storage.getInstance().login();
 
         try {
             InetAddress adress = InetAddress.getByAddress(new byte[] {(byte)255, (byte)255, (byte)255, (byte)255});
 
-            for(int i = 1024; i < Math.pow(2, 16); i++){
-                byte[] payload = new byte[0];
-                DatagramPacket packet = makeDatagramPackage(PacketTypes.HELLO, Storage.getInstance().getBroadCastId(), 0, 0, payload, adress, i);
-                MessageQueue.getInstance().push(packet);
+            if(!Storage.getInstance().isDebugMode()){
+                for(int i = 1024; i < Math.pow(2, 16); i++){
+                    byte[] payload = new byte[0];
+                    DatagramPacket packet = makeDatagramPackage(PacketTypes.HELLO, Storage.getInstance().getBroadCastId(), 0, 0, payload, adress, i);
+                    MessageQueue.getInstance().push(packet);
+                }
             }
         } catch (UnknownHostException e) {
             CompletableFuture.runAsync(new ExceptionHandler(e, this.getClass()));

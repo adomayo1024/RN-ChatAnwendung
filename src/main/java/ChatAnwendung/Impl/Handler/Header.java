@@ -68,7 +68,7 @@ public class Header {
         return ~crc;
     }
 
-    private static void addLong(int pos, long value, byte[] array) {
+    public static void addLong(int pos, long value, byte[] array) {
         array[pos] = (byte) value;
         array[pos + 1] = (byte) (value >> 8);
         array[pos + 2] = (byte) (value >> 16);
@@ -80,14 +80,14 @@ public class Header {
 
     }
 
-    private static void addInt(int pos, int value, byte[] array) {
+    public static void addInt(int pos, int value, byte[] array) {
         array[pos] = (byte) value;
         array[pos + 1] = (byte) (value >> 8);
         array[pos + 2] = (byte) (value >> 16);
         array[pos + 3] = (byte) (value >> 24);
     }
 
-    private static void addShort(int pos, short value, byte[] array){
+    public static void addShort(int pos, short value, byte[] array){
         array[pos] = (byte) value;
         array[pos + 1] = (byte) (value >> 8);
     }

@@ -37,8 +37,11 @@ public class SenderImpl implements Sender, Runnable {
 
             logger.log(Level.INFO, "Packet bekommen");
 
+            if(!Storage.getInstance().isDebugMode()){
                 socket.send(p);
-                logger.log(Level.INFO, "send a package to the adress: " + p.getAddress() + " and to port: " + p.getPort());
+            }
+            logger.log(Level.INFO, "send a package to the adress: " + p.getAddress() + " and to port: " + p.getPort());
+            logger.log(Level.INFO, "of Type: " + p.getData()[1]);
 
             } catch (IOException e) {
                 System.out.println(e.getMessage());

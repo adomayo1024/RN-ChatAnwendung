@@ -30,6 +30,8 @@ public class HandlerFactory {
             case "help":
                 handler = new HelpHandler(split);
                 break;
+            case "":
+                System.out.println("Nicht angemeldet");
             default:
                 handler = new WrongCommandHandler(split);
                 break;

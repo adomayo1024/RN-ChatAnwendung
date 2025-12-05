@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutorService;
@@ -12,6 +13,7 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.Map;
 
 public class Storage {
 
@@ -29,12 +31,19 @@ public class Storage {
 
     private boolean login;
 
-    BufferedReader reader;
+    private BufferedReader reader;
+
+    private Map<Long, Integer> openSendFiles;
+
+    private int fileCount;
+
+    private final boolean DEBUG_MODE = true;
 
     private Storage(){
         threadPool = Executors.newFixedThreadPool(10);
         broadcastId = -1L;
         login = false;
+        openSendFiles = new HashMap<>();
     }
 
     public static Storage getInstance(){
@@ -43,6 +52,14 @@ public class Storage {
         }
 
         return INSTANCE;
+    }
+
+    public void setSendOpenFile(long uID, int fileId){
+        openSendFiles.put(uID, fileId);
+    }
+
+    public int getNextFileID(){
+        return fileCount++;
     }
 
     public void setID(long ID) {
@@ -91,5 +108,9 @@ public class Storage {
 
     public BufferedReader getReader(){
         return reader;
+    }
+
+    public boolean isDebugMode() {
+        return DEBUG_MODE;
     }
 }
