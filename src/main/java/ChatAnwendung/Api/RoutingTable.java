@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface RoutingTable {
 
-    public void add(RoutingEntryImpl entry);
+    void add(RoutingEntryImpl entry);
 
     boolean isUIDavailable(long uid);
 

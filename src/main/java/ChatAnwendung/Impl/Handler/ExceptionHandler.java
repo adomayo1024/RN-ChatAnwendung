@@ -5,9 +5,9 @@ import java.util.logging.Logger;
 
 public class ExceptionHandler implements Runnable {
 
-    private Throwable exception;
+    private final Throwable exception;
 
-    private Class<?> thrower;
+    private final Class<?> thrower;
 
     private final  Logger logger;
 

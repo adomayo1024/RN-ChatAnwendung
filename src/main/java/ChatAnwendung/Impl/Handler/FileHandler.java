@@ -1,14 +1,11 @@
 package ChatAnwendung.Impl.Handler;
 
-import ChatAnwendung.Api.Handler;
-import ChatAnwendung.Api.RoutingTable;
+
 import ChatAnwendung.Impl.Exceptions.IllegalSequnzNumberException;
 import ChatAnwendung.Impl.Exceptions.UnknowUIDException;
 import ChatAnwendung.Impl.PacketTypes;
 import ChatAnwendung.Impl.RoutingTableImpl;
 import ChatAnwendung.Impl.Storage;
-
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.net.DatagramPacket;
@@ -34,7 +31,7 @@ public class FileHandler extends AbstractHandler {
 
 
         // TODO wie der name aussehen muss
-        try (RandomAccessFile file = new RandomAccessFile(path, "r");){
+        try (RandomAccessFile file = new RandomAccessFile(path, "r")){
 
             long length = file.length();
             long anzahlChunks = (long) Math.ceil(length / 1300.0);
@@ -94,9 +91,11 @@ public class FileHandler extends AbstractHandler {
 
     public static String help(){
 
-        return "file: Verschickt eine Datei die angegeben ist an einen bestimmten User\n" +
-                "\tAufbau: file  \"[absoluter Datei Pfad]\" [User Id]\n" +
-                "\tFehler: Die angegeben Datei gibt es nicht, der angegeben User ist nicht bekannt. \n";
+        return """
+                file: Verschickt eine Datei die angegeben ist an einen bestimmten User
+                \tAufbau: file  "[absoluter Datei Pfad]" [User Id]
+                \tFehler: Die angegeben Datei gibt es nicht, der angegeben User ist nicht bekannt.\s
+                """;
     }
 
 

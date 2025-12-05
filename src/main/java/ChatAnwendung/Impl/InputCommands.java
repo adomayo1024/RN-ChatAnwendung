@@ -5,5 +5,5 @@ public enum InputCommands {
     FILE,
     HELLO,
     GOODBYE,
-    EXIT;
+    EXIT
 }

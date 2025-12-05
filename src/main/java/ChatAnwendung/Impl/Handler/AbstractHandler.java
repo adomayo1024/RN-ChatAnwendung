@@ -11,7 +11,7 @@ public abstract class AbstractHandler implements Handler {
 
     protected String[] command;
 
-    protected Logger logger;
+    protected final Logger logger;
 
     public AbstractHandler(String[] command, String name){
         this.command = command;

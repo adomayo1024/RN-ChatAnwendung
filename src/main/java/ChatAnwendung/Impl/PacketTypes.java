@@ -11,5 +11,5 @@ public enum PacketTypes {
     HELLO,
     WELCOME,
     GOODBYE,
-    HEARTBEAT;
+    HEARTBEAT
 }

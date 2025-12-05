@@ -9,9 +9,9 @@ import java.util.logging.Logger;
 
 public class InputReaderImpl implements InputReader, Runnable {
 
-    private InputHandler inputHandler;
+    private final InputHandler inputHandler;
 
-    private Logger logger;
+    private final Logger logger;
 
     public InputReaderImpl(InputHandler handler) {
         inputHandler = handler;

@@ -10,11 +10,11 @@ public class MessageQueue {
 
     private  static MessageQueue INSTANCE;
 
-    private List<DatagramPacket> queue;
+    private final List<DatagramPacket> queue;
 
-    private Semaphore queueSemaphore;
+    private final Semaphore queueSemaphore;
 
-    private ReentrantLock queueMutex;
+    private final ReentrantLock queueMutex;
 
     private MessageQueue(){
         queue = new ArrayList<>();
