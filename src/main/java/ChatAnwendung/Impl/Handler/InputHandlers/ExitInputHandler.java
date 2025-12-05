@@ -1,16 +1,14 @@
-package ChatAnwendung.Impl.Handler;
+package ChatAnwendung.Impl.Handler.InputHandlers;
 
-import ChatAnwendung.Api.Handler;
 import ChatAnwendung.Impl.Storage;
 
 import java.io.IOException;
-import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 
-public class ExitHandler extends AbstractHandler {
+public class ExitInputHandler extends AbstractInputHandler {
 
-    public ExitHandler(String[] command) {
-        super(command, ExitHandler.class.getName());
+    public ExitInputHandler(String[] command) {
+        super(command, ExitInputHandler.class.getName());
     }
 
     @Override
@@ -18,7 +16,7 @@ public class ExitHandler extends AbstractHandler {
         logger.log(Level.INFO, "beginnung mit schließung");
         try {
             if(Storage.getInstance().isLogin()){
-                GoodbyeHandler bye = new GoodbyeHandler(new String[]{"bye"});
+                GoodbyeInputHandler bye = new GoodbyeInputHandler(new String[]{"bye"});
                 bye.run();
             }
             logger.log(Level.INFO,  "Werde schließen");

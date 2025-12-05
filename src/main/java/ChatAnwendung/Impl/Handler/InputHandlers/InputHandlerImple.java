@@ -1,4 +1,4 @@
-package ChatAnwendung.Impl.Handler;
+package ChatAnwendung.Impl.Handler.InputHandlers;
 
 import ChatAnwendung.Api.Handler;
 import ChatAnwendung.Api.InputHandler;
@@ -16,7 +16,7 @@ public class InputHandlerImple implements InputHandler {
             }
         }
 
-        Handler handler = HandlerFactory.getHandler(stdIn);
+        Handler handler = HandlerFactory.getInputHandler(stdIn);
         CompletableFuture.runAsync(handler, Storage.getInstance().getThreadPool());
     }
 }

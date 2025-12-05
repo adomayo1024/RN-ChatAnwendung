@@ -1,8 +1,11 @@
-package ChatAnwendung.Impl.Handler;
+package ChatAnwendung.Impl.Handler.InputHandlers;
 
 
 import ChatAnwendung.Impl.Exceptions.IllegalSequnzNumberException;
 import ChatAnwendung.Impl.Exceptions.UnknowUIDException;
+import ChatAnwendung.Impl.Handler.ExceptionHandler;
+import ChatAnwendung.Impl.Handler.Header;
+import ChatAnwendung.Impl.MessageQueue;
 import ChatAnwendung.Impl.PacketTypes;
 import ChatAnwendung.Impl.RoutingTableImpl;
 import ChatAnwendung.Impl.Storage;
@@ -12,9 +15,9 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.util.concurrent.CompletableFuture;
 
-public class FileHandler extends AbstractHandler {
-    public FileHandler(String[] command) {
-        super(command, FileHandler.class.getName());
+public class FileInputHandler extends AbstractInputHandler {
+    public FileInputHandler(String[] command) {
+        super(command, FileInputHandler.class.getName());
     }
 
     @Override

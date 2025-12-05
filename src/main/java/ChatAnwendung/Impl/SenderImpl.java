@@ -1,13 +1,10 @@
 package ChatAnwendung.Impl;
 
 import ChatAnwendung.Api.Sender;
-import ChatAnwendung.Impl.Handler.MessageQueue;
 
-import javax.xml.crypto.Data;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.util.concurrent.CancellationException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 

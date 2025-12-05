@@ -1,21 +1,21 @@
-package ChatAnwendung.Impl.Handler;
+package ChatAnwendung.Impl.Handler.InputHandlers;
 
 import ChatAnwendung.Impl.Exceptions.InvalidMessageException;
 import ChatAnwendung.Impl.Exceptions.UnknowUIDException;
+import ChatAnwendung.Impl.MessageQueue;
 import ChatAnwendung.Impl.PacketTypes;
 import ChatAnwendung.Impl.RoutingTableImpl;
-import ChatAnwendung.Impl.Storage;
 
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 
-public class MessageHandler extends AbstractHandler {
+public class MessageInputHandler extends AbstractInputHandler {
 
 
-    public MessageHandler(String[] command) {
-        super(command, MessageHandler.class.getName());
+    public MessageInputHandler(String[] command) {
+        super(command, MessageInputHandler.class.getName());
     }
 
     @Override

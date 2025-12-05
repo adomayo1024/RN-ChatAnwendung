@@ -1,4 +1,4 @@
-package ChatAnwendung.Impl.Handler;
+package ChatAnwendung.Impl;
 
 import java.net.DatagramPacket;
 import java.util.ArrayList;

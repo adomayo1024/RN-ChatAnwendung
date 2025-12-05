@@ -1,6 +1,8 @@
-package ChatAnwendung.Impl.Handler;
+package ChatAnwendung.Impl.Handler.InputHandlers;
 
 import ChatAnwendung.Impl.Exceptions.LoginException;
+import ChatAnwendung.Impl.Handler.ExceptionHandler;
+import ChatAnwendung.Impl.MessageQueue;
 import ChatAnwendung.Impl.PacketTypes;
 import ChatAnwendung.Impl.Storage;
 
@@ -9,10 +11,10 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.concurrent.CompletableFuture;
 
-public class HelloHandler extends AbstractHandler {
+public class HelloInputHandler extends AbstractInputHandler {
 
-    public HelloHandler(String[] command) {
-        super(command, HelloHandler.class.getName());
+    public HelloInputHandler(String[] command) {
+        super(command, HelloInputHandler.class.getName());
     }
 
     @Override

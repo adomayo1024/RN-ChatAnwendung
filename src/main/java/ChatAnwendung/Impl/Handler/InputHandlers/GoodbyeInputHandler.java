@@ -1,7 +1,8 @@
-package ChatAnwendung.Impl.Handler;
+package ChatAnwendung.Impl.Handler.InputHandlers;
 
-import ChatAnwendung.Api.Handler;
 import ChatAnwendung.Api.RoutingEntry;
+import ChatAnwendung.Impl.Handler.ExceptionHandler;
+import ChatAnwendung.Impl.MessageQueue;
 import ChatAnwendung.Impl.PacketTypes;
 import ChatAnwendung.Impl.RoutingTableImpl;
 import ChatAnwendung.Impl.Storage;
@@ -10,9 +11,9 @@ import javax.security.auth.login.LoginException;
 import java.net.DatagramPacket;
 import java.util.concurrent.CompletableFuture;
 
-public class GoodbyeHandler extends AbstractHandler {
-    public GoodbyeHandler(String[] command) {
-        super(command, GoodbyeHandler.class.getName());
+public class GoodbyeInputHandler extends AbstractInputHandler {
+    public GoodbyeInputHandler(String[] command) {
+        super(command, GoodbyeInputHandler.class.getName());
     }
 
     @Override

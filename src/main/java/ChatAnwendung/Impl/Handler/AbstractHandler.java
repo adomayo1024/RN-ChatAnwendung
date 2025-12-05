@@ -9,13 +9,10 @@ import java.util.logging.Logger;
 
 public abstract class AbstractHandler implements Handler {
 
-    protected String[] command;
-
     protected final Logger logger;
 
-    public AbstractHandler(String[] command, String name){
-        this.command = command;
-        logger = Logger.getLogger(name);
+    protected AbstractHandler(String name) {
+        this.logger = Logger.getLogger(name);
     }
 
     protected DatagramPacket makeDatagramPackage(PacketTypes type, long destId, int sequenz, int fileId, byte[] payload, InetAddress adress, int port) {

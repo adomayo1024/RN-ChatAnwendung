@@ -1,6 +1,6 @@
 package ChatAnwendung;
 
-import ChatAnwendung.Impl.Handler.InputHandlerImple;
+import ChatAnwendung.Impl.Handler.InputHandlers.InputHandlerImple;
 import ChatAnwendung.Impl.InputReaderImpl;
 import ChatAnwendung.Impl.RecieverImpl;
 import ChatAnwendung.Impl.SenderImpl;

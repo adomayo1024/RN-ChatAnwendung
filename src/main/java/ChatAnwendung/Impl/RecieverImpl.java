@@ -2,12 +2,12 @@ package ChatAnwendung.Impl;
 
 
 import ChatAnwendung.Api.Reciever;
+import ChatAnwendung.Impl.Handler.RecieverHandlers.RecieverHandlerImpl;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.Socket;
-import java.util.concurrent.CancellationException;
+import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -33,6 +33,8 @@ public class RecieverImpl implements Runnable, Reciever {
             DatagramPacket request = new DatagramPacket(new byte[1400], 1400);
 
             socket.receive(request);
+
+            CompletableFuture.runAsync(new RecieverHandlerImpl(request));
 
 
 
