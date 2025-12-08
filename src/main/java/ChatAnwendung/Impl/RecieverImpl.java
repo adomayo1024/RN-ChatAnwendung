@@ -48,7 +48,6 @@ public class RecieverImpl implements Runnable, Reciever {
             handler.handle(request);
 
 
-
         } catch (IOException e) {
             Thread.currentThread().interrupt();
             logger.log(Level.INFO, "Reciever got Interrupted");

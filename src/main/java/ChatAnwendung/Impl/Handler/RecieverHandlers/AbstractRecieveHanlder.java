@@ -19,7 +19,7 @@ public class AbstractRecieveHanlder extends AbstractHandler {
     }
 
     protected long getSrcUID(byte[] data){
-        return makeBytesTwoLong(data, Header.getSrcNodePos());
+        return makeBytesToLong(data, Header.getSrcNodePos());
     }
 
     protected int getSequenz(byte[] data){
@@ -30,7 +30,7 @@ public class AbstractRecieveHanlder extends AbstractHandler {
         return makeBytesToInt(data, Header.getFileIdPos());
     }
 
-    private long  makeBytesTwoLong(byte[] data, int pos){
+    protected long makeBytesToLong(byte[] data, int pos){
         byte b0 = data[pos];
         byte b1 = data[pos + 1];
         byte b2 = data[pos + 2];
@@ -51,14 +51,14 @@ public class AbstractRecieveHanlder extends AbstractHandler {
     }
 
 
-    private short makeBytesToShort(byte[] data, int pos){
+    protected short makeBytesToShort(byte[] data, int pos){
         byte b0 = data[pos];
         byte b1 = data[pos + 1];
 
         return (short) (((b0 & 0xFF) << 8) | (b1 & 0xFF));
     }
 
-    private int makeBytesToInt(byte[] data, int pos){
+    protected int makeBytesToInt(byte[] data, int pos){
         byte b0 = data[pos];
         byte b1 = data[pos + 1];
         byte b2 = data[pos + 2];

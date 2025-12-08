@@ -88,7 +88,7 @@ public class HandlerFactory {
                 handler = new GoodbyeRecieveHandler(packet);
             }
             case HEARTBEAT -> {
-                handler = new HeartbreatRecieveHanlder(packet);
+                handler = new HeartbeatRecieveHandler(packet);
             }
             default -> {
                 handler = null;
