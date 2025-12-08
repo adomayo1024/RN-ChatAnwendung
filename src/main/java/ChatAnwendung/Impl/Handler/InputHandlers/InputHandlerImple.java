@@ -2,6 +2,7 @@ package ChatAnwendung.Impl.Handler.InputHandlers;
 
 import ChatAnwendung.Api.Handler;
 import ChatAnwendung.Api.InputHandler;
+import ChatAnwendung.Impl.Handler.HandlerFactory;
 import ChatAnwendung.Impl.Storage;
 
 import java.util.concurrent.CompletableFuture;

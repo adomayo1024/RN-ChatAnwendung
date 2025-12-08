@@ -1,15 +1,12 @@
 package ChatAnwendung.Impl.Handler.InputHandlers;
 
 import ChatAnwendung.Api.RoutingEntry;
-import ChatAnwendung.Impl.Handler.ExceptionHandler;
 import ChatAnwendung.Impl.MessageQueue;
 import ChatAnwendung.Impl.PacketTypes;
 import ChatAnwendung.Impl.RoutingTableImpl;
 import ChatAnwendung.Impl.Storage;
 
-import javax.security.auth.login.LoginException;
 import java.net.DatagramPacket;
-import java.util.concurrent.CompletableFuture;
 
 public class GoodbyeInputHandler extends AbstractInputHandler {
     public GoodbyeInputHandler(String[] command) {
@@ -18,15 +15,6 @@ public class GoodbyeInputHandler extends AbstractInputHandler {
 
     @Override
     public void run() {
-
-        try {
-            if (!Storage.getInstance().isLogin()) {
-                throw new LoginException();
-            }
-        }catch (LoginException e) {
-            CompletableFuture.runAsync(new ExceptionHandler(e, this.getClass()));
-            return;
-        }
 
         for (RoutingEntry neighbour : RoutingTableImpl.getInstance().getAllDirectNeighbours()) {
 
@@ -37,8 +25,8 @@ public class GoodbyeInputHandler extends AbstractInputHandler {
                     0,
                     0,
                     payload,
-                    neighbour.getAdress(),
-                    neighbour.getPort());
+                    neighbour.getNextHopAdress(),
+                    neighbour.getNextHopPort());
             MessageQueue.getInstance().pushAtFirst(packet);
         }
         Storage.getInstance().logout();

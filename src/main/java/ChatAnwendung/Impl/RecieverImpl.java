@@ -7,7 +7,7 @@ import ChatAnwendung.Impl.Handler.RecieverHandlers.RecieverHandlerImpl;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.util.concurrent.CompletableFuture;
+import java.net.SocketException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -17,24 +17,35 @@ public class RecieverImpl implements Runnable, Reciever {
 
     private final Logger logger;
 
+    private RecieverHandlerImpl handler;
+
     private final int PACKETSIZE = 1400;
 
-    public RecieverImpl(DatagramSocket socket) {
+    public RecieverImpl(DatagramSocket socket, RecieverHandlerImpl handler) {
         this.socket = socket;
+        this.handler = handler;
         logger = Logger.getLogger(RecieverImpl.class.getName());
     }
 
     @Override
     public void run() {
 
+        if(Storage.getInstance().getSendMode() == SendMode.SELF) {
+            try {
+                socket = new DatagramSocket(8080);
+            } catch (SocketException e) {
+                throw new RuntimeException(e);
+            }
+        }
         while (!Thread.currentThread().isInterrupted()) {
 
+
         try {
-            DatagramPacket request = new DatagramPacket(new byte[1400], 1400);
+            DatagramPacket request = new DatagramPacket(new byte[PACKETSIZE], PACKETSIZE);
 
             socket.receive(request);
 
-            CompletableFuture.runAsync(new RecieverHandlerImpl(request));
+            handler.handle(request);
 
 
 

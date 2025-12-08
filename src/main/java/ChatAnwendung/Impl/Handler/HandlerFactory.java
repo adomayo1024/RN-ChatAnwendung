@@ -1,6 +1,8 @@
-package ChatAnwendung.Impl.Handler.InputHandlers;
+package ChatAnwendung.Impl.Handler;
 
 import ChatAnwendung.Api.Handler;
+import ChatAnwendung.Impl.Exceptions.LoginException;
+import ChatAnwendung.Impl.Handler.InputHandlers.*;
 import ChatAnwendung.Impl.PacketTypes;
 import ChatAnwendung.Impl.Handler.RecieverHandlers.*;
 
@@ -35,7 +37,8 @@ public class HandlerFactory {
                 handler = new HelpInputHandler(split);
                 break;
             case "":
-                System.out.println("Nicht angemeldet");
+                handler = new ExceptionHandler(new LoginException(), HandlerFactory.class);
+                break;
             default:
                 handler = new WrongCommandInputHandler(split);
                 break;
@@ -66,7 +69,7 @@ public class HandlerFactory {
             case MESSAGE -> {
                 handler = new MessageRecieveHandler(packet);
             }
-            case FILE_DATE -> {
+            case FILE_DATA -> {
                 handler = new FileDataRecieveHandler(packet);
             }
             case RESENDREQUEST -> {

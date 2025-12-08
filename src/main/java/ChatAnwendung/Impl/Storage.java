@@ -3,6 +3,8 @@ package ChatAnwendung.Impl;
 import java.io.BufferedReader;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -37,21 +39,32 @@ public class Storage {
 
     private int fileCount;
 
-    private final boolean DEBUG_MODE = true;
+    private final boolean DEBUG_MODE = false;
 
-    private Storage(){
+    private final SendMode sendMode = SendMode.SELF;
+
+    private Storage() throws NoSuchAlgorithmException {
         threadPool = Executors.newFixedThreadPool(10);
         broadcastId = -1L;
         login = false;
         openSendFiles = new HashMap<>();
+        ID = SecureRandom.getInstanceStrong().nextLong();
     }
 
-    public static Storage getInstance(){
+    public static Storage getInstance() {
         if(INSTANCE == null) {
-            INSTANCE = new Storage();
+            try {
+                INSTANCE = new Storage();
+            } catch (NoSuchAlgorithmException e) {
+                throw new RuntimeException(e);
+            }
         }
 
         return INSTANCE;
+    }
+
+    public SendMode getSendMode() {
+        return sendMode;
     }
 
     public void setSendOpenFile(long uID, int fileId){
@@ -60,10 +73,6 @@ public class Storage {
 
     public int getNextFileID(){
         return fileCount++;
-    }
-
-    public void setID(long ID) {
-        this.ID = ID;
     }
 
     public long getID() {
@@ -112,5 +121,9 @@ public class Storage {
 
     public boolean isDebugMode() {
         return DEBUG_MODE;
+    }
+
+    public String getUnsignedID() {
+        return Long.toUnsignedString(ID);
     }
 }

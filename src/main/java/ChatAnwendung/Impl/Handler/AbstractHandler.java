@@ -3,9 +3,12 @@ package ChatAnwendung.Impl.Handler;
 import ChatAnwendung.Api.Handler;
 import ChatAnwendung.Impl.PacketTypes;
 
+import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
+import java.util.logging.FileHandler;
 import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 public abstract class AbstractHandler implements Handler {
 

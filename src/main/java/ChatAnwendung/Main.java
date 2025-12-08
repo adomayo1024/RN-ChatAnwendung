@@ -1,6 +1,7 @@
 package ChatAnwendung;
 
 import ChatAnwendung.Impl.Handler.InputHandlers.InputHandlerImple;
+import ChatAnwendung.Impl.Handler.RecieverHandlers.RecieverHandlerImpl;
 import ChatAnwendung.Impl.InputReaderImpl;
 import ChatAnwendung.Impl.RecieverImpl;
 import ChatAnwendung.Impl.SenderImpl;
@@ -23,11 +24,12 @@ public class Main {
 
         try(DatagramSocket socket = new DatagramSocket(0)){
 
-            socket.setBroadcast(true);
+            Storage.getInstance().setPort(socket.getLocalPort());
             logger.log(Level.INFO, "Socket opened on port " + socket.getLocalPort());
+            logger.log(Level.INFO, "You got the ID: " + Storage.getInstance().getUnsignedID());
 
             CompletableFuture<Void> inputHandler = CompletableFuture.runAsync(new InputReaderImpl(new InputHandlerImple()), Storage.getInstance().getThreadPool());
-            CompletableFuture<Void> reciever = CompletableFuture.runAsync(new RecieverImpl(socket), Storage.getInstance().getThreadPool());
+            CompletableFuture<Void> reciever = CompletableFuture.runAsync(new RecieverImpl(socket, new RecieverHandlerImpl()), Storage.getInstance().getThreadPool());
             CompletableFuture<Void> sender = CompletableFuture.runAsync(new SenderImpl(socket), Storage.getInstance().getThreadPool());
             inputHandler.join();
             reciever.cancel(true);

@@ -8,18 +8,18 @@ public class RoutingEntryImpl implements RoutingEntry {
 
     private long UID;
 
-    private InetAddress adress;
+    private InetAddress nextHopAdress;
 
-    private int port;
+    private int nextHopPort;
 
     private int hops;
 
     private long last_seen;
 
-    public RoutingEntryImpl(long UID, InetAddress adress, int port, int hops, long last_seen) {
+    public RoutingEntryImpl(long UID, InetAddress adress, int nextHopPort, int hops, long last_seen) {
         this.UID = UID;
-        this.adress = adress;
-        this.port = port;
+        this.nextHopAdress = adress;
+        this.nextHopPort = nextHopPort;
         this.hops = hops;
         this.last_seen = last_seen;
     }
@@ -31,18 +31,33 @@ public class RoutingEntryImpl implements RoutingEntry {
     }
 
     @Override
-    public int getPort() {
-        return port;
+    public int getNextHopPort() {
+        return nextHopPort;
     }
 
     @Override
-    public InetAddress getAdress() {
-        return adress;
+    public void setNextHopPort(int port){
+        nextHopPort = port;
+    }
+
+    @Override
+    public InetAddress getNextHopAdress() {
+        return nextHopAdress;
+    }
+
+    @Override
+    public void setNextHopAdress(InetAddress adress){
+        nextHopAdress = adress;
     }
 
     @Override
     public int getHops() {
         return hops;
+    }
+
+    @Override
+    public void setHops(int hops){
+        this.hops = hops;
     }
 
     @Override

@@ -17,6 +17,7 @@ public class Header {
     private static final int fileIdPos = 24;
     private static final int crcPos = 28;
     private static final int payloadLenghtPos = 36;
+    private static final int payloadPos = 38;
 
 
 
@@ -69,27 +70,74 @@ public class Header {
     }
 
     public static void addLong(int pos, long value, byte[] array) {
-        array[pos] = (byte) value;
-        array[pos + 1] = (byte) (value >> 8);
-        array[pos + 2] = (byte) (value >> 16);
-        array[pos + 3] = (byte) (value >> 24);
-        array[pos + 4] = (byte) (value >> 32);
-        array[pos + 5] = (byte) (value >> 40);
-        array[pos + 6] = (byte) (value >> 48);
-        array[pos + 7] = (byte) (value >> 56);
+        array[pos] = (byte) (value >> 56);
+        array[pos + 1] = (byte) (value >> 48);
+        array[pos + 2] = (byte) (value >> 40);
+        array[pos + 3] = (byte) (value >> 32);
+        array[pos + 4] = (byte) (value >> 24);
+        array[pos + 5] = (byte) (value >> 16);
+        array[pos + 6] = (byte) (value >> 8);
+        array[pos + 7] = (byte) (value);
 
     }
 
     public static void addInt(int pos, int value, byte[] array) {
-        array[pos] = (byte) value;
-        array[pos + 1] = (byte) (value >> 8);
-        array[pos + 2] = (byte) (value >> 16);
-        array[pos + 3] = (byte) (value >> 24);
+        array[pos] = (byte) (value >> 24);
+        array[pos + 1] = (byte) (value >> 16);
+        array[pos + 2] = (byte) (value >> 8);
+        array[pos + 3] = (byte) (value);
     }
 
     public static void addShort(int pos, short value, byte[] array){
-        array[pos] = (byte) value;
-        array[pos + 1] = (byte) (value >> 8);
+        array[pos] = (byte) (value >> 8);
+        array[pos + 1] = (byte) (value);
+    }
+
+
+    //----------------------GETTER-------------------------
+
+    public static int getVersionPos(){
+        return versionPos;
+    }
+
+    public static int getTypePos(){
+        return typePos;
+    }
+
+    public static int getTtlPos(){
+        return ttlPos;
+    }
+
+    public static int getHopsPos(){
+        return hopsPos;
+    }
+
+    public static int getSrcNodePos(){
+        return srcNodePos;
+    }
+
+    public static int getDestNodePos(){
+        return destNodePos;
+    }
+
+    public static int getSequenzPos(){
+        return sequenzPos;
+    }
+
+    public static int getFileIdPos(){
+        return fileIdPos;
+    }
+
+    public static int getCrcPos(){
+        return crcPos;
+    }
+
+    public static int getPayloadLenghtPos(){
+        return payloadLenghtPos;
+    }
+
+    public static int getPayloadPos(){
+        return payloadPos;
     }
 
 }

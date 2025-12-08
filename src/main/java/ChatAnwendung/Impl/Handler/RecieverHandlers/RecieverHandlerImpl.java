@@ -1,9 +1,9 @@
 package ChatAnwendung.Impl.Handler.RecieverHandlers;
 
-import ChatAnwendung.Api.Handler;
-import ChatAnwendung.Api.InputHandler;
 import ChatAnwendung.Api.RecieverHanlder;
-import ChatAnwendung.Impl.Handler.InputHandlers.HandlerFactory;
+import ChatAnwendung.Impl.Handler.HandlerFactory;
+import ChatAnwendung.Impl.SendMode;
+import ChatAnwendung.Impl.Storage;
 
 import java.net.DatagramPacket;
 import java.util.concurrent.CompletableFuture;
@@ -11,7 +11,10 @@ import java.util.concurrent.CompletableFuture;
 public class RecieverHandlerImpl implements RecieverHanlder {
 
     @Override
-    public void hanlde(DatagramPacket packet) {
-        CompletableFuture.runAsync(HandlerFactory.getRecieverHandler(packet));
+    public void handle(DatagramPacket packet) {
+
+        if(Storage.getInstance().isLogin() || Storage.getInstance().getSendMode() == SendMode.SELF){
+            CompletableFuture.runAsync(HandlerFactory.getRecieverHandler(packet), Storage.getInstance().getThreadPool());
+        }
     }
 }

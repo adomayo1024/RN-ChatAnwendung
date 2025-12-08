@@ -37,6 +37,7 @@ public class HelpInputHandler extends AbstractInputHandler {
                     break;
                 case "send":
                     builder.append(MessageInputHandler.help());
+                    break;
                 default:
                     builder.append("Unbekannte command: ").append(command[1]);
             }

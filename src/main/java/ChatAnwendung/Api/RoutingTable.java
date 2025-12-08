@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface RoutingTable {
 
-    void add(RoutingEntryImpl entry);
+    void add(RoutingEntry entry);
 
     boolean isUIDavailable(long uid);
 
@@ -16,6 +16,8 @@ public interface RoutingTable {
     InetAddress getNextHopAdressForUID(long uID);
 
     void removeUID(long uID);
+
+    void removeUIDThroughGoodbye(long uID);
 
     int getNextHopPortForUID(long uID);
 

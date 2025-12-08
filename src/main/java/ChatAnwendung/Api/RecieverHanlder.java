@@ -4,5 +4,5 @@ import java.net.DatagramPacket;
 
 public interface RecieverHanlder {
 
-    void hanlde(DatagramPacket packet);
+    void handle(DatagramPacket packet);
 }

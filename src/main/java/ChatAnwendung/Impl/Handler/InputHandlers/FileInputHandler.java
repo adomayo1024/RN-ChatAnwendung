@@ -37,20 +37,20 @@ public class FileInputHandler extends AbstractInputHandler {
         try (RandomAccessFile file = new RandomAccessFile(path, "r")){
 
             long length = file.length();
-            long anzahlChunks = (long) Math.ceil(length / 1300.0);
+            int anzahlChunks = (int) Math.ceil(length / 1300.0);
             int fileId = Storage.getInstance().getNextFileID();
             InetAddress adress = RoutingTableImpl.getInstance().getNextHopAdressForUID(uID);
             int port = RoutingTableImpl.getInstance().getNextHopPortForUID(uID);
             Storage.getInstance().setSendOpenFile(uID, fileId);
 
 
-            sendFileInitPacket(length, path, uID, fileId, adress, port);
+            sendFileInitPacket(anzahlChunks, length, path, uID, fileId, adress, port);
 
 
             for(int sequenz = 0; sequenz < anzahlChunks; sequenz++){
                 byte[] payload = split(file, sequenz);
                 DatagramPacket packet = makeDatagramPackage(
-                        PacketTypes.FILE_DATE,
+                        PacketTypes.FILE_DATA,
                         uID,
                         sequenz,
                         fileId,
@@ -79,12 +79,12 @@ public class FileInputHandler extends AbstractInputHandler {
         MessageQueue.getInstance().push(packet);
     }
 
-    private void sendFileInitPacket(long length, String path, long uID, int fileId, InetAddress adress, int port) {
+    private void sendFileInitPacket(int anzahlChunks, long length, String path, long uID, int fileId, InetAddress adress, int port) {
         byte[] payload = makeDataInitPayload(length, path);
         DatagramPacket packet = makeDatagramPackage(
                 PacketTypes.FILE_INIT,
                 uID,
-                0,
+                anzahlChunks,
                 fileId,
                 payload,
                 adress,

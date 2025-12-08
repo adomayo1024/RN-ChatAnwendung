@@ -1,14 +1,14 @@
 package ChatAnwendung.Impl.Handler.InputHandlers;
 
+import ChatAnwendung.Api.RoutingEntry;
 import ChatAnwendung.Impl.Exceptions.LoginException;
 import ChatAnwendung.Impl.Handler.ExceptionHandler;
 import ChatAnwendung.Impl.MessageQueue;
 import ChatAnwendung.Impl.PacketTypes;
+import ChatAnwendung.Impl.RoutingTableImpl;
 import ChatAnwendung.Impl.Storage;
 
 import java.net.DatagramPacket;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.concurrent.CompletableFuture;
 
 public class HelloInputHandler extends AbstractInputHandler {
@@ -25,18 +25,12 @@ public class HelloInputHandler extends AbstractInputHandler {
         }
         Storage.getInstance().login();
 
-        try {
-            InetAddress adress = InetAddress.getByAddress(new byte[] {(byte)255, (byte)255, (byte)255, (byte)255});
+            //InetAddress adress = InetAddress.getByAddress(new byte[] {(byte)255, (byte)255, (byte)255, (byte)255});
 
-            if(!Storage.getInstance().isDebugMode()){
-                for(int i = 1024; i < Math.pow(2, 16); i++){
-                    byte[] payload = new byte[0];
-                    DatagramPacket packet = makeDatagramPackage(PacketTypes.HELLO, Storage.getInstance().getBroadCastId(), 0, 0, payload, adress, i);
-                    MessageQueue.getInstance().push(packet);
-                }
-            }
-        } catch (UnknownHostException e) {
-            CompletableFuture.runAsync(new ExceptionHandler(e, this.getClass()));
+        for(RoutingEntry entry : RoutingTableImpl.getInstance().getAllDirectNeighbours()){
+            byte[] payload = new byte[0];
+            DatagramPacket packet = makeDatagramPackage(PacketTypes.HELLO, Storage.getInstance().getBroadCastId(), 0, 0, payload, entry.getNextHopAdress(), entry.getNextHopPort());
+            MessageQueue.getInstance().push(packet);
         }
     }
 

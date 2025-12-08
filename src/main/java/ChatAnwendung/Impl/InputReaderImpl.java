@@ -20,9 +20,6 @@ public class InputReaderImpl implements InputReader, Runnable {
 
     @Override
     public void run() {
-
-        inputHandler.handle("hello");
-
         try(BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
             Storage.getInstance().setReader(reader);
             String stdIn;
