@@ -45,9 +45,17 @@ public class RoutingTableImpl implements RoutingTable {
         mutex.unlock();
     }
 
-    private boolean newEntryIsBetter(RoutingEntry entry) {
-        // TODO richtig implementieren nach Protokoll
-        return true;
+    private boolean newEntryIsBetter(RoutingEntry newEntry) {
+        RoutingEntry oldEntry = entries.get(newEntry.getUID());
+        boolean result;
+
+        if(!oldEntry.isRoutable()){
+            result = true;
+        } else if(oldEntry.getHops() > newEntry.getHops()) {
+            result = true;
+        } else result = oldEntry.getNextHopAdress().equals(newEntry.getNextHopAdress()) &&
+                oldEntry.getNextHopPort() == newEntry.getNextHopPort();
+        return result;
     }
 
     @Override
@@ -94,6 +102,7 @@ public class RoutingTableImpl implements RoutingTable {
                     entry.setNextHopPort(-1);
                     entry.setNextHopAdress(null);
                     entry.setHops(-1);
+                    entry.setRoutable(false);
                 }
             }
 

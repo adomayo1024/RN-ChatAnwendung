@@ -35,7 +35,7 @@ public class Storage {
 
     private BufferedReader reader;
 
-    private Map<Long, Integer> openSendFiles;
+    private Map<Integer, String> openSendFiles;
 
     private int fileCount;
 
@@ -67,8 +67,8 @@ public class Storage {
         return sendMode;
     }
 
-    public void setSendOpenFile(long uID, int fileId){
-        openSendFiles.put(uID, fileId);
+    public void setSendOpenFile(int fileId, String path){
+        openSendFiles.put(fileId, path);
     }
 
     public int getNextFileID(){
@@ -125,5 +125,9 @@ public class Storage {
 
     public String getUnsignedID() {
         return Long.toUnsignedString(ID);
+    }
+
+    public String getOpenFile(int fileID){
+        return openSendFiles.get(fileID);
     }
 }

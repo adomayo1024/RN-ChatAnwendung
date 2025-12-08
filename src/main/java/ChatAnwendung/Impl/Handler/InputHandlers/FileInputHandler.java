@@ -33,7 +33,6 @@ public class FileInputHandler extends AbstractInputHandler {
 
 
 
-        // TODO wie der name aussehen muss
         try (RandomAccessFile file = new RandomAccessFile(path, "r")){
 
             long length = file.length();
@@ -41,7 +40,7 @@ public class FileInputHandler extends AbstractInputHandler {
             int fileId = Storage.getInstance().getNextFileID();
             InetAddress adress = RoutingTableImpl.getInstance().getNextHopAdressForUID(uID);
             int port = RoutingTableImpl.getInstance().getNextHopPortForUID(uID);
-            Storage.getInstance().setSendOpenFile(uID, fileId);
+            Storage.getInstance().setSendOpenFile(fileId, path);
 
 
             sendFileInitPacket(anzahlChunks, length, path, uID, fileId, adress, port);

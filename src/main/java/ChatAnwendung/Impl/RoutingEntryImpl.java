@@ -16,12 +16,15 @@ public class RoutingEntryImpl implements RoutingEntry {
 
     private long last_seen;
 
+    private boolean routable;
+
     public RoutingEntryImpl(long UID, InetAddress adress, int nextHopPort, int hops, long last_seen) {
         this.UID = UID;
         this.nextHopAdress = adress;
         this.nextHopPort = nextHopPort;
         this.hops = hops;
         this.last_seen = last_seen;
+        routable = true;
     }
 
 
@@ -58,6 +61,16 @@ public class RoutingEntryImpl implements RoutingEntry {
     @Override
     public void setHops(int hops){
         this.hops = hops;
+    }
+
+    @Override
+    public boolean isRoutable(){
+        return routable;
+    }
+
+    @Override
+    public void setRoutable(boolean routable){
+        this.routable = routable;
     }
 
     @Override

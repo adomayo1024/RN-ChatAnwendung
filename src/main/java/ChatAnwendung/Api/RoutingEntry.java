@@ -17,5 +17,9 @@ public interface RoutingEntry {
 
     void setHops(int hops);
 
+    boolean isRoutable();
+
+    void setRoutable(boolean routable);
+
     long getLast_seen();
 }
