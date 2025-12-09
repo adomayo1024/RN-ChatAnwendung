@@ -1,5 +1,8 @@
 package ChatAnwendung.Impl.Handler.RecieverHandlers;
 
+import ChatAnwendung.Impl.DownloadFiles;
+import ChatAnwendung.Impl.File;
+
 import java.net.DatagramPacket;
 import java.util.logging.Level;
 
@@ -14,6 +17,8 @@ public class FileEndRecieveHandler extends AbstractRecieveHanlder{
         byte[] data = packet.getData();
         int fileID = getFileId(data);
         long srcUID = getSrcUID(data);
-        logger.log(Level.INFO, "Recieved File End from file: " + Long.toUnsignedString(fileID) + " from User: " + srcUID );
+        logger.log(Level.INFO, "Recieved File End from file: " + fileID + " from User: " + Long.toUnsignedString(srcUID));
+        File file = DownloadFiles.getInstance().getFile(srcUID, fileID);
+        file.startRequesting();
     }
 }

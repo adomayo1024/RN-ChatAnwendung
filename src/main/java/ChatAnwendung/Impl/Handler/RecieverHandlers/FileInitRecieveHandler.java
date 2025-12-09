@@ -28,9 +28,9 @@ public class FileInitRecieveHandler extends AbstractRecieveHanlder {
         long srcUID = getSrcUID(data);
         short payloadLength = getPayloadLength(data);
         byte[] payload = new byte[payloadLength];
-        System.arraycopy(data, Header.getPayloadLenghtPos(), payload, 0, payloadLength);
+        System.arraycopy(data, Header.getPayloadPos(), payload, 0, payloadLength);
         String fileName = getFileName(payload, payloadLength);
-        int size = getSize(payload, payloadLength);
+        int size = getSize(payload);
         ScheduledExecutorService timer = DownloadFiles.getInstance().getScheduledThreadPool();
 
         File file = new File(
@@ -43,7 +43,7 @@ public class FileInitRecieveHandler extends AbstractRecieveHanlder {
 
         DownloadFiles.getInstance().setNewFile(srcUID, fileID, file);
 
-        logger.log(Level.INFO, "Created new File for: " + fileID + "from User: " + Long.toUnsignedString(srcUID));
+        logger.log(Level.INFO, "Created new File" + fileName +  " for: " + fileID + " from User: " + Long.toUnsignedString(srcUID));
 
     }
 
@@ -52,13 +52,13 @@ public class FileInitRecieveHandler extends AbstractRecieveHanlder {
         byte[] name = new byte[payloadLength - 4];
 
         for(int i = 0; i < name.length; i++){
-            name[i] = payload[i];
+            name[i] = payload[i + 4];
         }
 
         return new String(name, StandardCharsets.UTF_8);
     }
 
-    private int getSize(byte[] payload, short payloadLength) {
-        return makeBytesToInt(payload, payloadLength - 4);
+    private int getSize(byte[] payload) {
+        return makeBytesToInt(payload, 0);
     }
 }

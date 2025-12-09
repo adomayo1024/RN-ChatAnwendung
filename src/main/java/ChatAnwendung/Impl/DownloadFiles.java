@@ -1,5 +1,7 @@
 package ChatAnwendung.Impl;
 
+import ChatAnwendung.Impl.Handler.ExceptionHandler;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -7,6 +9,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class DownloadFiles {
 
@@ -17,6 +21,8 @@ public class DownloadFiles {
     private Map<Long, Map<Integer, File>> downloadedFiles;
 
     private ReentrantLock mutex;
+
+    private final Logger logger = Logger.getLogger(DownloadFiles.class.getName());
 
     private DownloadFiles() {
         downloadedFiles = new HashMap<>();
@@ -33,10 +39,24 @@ public class DownloadFiles {
     }
 
     public File getFile(long uID, int fileID) throws NullPointerException{
+        logger.log(Level.INFO, "Requesting File: " + fileID + " from User: " + Long.toUnsignedString(uID));
+        if(!fileIsThere(uID, fileID)){
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+                new ExceptionHandler(e, this.getClass());
+            }
+        }
+
         mutex.lock();
         File result = downloadedFiles.get(uID).get(fileID);
         mutex.unlock();
+        logger.log(Level.INFO, "Got File: " + fileID + " from User: " + Long.toUnsignedString(uID));
         return result;
+    }
+
+    private boolean fileIsThere(long uID, int fileID) {
+        return downloadedFiles.containsKey(uID) && downloadedFiles.get(uID).containsKey(fileID);
     }
 
     public void setNewFile(long uID, int fileID, File file){

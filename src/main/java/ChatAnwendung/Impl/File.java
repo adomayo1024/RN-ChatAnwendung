@@ -1,11 +1,15 @@
 package ChatAnwendung.Impl;
 
+import ChatAnwendung.Impl.Handler.ExceptionHandler;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class File {
@@ -22,7 +26,7 @@ public class File {
 
     private boolean[] writedChunks;
 
-    private int requestSendedWithoutAResponse;
+    private AtomicInteger requestSendedWithoutAResponse;
 
     private ScheduledFuture<?> requestTimer;
 
@@ -30,7 +34,7 @@ public class File {
 
     private ReentrantLock mutex;
 
-    private long recievedLastChunk;
+    private AtomicLong recievedLastChunk;
 
     public File(int anzahlChunks, int length, String name, int fileId, long srcUID, ScheduledExecutorService executor){
         this.anzahlChunks = anzahlChunks;
@@ -41,9 +45,9 @@ public class File {
         this.srcUID = srcUID;
         this.executor = executor;
         this.mutex = new ReentrantLock(true);
-        requestTimer = executor.scheduleAtFixedRate(new RequestSender(this), 1, 1, TimeUnit.SECONDS);
         makeFile();
-        recievedLastChunk = 0;
+        recievedLastChunk = new AtomicLong(System.currentTimeMillis());
+        requestSendedWithoutAResponse = new AtomicInteger(0);
     }
 
     private void makeFile() {
@@ -67,23 +71,22 @@ public class File {
                 int pos = sequenz * 1300;
                 file.seek(pos);
                 file.write(chunk);
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException(e);
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                writedChunks[sequenz] = false;
+                new ExceptionHandler(e, this.getClass());
             }
             finally {
                 mutex.unlock();
             }
 
-            writedChunks[sequenz] = true;
             dekrementRequestCountWithoutResponse();
-            recievedLastChunk = System.currentTimeMillis();
+            recievedLastChunk.set(System.currentTimeMillis());
         }
 
         boolean finished = finished();
         if(finished) {
             executor.shutdown();
+            System.out.println("File " + name + " is finished");
         }
 
         return finished;
@@ -125,21 +128,31 @@ public class File {
     }
 
     public void inkrementRequestCountWithoutResponse(){
-        requestSendedWithoutAResponse++;
+        requestSendedWithoutAResponse.incrementAndGet();
     }
 
     public void dekrementRequestCountWithoutResponse(){
-        requestSendedWithoutAResponse--;
+        requestSendedWithoutAResponse.decrementAndGet();
 
-        if(requestSendedWithoutAResponse < 0){
-            requestSendedWithoutAResponse = 0;
+        if(requestSendedWithoutAResponse.intValue() < 0){
+            requestSendedWithoutAResponse.set(0);
         }
     }
 
     public long getRecievedLastChunk(){
-        return recievedLastChunk;
+        return recievedLastChunk.get();
     }
 
 
+    public String getName() {
+        return name;
+    }
 
+    public void startRequesting(){
+        executor.scheduleAtFixedRate(new RequestSender(this), 1, 1, TimeUnit.SECONDS);
+    }
+
+    public void setSequenzGetted(int sequenz) {
+        writedChunks[sequenz] = true;
+    }
 }

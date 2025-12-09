@@ -23,11 +23,12 @@ public class FileDataRecieveHandler extends AbstractRecieveHanlder {
         byte[] payload = new byte[payloadLength];
         System.arraycopy(data, Header.getPayloadPos(), payload, 0, payloadLength);
         File file = DownloadFiles.getInstance().getFile(srcUID, fileId);
+        file.setSequenzGetted(sequenz);
         if(file.addChunk(payload, sequenz)){
             DownloadFiles.getInstance().removeFile(srcUID, fileId);
         }
 
-        logger.log(Level.INFO, "Added Chunk: " + sequenz + "to File: " + file + "from User: " + Long.toUnsignedString(srcUID));
+        logger.log(Level.INFO, "Added Chunk: " + sequenz + "to File: " + file.getName() + "from User: " + Long.toUnsignedString(srcUID));
 
     }
 }

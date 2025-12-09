@@ -41,13 +41,15 @@ public class FileInputHandler extends AbstractInputHandler {
             InetAddress adress = RoutingTableImpl.getInstance().getNextHopAdressForUID(uID);
             int port = RoutingTableImpl.getInstance().getNextHopPortForUID(uID);
             Storage.getInstance().setSendOpenFile(fileId, path);
+            byte[] wholeFile = new byte[1300 * anzahlChunks];
 
 
             sendFileInitPacket(anzahlChunks, length, path, uID, fileId, adress, port);
 
 
             for(int sequenz = 0; sequenz < anzahlChunks; sequenz++){
-                byte[] payload = split(file, sequenz);
+                byte[] payload = split(file, sequenz, anzahlChunks);
+                System.arraycopy(payload, 0, wholeFile, sequenz * 1300, payload.length);
                 DatagramPacket packet = makeDatagramPackage(
                         PacketTypes.FILE_DATA,
                         uID,
@@ -105,11 +107,10 @@ public class FileInputHandler extends AbstractInputHandler {
         return RoutingTableImpl.getInstance().isUIDavailable(uID);
     }
 
-    private byte[] split(RandomAccessFile file, long sequenz){
+    private byte[] split(RandomAccessFile file, long sequenz, long anzahlChunks){
         byte[] chunk = null;
 
         try {
-            long anzahlChunks = (long)Math.ceil(file.length() / 1300.0);
             if(anzahlChunks <= sequenz || sequenz < 0){
                 throw new IllegalSequnzNumberException(sequenz);
             }
@@ -120,19 +121,19 @@ public class FileInputHandler extends AbstractInputHandler {
             else{
                 chunk = new byte[1300];
             }
-            file.seek(sequenz);
+            file.seek(sequenz * 1300);
             file.read(chunk);
         } catch (IOException | IllegalSequnzNumberException e) {
-            CompletableFuture.runAsync(new ExceptionHandler(e, this.getClass()));
+            new ExceptionHandler(e, this.getClass());
         }
         return chunk;
     }
 
 
     private byte[] makeDataInitPayload(long length, String path) {
-        String[] splitPath = path.split("\\d+");
+        String[] splitPath = path.split("/");
         String fileName = splitPath[splitPath.length - 1];
-        byte[] payload= new byte[fileName.getBytes().length + 4];
+        byte[] payload = new byte[fileName.getBytes().length + 4];
         Header.addInt(0, (int)length, payload);
         System.arraycopy(fileName.getBytes(), 0, payload, 4, fileName.getBytes().length);
         return payload;
