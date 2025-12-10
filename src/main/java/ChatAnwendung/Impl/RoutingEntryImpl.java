@@ -3,6 +3,7 @@ package ChatAnwendung.Impl;
 import ChatAnwendung.Api.RoutingEntry;
 
 import java.net.InetAddress;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class RoutingEntryImpl implements RoutingEntry {
 
@@ -14,17 +15,19 @@ public class RoutingEntryImpl implements RoutingEntry {
 
     private int hops;
 
-    private long last_seen;
+    private long lastSeen;
 
     private boolean routable;
+    private final ReentrantLock mutex;
 
-    public RoutingEntryImpl(long UID, InetAddress adress, int nextHopPort, int hops, long last_seen) {
+    public RoutingEntryImpl(long UID, InetAddress adress, int nextHopPort, int hops, long lastSeen) {
         this.UID = UID;
         this.nextHopAdress = adress;
         this.nextHopPort = nextHopPort;
         this.hops = hops;
-        this.last_seen = last_seen;
+        this.lastSeen = lastSeen;
         routable = true;
+        mutex = new ReentrantLock();
     }
 
 
@@ -40,7 +43,9 @@ public class RoutingEntryImpl implements RoutingEntry {
 
     @Override
     public void setNextHopPort(int port){
+        mutex.unlock();
         nextHopPort = port;
+        mutex.unlock();
     }
 
     @Override
@@ -50,7 +55,9 @@ public class RoutingEntryImpl implements RoutingEntry {
 
     @Override
     public void setNextHopAdress(InetAddress adress){
+        mutex.lock();
         nextHopAdress = adress;
+        mutex.unlock();
     }
 
     @Override
@@ -60,7 +67,9 @@ public class RoutingEntryImpl implements RoutingEntry {
 
     @Override
     public void setHops(int hops){
+        mutex.unlock();
         this.hops = hops;
+        mutex.unlock();
     }
 
     @Override
@@ -70,11 +79,20 @@ public class RoutingEntryImpl implements RoutingEntry {
 
     @Override
     public void setRoutable(boolean routable){
+        mutex.lock();
         this.routable = routable;
+        mutex.unlock();
     }
 
     @Override
-    public long getLast_seen(){
-        return last_seen;
+    public long getLastSeen(){
+        return lastSeen;
+    }
+
+    @Override
+    public void setLastSeen() {
+        mutex.lock();
+        lastSeen = System.currentTimeMillis();
+        mutex.unlock();
     }
 }

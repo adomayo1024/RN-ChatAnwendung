@@ -1,14 +1,12 @@
 package ChatAnwendung.Impl.Handler;
 
 import ChatAnwendung.Api.Handler;
+import ChatAnwendung.Impl.Header;
 import ChatAnwendung.Impl.PacketTypes;
 
-import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
-import java.util.logging.FileHandler;
 import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
 
 public abstract class AbstractHandler implements Handler {
 
@@ -18,9 +16,13 @@ public abstract class AbstractHandler implements Handler {
         this.logger = Logger.getLogger(name);
     }
 
-    protected DatagramPacket makeDatagramPackage(PacketTypes type, long destId, int sequenz, int fileId, byte[] payload, InetAddress adress, int port) {
+    protected DatagramPacket makeDatagramPackage(PacketTypes type,  long destId, int sequenz, int fileId, byte[] payload, InetAddress adress, int port) {
+        return makeDatagramPackage(type, (byte) 32, destId, sequenz, fileId, payload, adress, port);
+    }
 
-        byte[] header = Header.makeHeader((byte) type.ordinal(), destId, sequenz, fileId, (short) payload.length);
+    protected DatagramPacket makeDatagramPackage(PacketTypes type, byte ttl, long destId, int sequenz, int fileId, byte[] payload, InetAddress adress, int port) {
+
+        byte[] header = Header.makeHeader((byte) type.ordinal(), ttl, destId, sequenz, fileId, (short) payload.length);
 
         byte[] packet = new byte[header.length + payload.length];
 

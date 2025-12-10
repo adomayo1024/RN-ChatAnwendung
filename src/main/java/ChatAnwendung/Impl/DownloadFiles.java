@@ -4,10 +4,7 @@ import ChatAnwendung.Impl.Handler.ExceptionHandler;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.*;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -16,7 +13,7 @@ public class DownloadFiles {
 
     private static  DownloadFiles INSTANCE;
 
-    private final ScheduledExecutorService timer = Executors.newScheduledThreadPool(3);
+    private  ScheduledExecutorService timer;
 
     private Map<Long, Map<Integer, File>> downloadedFiles;
 
@@ -27,6 +24,7 @@ public class DownloadFiles {
     private DownloadFiles() {
         downloadedFiles = new HashMap<>();
         mutex = new ReentrantLock(true);
+        timer = Storage.getInstance().getScheduledThreadPool();
     }
 
 
@@ -40,11 +38,12 @@ public class DownloadFiles {
 
     public File getFile(long uID, int fileID) throws NullPointerException{
         logger.log(Level.INFO, "Requesting File: " + fileID + " from User: " + Long.toUnsignedString(uID));
-        if(!fileIsThere(uID, fileID)){
+        // TODO kein busy waiting mit Semphore
+        while(!fileIsThere(uID, fileID)){
             try {
                 Thread.sleep(50);
             } catch (InterruptedException e) {
-                new ExceptionHandler(e, this.getClass());
+                ExceptionHandler.handle(e, this.getClass());
             }
         }
 

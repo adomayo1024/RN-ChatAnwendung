@@ -1,6 +1,4 @@
-package ChatAnwendung.Impl.Handler;
-
-import ChatAnwendung.Impl.Storage;
+package ChatAnwendung.Impl;
 
 public class Header {
 
@@ -35,9 +33,9 @@ public class Header {
         }
     }
 
-    public static byte[] makeHeader(byte type, long destId, int sequenz, int fileId, short payloadLenght) {
+
+    public static byte[] makeHeader(byte type, byte ttl, long destId, int sequenz, int fileId, short payloadLenght) {
         byte version = 1;
-        byte ttl = 32;
         byte hops = 0;
         long srcID = Storage.getInstance().getID();
 

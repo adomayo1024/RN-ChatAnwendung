@@ -5,6 +5,7 @@ import ChatAnwendung.Impl.Handler.ExceptionHandler;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.util.Arrays;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -71,9 +72,10 @@ public class File {
                 int pos = sequenz * 1300;
                 file.seek(pos);
                 file.write(chunk);
+                writedChunks[sequenz] = true;
             } catch (IOException e) {
                 writedChunks[sequenz] = false;
-                new ExceptionHandler(e, this.getClass());
+                ExceptionHandler.handle(e, this.getClass());
             }
             finally {
                 mutex.unlock();
@@ -82,6 +84,7 @@ public class File {
             dekrementRequestCountWithoutResponse();
             recievedLastChunk.set(System.currentTimeMillis());
         }
+
 
         boolean finished = finished();
         if(finished) {
@@ -116,7 +119,7 @@ public class File {
 
     public int getNextNeededChunk(){
         int i = 0;
-        boolean written= writedChunks[i];
+        boolean written = writedChunks[i];
         while(written && i < writedChunks.length){
             written = writedChunks[i++];
         }
@@ -150,9 +153,5 @@ public class File {
 
     public void startRequesting(){
         executor.scheduleAtFixedRate(new RequestSender(this), 1, 1, TimeUnit.SECONDS);
-    }
-
-    public void setSequenzGetted(int sequenz) {
-        writedChunks[sequenz] = true;
     }
 }

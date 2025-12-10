@@ -11,16 +11,19 @@ public class ExceptionHandler implements Handler {
 
     private final Class<?> thrower;
 
-    private final  Logger logger;
+    private static final  Logger logger = Logger.getLogger(ExceptionHandler.class.getName());
 
     public ExceptionHandler(Throwable e, Class<?> t) {
         exception = e;
         thrower = t;
-        logger = Logger.getLogger(ExceptionHandler.class.getName());
     }
 
     @Override
     public void run() {
+        logger.log(Level.WARNING, thrower.getName() + " hat Fehler gemeldet: " +  exception.getMessage());
+    }
+
+    public static void handle(Throwable exception, Class<?> thrower){
         logger.log(Level.WARNING, thrower.getName() + " hat Fehler gemeldet: " +  exception.getMessage());
     }
 }

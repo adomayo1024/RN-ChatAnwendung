@@ -1,10 +1,12 @@
 package ChatAnwendung.Impl.Handler.InputHandlers;
 
 
+import ChatAnwendung.Impl.Exceptions.ArgumentException;
 import ChatAnwendung.Impl.Exceptions.IllegalSequnzNumberException;
+import ChatAnwendung.Impl.Exceptions.NotAUIDException;
 import ChatAnwendung.Impl.Exceptions.UnknowUIDException;
 import ChatAnwendung.Impl.Handler.ExceptionHandler;
-import ChatAnwendung.Impl.Handler.Header;
+import ChatAnwendung.Impl.Header;
 import ChatAnwendung.Impl.MessageQueue;
 import ChatAnwendung.Impl.PacketTypes;
 import ChatAnwendung.Impl.RoutingTableImpl;
@@ -25,46 +27,58 @@ public class FileInputHandler extends AbstractInputHandler {
 
         String path = command[1];
 
-        long uID = Long.parseLong(command[2]);
+        long uID = 0;
+        try {
+            uID = Long.parseLong(command[2]);
+        } catch (NumberFormatException e) {
+            ExceptionHandler.handle(new NotAUIDException(e.getMessage()), this.getClass());
+            return;
+        } catch (ArrayIndexOutOfBoundsException e) {
+            ExceptionHandler.handle(new ArgumentException("Sender UID is missing"), this.getClass());
+            return;
+        }
 
         if(!validUID(uID))  {
-            CompletableFuture.runAsync(new ExceptionHandler(new UnknowUIDException(uID), this.getClass()));
+            ExceptionHandler.handle(new UnknowUIDException(uID), this.getClass());
         }
+        else {
+            try (RandomAccessFile file = new RandomAccessFile(path, "r")){
+
+                long length = file.length();
+                int anzahlChunks = (int) Math.ceil(length / 1300.0);
+                int fileId = Storage.getInstance().getNextFileID();
+                InetAddress adress = RoutingTableImpl.getInstance().getNextHopAdressForUID(uID);
+                int port = RoutingTableImpl.getInstance().getNextHopPortForUID(uID);
+                Storage.getInstance().setSendOpenFile(fileId, path);
+                byte[] wholeFile = new byte[1300 * anzahlChunks];
 
 
-
-        try (RandomAccessFile file = new RandomAccessFile(path, "r")){
-
-            long length = file.length();
-            int anzahlChunks = (int) Math.ceil(length / 1300.0);
-            int fileId = Storage.getInstance().getNextFileID();
-            InetAddress adress = RoutingTableImpl.getInstance().getNextHopAdressForUID(uID);
-            int port = RoutingTableImpl.getInstance().getNextHopPortForUID(uID);
-            Storage.getInstance().setSendOpenFile(fileId, path);
-            byte[] wholeFile = new byte[1300 * anzahlChunks];
+                sendFileInitPacket(anzahlChunks, length, path, uID, fileId, adress, port);
 
 
-            sendFileInitPacket(anzahlChunks, length, path, uID, fileId, adress, port);
+                for(int sequenz = 0; sequenz < anzahlChunks; sequenz++){
+                    byte[] payload = split(file, sequenz, anzahlChunks);
+                    System.arraycopy(payload, 0, wholeFile, sequenz * 1300, payload.length);
+                    DatagramPacket packet = makeDatagramPackage(
+                            PacketTypes.FILE_DATA,
+                            uID,
+                            sequenz,
+                            fileId,
+                            payload,
+                            adress,
+                            port);
+                    MessageQueue.getInstance().push(packet);
+                }
 
-
-            for(int sequenz = 0; sequenz < anzahlChunks; sequenz++){
-                byte[] payload = split(file, sequenz, anzahlChunks);
-                System.arraycopy(payload, 0, wholeFile, sequenz * 1300, payload.length);
-                DatagramPacket packet = makeDatagramPackage(
-                        PacketTypes.FILE_DATA,
-                        uID,
-                        sequenz,
-                        fileId,
-                        payload,
-                        adress,
-                        port);
-                MessageQueue.getInstance().push(packet);
+                sendFileEnd(uID, fileId, adress, port);
+            } catch (IOException e) {
+                ExceptionHandler.handle(e, this.getClass());
             }
-
-            sendFileEnd(uID, fileId, adress, port);
-        } catch (IOException e) {
-            CompletableFuture.runAsync(new ExceptionHandler(e, this.getClass()));
         }
+
+
+
+
     }
 
     private void sendFileEnd(long uID, int fileId, InetAddress adress, int port) {
@@ -124,7 +138,7 @@ public class FileInputHandler extends AbstractInputHandler {
             file.seek(sequenz * 1300);
             file.read(chunk);
         } catch (IOException | IllegalSequnzNumberException e) {
-            new ExceptionHandler(e, this.getClass());
+            ExceptionHandler.handle(e, this.getClass());
         }
         return chunk;
     }

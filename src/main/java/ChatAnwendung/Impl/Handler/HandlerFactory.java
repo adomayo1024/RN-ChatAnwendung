@@ -3,6 +3,7 @@ package ChatAnwendung.Impl.Handler;
 import ChatAnwendung.Api.Handler;
 import ChatAnwendung.Impl.Exceptions.LoginException;
 import ChatAnwendung.Impl.Handler.InputHandlers.*;
+import ChatAnwendung.Impl.Header;
 import ChatAnwendung.Impl.PacketTypes;
 import ChatAnwendung.Impl.Handler.RecieverHandlers.*;
 
@@ -36,6 +37,14 @@ public class HandlerFactory {
             case "help":
                 handler = new HelpInputHandler(split);
                 break;
+            case "connect":
+                handler = new ConnectHandler(split);
+                break;
+            case "disconnect":
+                handler = new DisconnectHandler(split);
+                break;
+            case "list":
+                handler = new ListHandler(split);
             case "":
                 handler = new ExceptionHandler(new LoginException(), HandlerFactory.class);
                 break;
@@ -56,44 +65,50 @@ public class HandlerFactory {
     }
 
 
-    public static Runnable getRecieverHandler(DatagramPacket packet) {
-        PacketTypes type = PacketTypes.values()[packet.getData()[1]];
+    public static Runnable getRecieverHandler(DatagramPacket packet, boolean isItForMe) {
+        PacketTypes type = PacketTypes.values()[packet.getData()[Header.getTypePos()]];
         Handler handler;
-        switch (type){
-            case FILE_INIT -> {
-                handler = new FileInitRecieveHandler(packet);
-            }
-            case File_End -> {
-                handler = new FileEndRecieveHandler(packet);
-            }
-            case MESSAGE -> {
-                handler = new MessageRecieveHandler(packet);
-            }
-            case FILE_DATA -> {
-                handler = new FileDataRecieveHandler(packet);
-            }
-            case RESENDREQUEST -> {
-                handler = new RequestRecieveHandler(packet);
-            }
-            case ROUTINGTABLE -> {
-                handler = new RoutingTableRecievetHandler(packet);
-            }
-            case HELLO -> {
-                handler = new HelloRecieveHandler(packet);
-            }
-            case WELCOME -> {
-                handler = new WelcomeRecieveHandler(packet);
-            }
-            case GOODBYE -> {
-                handler = new GoodbyeRecieveHandler(packet);
-            }
-            case HEARTBEAT -> {
-                handler = new HeartbeatRecieveHandler(packet);
-            }
-            default -> {
-                handler = null;
+        if(!isItForMe){
+         handler = new FeedForwadingHanlder(packet);
+        }
+        else{
+            switch (type){
+                case FILE_INIT -> {
+                    handler = new FileInitRecieveHandler(packet);
+                }
+                case File_End -> {
+                    handler = new FileEndRecieveHandler(packet);
+                }
+                case MESSAGE -> {
+                    handler = new MessageRecieveHandler(packet);
+                }
+                case FILE_DATA -> {
+                    handler = new FileDataRecieveHandler(packet);
+                }
+                case RESENDREQUEST -> {
+                    handler = new RequestRecieveHandler(packet);
+                }
+                case ROUTINGTABLE -> {
+                    handler = new RoutingTableRecievetHandler(packet);
+                }
+                case HELLO -> {
+                    handler = new HelloRecieveHandler(packet);
+                }
+                case WELCOME -> {
+                    handler = new WelcomeRecieveHandler(packet);
+                }
+                case GOODBYE -> {
+                    handler = new GoodbyeRecieveHandler(packet);
+                }
+                case HEARTBEAT -> {
+                    handler = new HeartbeatRecieveHandler(packet);
+                }
+                default -> {
+                    handler = null;
+                }
             }
         }
+
         return handler;
     }
 }

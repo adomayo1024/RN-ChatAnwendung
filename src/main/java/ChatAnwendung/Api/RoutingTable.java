@@ -22,4 +22,6 @@ public interface RoutingTable {
     int getNextHopPortForUID(long uID);
 
     List<RoutingEntry> getAllDirectNeighbours();
+
+    void setLastSeen(long uID);
 }

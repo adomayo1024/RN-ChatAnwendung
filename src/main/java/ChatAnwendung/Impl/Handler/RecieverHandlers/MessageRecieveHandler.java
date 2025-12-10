@@ -1,10 +1,9 @@
 package ChatAnwendung.Impl.Handler.RecieverHandlers;
 
-import ChatAnwendung.Impl.Handler.Header;
+import ChatAnwendung.Impl.Header;
 
 import java.net.DatagramPacket;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 
 public class MessageRecieveHandler extends AbstractRecieveHanlder {
     public MessageRecieveHandler(DatagramPacket packet) {

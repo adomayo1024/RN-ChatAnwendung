@@ -1,7 +1,9 @@
 package ChatAnwendung.Impl.Handler.RecieverHandlers;
 
 import ChatAnwendung.Impl.Handler.AbstractHandler;
-import ChatAnwendung.Impl.Handler.Header;
+import ChatAnwendung.Impl.Header;
+import ChatAnwendung.Impl.RoutingTableImpl;
+import ChatAnwendung.Impl.Storage;
 
 import java.net.DatagramPacket;
 
@@ -14,12 +16,21 @@ public class AbstractRecieveHanlder extends AbstractHandler {
         this.packet = packet;
     }
 
+
     protected short getPayloadLength(byte[] data){
         return makeBytesToShort(data, Header.getPayloadLenghtPos());
     }
 
     protected long getSrcUID(byte[] data){
         return makeBytesToLong(data, Header.getSrcNodePos());
+    }
+
+    protected byte getTtl(byte[] data){
+        return data[Header.getTtlPos()];
+    }
+
+    protected byte getHops(byte[] data){
+        return data[Header.getHopsPos()];
     }
 
     protected int getSequenz(byte[] data){

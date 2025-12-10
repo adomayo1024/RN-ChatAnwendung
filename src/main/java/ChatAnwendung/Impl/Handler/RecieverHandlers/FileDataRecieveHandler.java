@@ -2,7 +2,7 @@ package ChatAnwendung.Impl.Handler.RecieverHandlers;
 
 import ChatAnwendung.Impl.DownloadFiles;
 import ChatAnwendung.Impl.File;
-import ChatAnwendung.Impl.Handler.Header;
+import ChatAnwendung.Impl.Header;
 
 import java.net.DatagramPacket;
 import java.util.logging.Level;
@@ -23,7 +23,6 @@ public class FileDataRecieveHandler extends AbstractRecieveHanlder {
         byte[] payload = new byte[payloadLength];
         System.arraycopy(data, Header.getPayloadPos(), payload, 0, payloadLength);
         File file = DownloadFiles.getInstance().getFile(srcUID, fileId);
-        file.setSequenzGetted(sequenz);
         if(file.addChunk(payload, sequenz)){
             DownloadFiles.getInstance().removeFile(srcUID, fileId);
         }

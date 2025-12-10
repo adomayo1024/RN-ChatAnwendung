@@ -1,16 +1,12 @@
 package ChatAnwendung.Impl.Handler.RecieverHandlers;
 
-import ChatAnwendung.Api.Handler;
 import ChatAnwendung.Impl.DownloadFiles;
 import ChatAnwendung.Impl.File;
-import ChatAnwendung.Impl.Handler.HandlerFactory;
-import ChatAnwendung.Impl.Handler.Header;
+import ChatAnwendung.Impl.Header;
 
 import java.net.DatagramPacket;
 import java.nio.charset.StandardCharsets;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.logging.Level;
 
 public class FileInitRecieveHandler extends AbstractRecieveHanlder {

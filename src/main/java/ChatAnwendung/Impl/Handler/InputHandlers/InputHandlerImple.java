@@ -12,7 +12,7 @@ public class InputHandlerImple implements InputHandler {
     public void handle(String stdIn) {
         if(!Storage.getInstance().isLogin()) {
             String[] string = stdIn.split(" ");
-            if (!string[0].equals("hello") && !string[0].equals("help") && !string[0].equals("exit")){
+            if (!string[0].equals("hello") && !string[0].equals("help") && !string[0].equals("exit") && !string[0].equals("connect")){
                 stdIn = "";
             }
         }

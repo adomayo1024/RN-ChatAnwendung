@@ -1,7 +1,9 @@
 package ChatAnwendung.Impl.Handler.InputHandlers;
 
 import ChatAnwendung.Impl.Exceptions.InvalidMessageException;
+import ChatAnwendung.Impl.Exceptions.NotAUIDException;
 import ChatAnwendung.Impl.Exceptions.UnknowUIDException;
+import ChatAnwendung.Impl.Handler.ExceptionHandler;
 import ChatAnwendung.Impl.MessageQueue;
 import ChatAnwendung.Impl.PacketTypes;
 import ChatAnwendung.Impl.RoutingTableImpl;
@@ -22,23 +24,25 @@ public class MessageInputHandler extends AbstractInputHandler {
     public void run()  {
 
         logger.log(Level.INFO, "Begin with Message");
-        long uID = Long.parseLong(command[1]);
+        long uID = 0;
+        try {
+            uID = Long.parseUnsignedLong(command[1]);
+        } catch (NumberFormatException e) {
+            ExceptionHandler.handle(new NotAUIDException(e.getMessage()), this.getClass());
+            return;
+        }
         String msg = command[2];
 
-        //TODO richtiges Exception handling betreiben
-        try {
-            if(!validUID(uID)) {
-                throw new UnknowUIDException(uID);
-            }
-            if(!validMessage(msg)){
-                throw new InvalidMessageException(msg);
-            }
-        } catch (UnknowUIDException e) {
-            throw new RuntimeException(e);
-        } catch (InvalidMessageException e) {
-            throw new RuntimeException(e);
-        }
 
+
+        if(!validUID(uID)) {
+            ExceptionHandler.handle(new UnknowUIDException(uID), this.getClass());
+            return;
+        }
+        else if(!validMessage(msg)){
+            ExceptionHandler.handle(new InvalidMessageException(msg), this.getClass());
+            return;
+        }
         byte[] payload = msg.getBytes(StandardCharsets.UTF_8);
         InetAddress adress = RoutingTableImpl.getInstance().getNextHopAdressForUID(uID);
         int port = RoutingTableImpl.getInstance().getNextHopPortForUID(uID);

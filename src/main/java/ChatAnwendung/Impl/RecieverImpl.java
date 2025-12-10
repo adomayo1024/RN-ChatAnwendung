@@ -2,6 +2,7 @@ package ChatAnwendung.Impl;
 
 
 import ChatAnwendung.Api.Reciever;
+import ChatAnwendung.Impl.Handler.ExceptionHandler;
 import ChatAnwendung.Impl.Handler.RecieverHandlers.RecieverHandlerImpl;
 
 import java.io.IOException;
@@ -37,22 +38,33 @@ public class RecieverImpl implements Runnable, Reciever {
                 throw new RuntimeException(e);
             }
         }
-        while (!Thread.currentThread().isInterrupted()) {
+
+        boolean interrupted = false;
+
+        while (!interrupted) {
 
 
-        try {
-            DatagramPacket request = new DatagramPacket(new byte[PACKETSIZE], PACKETSIZE);
+            try {
+                DatagramPacket request = new DatagramPacket(new byte[PACKETSIZE], PACKETSIZE);
 
-            socket.receive(request);
+                logger.log(Level.INFO, "Waiting for packet");
 
-            handler.handle(request);
+                socket.receive(request);
+
+                logger.log(Level.INFO, "Packet received");
+
+                handler.handle(request);
 
 
-        } catch (IOException e) {
-            Thread.currentThread().interrupt();
-            logger.log(Level.INFO, "Reciever got Interrupted");
-        }
+            }catch (SocketException e) {
+                interrupted = true;
+                logger.log(Level.INFO, "Socket closed");
             }
+            catch (IOException e) {
+                interrupted = true;
+                ExceptionHandler.handle(e, this.getClass());
+            }
+        }
 
         logger.log(Level.INFO, "Reciever turned down");
 

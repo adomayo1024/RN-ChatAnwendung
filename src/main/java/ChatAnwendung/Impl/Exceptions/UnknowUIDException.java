@@ -8,4 +8,9 @@ public class UnknowUIDException extends Throwable {
     public UnknowUIDException(Long uID) {
         this.uID = uID;
     }
+
+    @Override
+    public String getMessage() {
+        return "Unknow UID: " + uID;
+    }
 }

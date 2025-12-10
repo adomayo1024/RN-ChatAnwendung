@@ -20,17 +20,18 @@ public class HelloInputHandler extends AbstractInputHandler {
     @Override
     public void run() {
         if(Storage.getInstance().isLogin()){
-             CompletableFuture.runAsync(new ExceptionHandler(new LoginException(), this.getClass()));
-             return;
+             ExceptionHandler.handle(new LoginException(), this.getClass());
         }
-        Storage.getInstance().login();
+        else {
+            Storage.getInstance().login();
 
             //InetAddress adress = InetAddress.getByAddress(new byte[] {(byte)255, (byte)255, (byte)255, (byte)255});
 
-        for(RoutingEntry entry : RoutingTableImpl.getInstance().getAllDirectNeighbours()){
-            byte[] payload = new byte[0];
-            DatagramPacket packet = makeDatagramPackage(PacketTypes.HELLO, Storage.getInstance().getBroadCastId(), 0, 0, payload, entry.getNextHopAdress(), entry.getNextHopPort());
-            MessageQueue.getInstance().push(packet);
+            for(RoutingEntry entry : RoutingTableImpl.getInstance().getAllDirectNeighbours()){
+                byte[] payload = new byte[0];
+                DatagramPacket packet = makeDatagramPackage(PacketTypes.HELLO, Storage.getInstance().getBroadCastId(), 0, 0, payload, entry.getNextHopAdress(), entry.getNextHopPort());
+                MessageQueue.getInstance().push(packet);
+            }
         }
     }
 

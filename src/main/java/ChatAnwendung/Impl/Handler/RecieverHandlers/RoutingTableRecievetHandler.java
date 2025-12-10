@@ -1,7 +1,6 @@
 package ChatAnwendung.Impl.Handler.RecieverHandlers;
 
 import ChatAnwendung.Api.RoutingEntry;
-import ChatAnwendung.Impl.Handler.Header;
 import ChatAnwendung.Impl.RoutingEntryImpl;
 import ChatAnwendung.Impl.RoutingTableImpl;
 

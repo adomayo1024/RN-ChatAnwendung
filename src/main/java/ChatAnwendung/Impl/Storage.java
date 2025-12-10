@@ -8,10 +8,7 @@ import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.CancellationException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Semaphore;
+import java.util.concurrent.*;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -41,7 +38,9 @@ public class Storage {
 
     private final boolean DEBUG_MODE = false;
 
-    private final SendMode sendMode = SendMode.SELF;
+    private final SendMode sendMode = SendMode.ALL;
+
+    private final ScheduledExecutorService scheduledThreadPool = Executors.newScheduledThreadPool(3);
 
     private Storage() throws NoSuchAlgorithmException {
         threadPool = Executors.newFixedThreadPool(10);
@@ -61,6 +60,10 @@ public class Storage {
         }
 
         return INSTANCE;
+    }
+
+    public  ScheduledExecutorService getScheduledThreadPool() {
+        return scheduledThreadPool;
     }
 
     public SendMode getSendMode() {
@@ -97,6 +100,7 @@ public class Storage {
 
     public void shutDown(){
         threadPool.shutdownNow();
+        scheduledThreadPool.shutdownNow();
     }
 
     public void login(){

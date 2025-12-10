@@ -21,5 +21,7 @@ public interface RoutingEntry {
 
     void setRoutable(boolean routable);
 
-    long getLast_seen();
+    long getLastSeen();
+
+    void setLastSeen();
 }

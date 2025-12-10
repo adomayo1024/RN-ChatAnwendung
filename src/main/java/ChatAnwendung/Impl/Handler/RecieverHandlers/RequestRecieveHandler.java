@@ -66,7 +66,7 @@ public class RequestRecieveHandler extends AbstractRecieveHanlder {
             file.seek(sequenz);
             file.read(chunk);
         } catch (IOException | IllegalSequnzNumberException e) {
-            CompletableFuture.runAsync(new ExceptionHandler(e, this.getClass()));
+            ExceptionHandler.handle(e, this.getClass());
         }
         return chunk;
     }

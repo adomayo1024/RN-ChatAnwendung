@@ -21,7 +21,10 @@ public class RoutingTableImpl implements RoutingTable {
     private RoutingTableImpl() {
         entries = new HashMap<>();
         mutex = new ReentrantLock(true);
-        add(new RoutingEntryImpl(0, InetAddress.getLoopbackAddress(), 8080, 1, System.currentTimeMillis()));
+        if (Storage.getInstance().getSendMode() != SendMode.ALL) {
+            add(new RoutingEntryImpl(0, InetAddress.getLoopbackAddress(), 8080, 1, System.currentTimeMillis()));
+        }
+
     }
 
     public static RoutingTable getInstance(){
@@ -60,7 +63,7 @@ public class RoutingTableImpl implements RoutingTable {
 
     @Override
     public boolean isUIDavailable(long uid) {
-        return true;
+        return entries.containsKey(uid);
     }
 
     @Override
@@ -91,11 +94,11 @@ public class RoutingTableImpl implements RoutingTable {
 
     @Override
     public void removeUIDThroughGoodbye(long uID){
-        mutex.lock();
+
         if(entries.containsKey(uID)) {
             InetAddress adressFromUID = entries.get(uID).getNextHopAdress();
             int portFromUID = entries.get(uID).getNextHopPort();
-
+            mutex.lock();
             for(Long key: entries.keySet() ){
                 RoutingEntry entry = entries.get(key);
                 if(adressFromUID.equals(entry.getNextHopAdress()) && entry.getNextHopPort() == portFromUID){
@@ -105,19 +108,15 @@ public class RoutingTableImpl implements RoutingTable {
                     entry.setRoutable(false);
                 }
             }
-
+            mutex.unlock();
             removeUID(uID);
         }
-        mutex.unlock();
 
     }
 
     @Override
     public int getNextHopPortForUID(long uID) {
-        mutex.lock();
-        int result = entries.get(uID).getNextHopPort();
-        mutex.unlock();
-        return result;
+        return entries.get(uID).getNextHopPort();
     }
 
     @Override
@@ -135,5 +134,14 @@ public class RoutingTableImpl implements RoutingTable {
         mutex.unlock();
 
         return result;
+    }
+
+    @Override
+    public void setLastSeen(long uID){
+        mutex.lock();
+        if(entries.containsKey(uID)){
+            entries.get(uID).setLastSeen();
+        }
+        mutex.unlock();
     }
 }

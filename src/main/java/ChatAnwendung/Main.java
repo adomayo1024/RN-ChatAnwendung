@@ -27,6 +27,7 @@ public class Main {
             Storage.getInstance().setPort(socket.getLocalPort());
             logger.log(Level.INFO, "Socket opened on port " + socket.getLocalPort());
             logger.log(Level.INFO, "You got the ID: " + Storage.getInstance().getUnsignedID());
+            logger.log(Level.INFO, "Sender mode is " + Storage.getInstance().getSendMode());
 
             CompletableFuture<Void> inputHandler = CompletableFuture.runAsync(new InputReaderImpl(new InputHandlerImple()), Storage.getInstance().getThreadPool());
             CompletableFuture<Void> reciever = CompletableFuture.runAsync(new RecieverImpl(socket, new RecieverHandlerImpl()), Storage.getInstance().getThreadPool());
@@ -37,8 +38,6 @@ public class Main {
 
         } catch (SocketException e) {
             throw new RuntimeException();
-        }catch (CancellationException e){
-
         } finally{
             Storage.getInstance().shutDown();
             logger.log(Level.INFO, "Anwendung beendet");
