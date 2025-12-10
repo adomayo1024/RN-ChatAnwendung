@@ -5,6 +5,10 @@ public class ConnectHandler extends AbstractInputHandler {
         super(split, ConnectHandler.class.getName());
     }
 
+    public static String help() {
+        return "connect <ip> <port>";
+    }
+
     @Override
     public void run(){
 

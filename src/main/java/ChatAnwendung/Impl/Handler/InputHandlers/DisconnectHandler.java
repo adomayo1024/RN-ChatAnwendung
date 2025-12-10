@@ -5,6 +5,10 @@ public class DisconnectHandler extends AbstractInputHandler {
         super(split, DisconnectHandler.class.getName());
     }
 
+    public static String help() {
+        return "no";
+    }
+
     @Override
     public void run(){
 

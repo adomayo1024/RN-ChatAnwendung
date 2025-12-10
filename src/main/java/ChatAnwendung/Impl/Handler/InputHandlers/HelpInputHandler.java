@@ -1,5 +1,7 @@
 package ChatAnwendung.Impl.Handler.InputHandlers;
 
+import ChatAnwendung.Impl.Handler.ListHandler;
+
 public class HelpInputHandler extends AbstractInputHandler {
 
 
@@ -19,6 +21,9 @@ public class HelpInputHandler extends AbstractInputHandler {
             builder.append(GoodbyeInputHandler.help());
             builder.append(HelloInputHandler.help());
             builder.append(MessageInputHandler.help());
+            builder.append(ConnectHandler.help());
+            builder.append(DisconnectHandler.help());
+            builder.append(ListHandler.help());
         } else {
             switch (command[1]){
                 case "help":
@@ -37,6 +42,15 @@ public class HelpInputHandler extends AbstractInputHandler {
                     break;
                 case "send":
                     builder.append(MessageInputHandler.help());
+                    break;
+                case "connect":
+                    builder.append(ConnectHandler.help());
+                    break;
+                case "disconnect":
+                    builder.append(DisconnectHandler.help());
+                    break;
+                case "list":
+                    builder.append(ListHandler.help());
                     break;
                 default:
                     builder.append("Unbekannte command: ").append(command[1]);

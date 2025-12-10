@@ -8,6 +8,10 @@ public class ListHandler extends AbstractInputHandler {
         super(split, ListHandler.class.getName());
     }
 
+    public static String help() {
+        return "list";
+    }
+
     @Override
     public void run(){
 
