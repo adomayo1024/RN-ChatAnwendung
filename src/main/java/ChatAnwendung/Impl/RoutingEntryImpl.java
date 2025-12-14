@@ -43,7 +43,7 @@ public class RoutingEntryImpl implements RoutingEntry {
 
     @Override
     public void setNextHopPort(int port){
-        mutex.unlock();
+        mutex.lock();
         nextHopPort = port;
         mutex.unlock();
     }
@@ -67,7 +67,7 @@ public class RoutingEntryImpl implements RoutingEntry {
 
     @Override
     public void setHops(int hops){
-        mutex.unlock();
+        mutex.lock();
         this.hops = hops;
         mutex.unlock();
     }

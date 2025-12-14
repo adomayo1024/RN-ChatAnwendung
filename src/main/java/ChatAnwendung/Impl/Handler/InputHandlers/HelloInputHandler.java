@@ -1,15 +1,15 @@
 package ChatAnwendung.Impl.Handler.InputHandlers;
 
 import ChatAnwendung.Api.RoutingEntry;
+import ChatAnwendung.Impl.*;
 import ChatAnwendung.Impl.Exceptions.LoginException;
 import ChatAnwendung.Impl.Handler.ExceptionHandler;
-import ChatAnwendung.Impl.MessageQueue;
-import ChatAnwendung.Impl.PacketTypes;
-import ChatAnwendung.Impl.RoutingTableImpl;
-import ChatAnwendung.Impl.Storage;
 
 import java.net.DatagramPacket;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 public class HelloInputHandler extends AbstractInputHandler {
 
@@ -32,6 +32,9 @@ public class HelloInputHandler extends AbstractInputHandler {
                 DatagramPacket packet = makeDatagramPackage(PacketTypes.HELLO, Storage.getInstance().getBroadCastId(), 0, 0, payload, entry.getNextHopAdress(), entry.getNextHopPort());
                 MessageQueue.getInstance().push(packet);
             }
+
+            ThreadPools.getInstance().setHeartBeatTimerFuture(ThreadPools.getInstance().getHeartBeatTimer().scheduleWithFixedDelay(new HearbeatSender(), 1, 5, TimeUnit.SECONDS));
+            ThreadPools.getInstance().setTimeoutFuture(CompletableFuture.runAsync(new TimeoutHandler(), Executors.newSingleThreadExecutor()));
         }
     }
 

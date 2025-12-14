@@ -1,7 +1,5 @@
 package ChatAnwendung.Impl.Handler.InputHandlers;
 
-import ChatAnwendung.Impl.Handler.ListHandler;
-
 public class HelpInputHandler extends AbstractInputHandler {
 
 

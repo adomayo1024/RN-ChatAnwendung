@@ -1,10 +1,7 @@
 package ChatAnwendung.Impl.Handler.InputHandlers;
 
 import ChatAnwendung.Api.RoutingEntry;
-import ChatAnwendung.Impl.MessageQueue;
-import ChatAnwendung.Impl.PacketTypes;
-import ChatAnwendung.Impl.RoutingTableImpl;
-import ChatAnwendung.Impl.Storage;
+import ChatAnwendung.Impl.*;
 
 import java.net.DatagramPacket;
 
@@ -15,21 +12,29 @@ public class GoodbyeInputHandler extends AbstractInputHandler {
 
     @Override
     public void run() {
+        ThreadPools.getInstance().getHeartBeatTimerFuture().cancel(false);
+        ThreadPools.getInstance().getTimeoutFuture().cancel(true);
+        Storage.getInstance().logout();
+        ThreadPools.getInstance().setHeartBeatTimerFuture(null);
+        ThreadPools.getInstance().setTimeoutFuture(null);
 
         for (RoutingEntry neighbour : RoutingTableImpl.getInstance().getAllDirectNeighbours()) {
 
-            byte[] payload = new byte[0];
-            DatagramPacket packet = makeDatagramPackage(
-                    PacketTypes.GOODBYE,
-                    Storage.getInstance().getBroadCastId(),
-                    0,
-                    0,
-                    payload,
-                    neighbour.getNextHopAdress(),
-                    neighbour.getNextHopPort());
-            MessageQueue.getInstance().pushAtFirst(packet);
+            if(RoutingTableImpl.getInstance().isUIDavailable(neighbour.getUID())){
+                byte[] payload = new byte[0];
+                DatagramPacket packet = makeDatagramPackage(
+                        PacketTypes.GOODBYE,
+                        Storage.getInstance().getBroadCastId(),
+                        0,
+                        0,
+                        payload,
+                        neighbour.getNextHopAdress(),
+                        neighbour.getNextHopPort());
+                MessageQueue.getInstance().pushAtFirst(packet);
+            }
         }
-        Storage.getInstance().logout();
+
+        RoutingTableImpl.getInstance().removeAllExceptHops1();
     }
 
     public static String help(){

@@ -18,8 +18,6 @@ public class Storage {
 
     private static Storage INSTANCE;
 
-    private final ExecutorService threadPool;
-
     private final Long broadcastId;
 
     private long ID;
@@ -38,12 +36,9 @@ public class Storage {
 
     private final boolean DEBUG_MODE = false;
 
-    private final SendMode sendMode = SendMode.ALL;
-
-    private final ScheduledExecutorService scheduledThreadPool = Executors.newScheduledThreadPool(3);
+    private final SendMode sendMode = SendMode.SELF;
 
     private Storage() throws NoSuchAlgorithmException {
-        threadPool = Executors.newFixedThreadPool(10);
         broadcastId = -1L;
         login = false;
         openSendFiles = new HashMap<>();
@@ -60,10 +55,6 @@ public class Storage {
         }
 
         return INSTANCE;
-    }
-
-    public  ScheduledExecutorService getScheduledThreadPool() {
-        return scheduledThreadPool;
     }
 
     public SendMode getSendMode() {
@@ -90,17 +81,8 @@ public class Storage {
         return port;
     }
 
-    public ExecutorService getThreadPool() {
-        return threadPool;
-    }
-
     public long getBroadCastId(){
         return broadcastId;
-    }
-
-    public void shutDown(){
-        threadPool.shutdownNow();
-        scheduledThreadPool.shutdownNow();
     }
 
     public void login(){

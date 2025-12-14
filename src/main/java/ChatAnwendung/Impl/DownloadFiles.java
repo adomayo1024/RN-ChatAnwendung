@@ -24,7 +24,7 @@ public class DownloadFiles {
     private DownloadFiles() {
         downloadedFiles = new HashMap<>();
         mutex = new ReentrantLock(true);
-        timer = Storage.getInstance().getScheduledThreadPool();
+        timer = ThreadPools.getInstance().getFileRequestTimer();
     }
 
 

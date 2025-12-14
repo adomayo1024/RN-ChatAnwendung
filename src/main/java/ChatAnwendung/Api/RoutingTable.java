@@ -24,4 +24,6 @@ public interface RoutingTable {
     List<RoutingEntry> getAllDirectNeighbours();
 
     void setLastSeen(long uID);
+
+    void removeAllExceptHops1();
 }

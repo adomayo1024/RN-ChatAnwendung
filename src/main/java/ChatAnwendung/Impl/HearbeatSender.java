@@ -8,7 +8,7 @@ import java.net.DatagramPacket;
 public class HearbeatSender extends AbstractHandler {
 
 
-    protected HearbeatSender() {
+    public HearbeatSender() {
         super(HearbeatSender.class.getName());
     }
 

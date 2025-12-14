@@ -4,6 +4,7 @@ import ChatAnwendung.Api.Handler;
 import ChatAnwendung.Api.InputHandler;
 import ChatAnwendung.Impl.Handler.HandlerFactory;
 import ChatAnwendung.Impl.Storage;
+import ChatAnwendung.Impl.ThreadPools;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -18,6 +19,6 @@ public class InputHandlerImple implements InputHandler {
         }
 
         Handler handler = HandlerFactory.getInputHandler(stdIn);
-        CompletableFuture.runAsync(handler, Storage.getInstance().getThreadPool());
+        CompletableFuture.runAsync(handler, ThreadPools.getInstance().getThreadPool());
     }
 }

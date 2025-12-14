@@ -63,7 +63,12 @@ public class RoutingTableImpl implements RoutingTable {
 
     @Override
     public boolean isUIDavailable(long uid) {
-        return entries.containsKey(uid);
+        boolean result = false;
+
+        if(entries.containsKey(uid) && entries.get(uid).isRoutable()){
+            result = true;
+        }
+        return result;
     }
 
     @Override
@@ -88,7 +93,14 @@ public class RoutingTableImpl implements RoutingTable {
     @Override
     public void removeUID(long uID) {
         mutex.lock();
-        entries.remove(uID);
+        if(entries.containsKey(uID)){
+            if(entries.get(uID).getHops() <= 1){
+                entries.get(uID).setRoutable(false);
+            }
+            else {
+                entries.remove(uID);
+            }
+        }
         mutex.unlock();
     }
 
@@ -143,5 +155,12 @@ public class RoutingTableImpl implements RoutingTable {
             entries.get(uID).setLastSeen();
         }
         mutex.unlock();
+    }
+
+    @Override
+    public void removeAllExceptHops1() {
+        for(Long key : entries.keySet()){
+            removeUID(key);
+        }
     }
 }

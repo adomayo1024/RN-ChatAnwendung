@@ -1,7 +1,4 @@
-package ChatAnwendung.Impl.Handler;
-
-import ChatAnwendung.Api.Handler;
-import ChatAnwendung.Impl.Handler.InputHandlers.AbstractInputHandler;
+package ChatAnwendung.Impl.Handler.InputHandlers;
 
 public class ListHandler extends AbstractInputHandler {
     public ListHandler(String[] split) {
