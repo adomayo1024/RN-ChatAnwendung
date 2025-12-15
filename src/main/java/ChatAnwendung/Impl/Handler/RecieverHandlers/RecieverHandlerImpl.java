@@ -1,7 +1,7 @@
 package ChatAnwendung.Impl.Handler.RecieverHandlers;
 
 import ChatAnwendung.Api.RecieverHanlder;
-import ChatAnwendung.Impl.Handler.HandlerFactory;
+import ChatAnwendung.Impl.Handler.Common.HandlerFactory;
 import ChatAnwendung.Impl.Header;
 import ChatAnwendung.Impl.SendMode;
 import ChatAnwendung.Impl.Storage;
@@ -15,19 +15,31 @@ public class RecieverHandlerImpl implements RecieverHanlder {
     @Override
     public void handle(DatagramPacket packet) {
 
-        boolean isItForMe = isItForMe(packet);
+        if(checksumRight(packet)){
+            boolean isItForMe = isItForMe(packet);
 
-        if(Storage.getInstance().isLogin() && Storage.getInstance().getSendMode() == SendMode.SELF){
-            CompletableFuture.runAsync(HandlerFactory.getRecieverHandler(packet, isItForMe), ThreadPools.getInstance().getThreadPool());
+            if(Storage.getInstance().isLogin() && Storage.getInstance().getSendMode() == SendMode.SELF){
+                CompletableFuture.runAsync(HandlerFactory.getRecieverHandler(packet, isItForMe), ThreadPools.getInstance().getThreadPool());
+            }
         }
     }
 
+    private boolean checksumRight(DatagramPacket packet) {
+        byte[] data = packet.getData();
+        long expectCrc = makeBytesToLong(data, Header.getCrcPos());
+        long realCrc = Header.makeChecksum(Header.extractChecksum(data));
+
+        return expectCrc == realCrc;
+    }
+
     private boolean isItForMe(DatagramPacket packet){
-        if(Storage.getInstance().getSendMode() == SendMode.SELF) return true;
+        if(Storage.getInstance().getSendMode() == SendMode.SELF) {
+            return true;
+        }
         long destUID = makeBytesToLong(packet.getData(), Header.getDestNodePos());
 
 
-        return destUID == Storage.getInstance().getID();
+        return destUID == Storage.getInstance().getID() || destUID == -1;
     }
 
     private long makeBytesToLong(byte[] data, int pos){

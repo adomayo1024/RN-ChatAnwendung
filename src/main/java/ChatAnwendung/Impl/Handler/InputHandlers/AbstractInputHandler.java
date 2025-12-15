@@ -1,6 +1,6 @@
 package ChatAnwendung.Impl.Handler.InputHandlers;
 
-import ChatAnwendung.Impl.Handler.AbstractHandler;
+import ChatAnwendung.Impl.Handler.Common.AbstractHandler;
 
 public abstract class AbstractInputHandler extends AbstractHandler {
 

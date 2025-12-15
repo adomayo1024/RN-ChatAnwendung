@@ -3,7 +3,7 @@ package ChatAnwendung.Impl.Handler.InputHandlers;
 import ChatAnwendung.Impl.Exceptions.InvalidMessageException;
 import ChatAnwendung.Impl.Exceptions.NotAUIDException;
 import ChatAnwendung.Impl.Exceptions.UnknowUIDException;
-import ChatAnwendung.Impl.Handler.ExceptionHandler;
+import ChatAnwendung.Impl.Handler.Common.ExceptionHandler;
 import ChatAnwendung.Impl.MessageQueue;
 import ChatAnwendung.Impl.PacketTypes;
 import ChatAnwendung.Impl.RoutingTableImpl;

@@ -1,9 +1,7 @@
 package ChatAnwendung.Impl.Handler.RecieverHandlers;
 
-import ChatAnwendung.Impl.Handler.AbstractHandler;
+import ChatAnwendung.Impl.Handler.Common.AbstractHandler;
 import ChatAnwendung.Impl.Header;
-import ChatAnwendung.Impl.RoutingTableImpl;
-import ChatAnwendung.Impl.Storage;
 
 import java.net.DatagramPacket;
 
@@ -18,7 +16,7 @@ public class AbstractRecieveHanlder extends AbstractHandler {
 
 
     protected short getPayloadLength(byte[] data){
-        return makeBytesToShort(data, Header.getPayloadLenghtPos());
+        return makeBytesToShort(data, Header.getPayloadLengthPos());
     }
 
     protected long getSrcUID(byte[] data){

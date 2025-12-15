@@ -1,6 +1,6 @@
 package ChatAnwendung.Impl;
 
-import ChatAnwendung.Impl.Handler.ExceptionHandler;
+import ChatAnwendung.Impl.Handler.Common.ExceptionHandler;
 
 import java.util.HashMap;
 import java.util.Map;

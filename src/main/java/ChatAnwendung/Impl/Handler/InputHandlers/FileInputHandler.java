@@ -5,7 +5,7 @@ import ChatAnwendung.Impl.Exceptions.ArgumentException;
 import ChatAnwendung.Impl.Exceptions.IllegalSequnzNumberException;
 import ChatAnwendung.Impl.Exceptions.NotAUIDException;
 import ChatAnwendung.Impl.Exceptions.UnknowUIDException;
-import ChatAnwendung.Impl.Handler.ExceptionHandler;
+import ChatAnwendung.Impl.Handler.Common.ExceptionHandler;
 import ChatAnwendung.Impl.Header;
 import ChatAnwendung.Impl.MessageQueue;
 import ChatAnwendung.Impl.PacketTypes;
@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
-import java.util.concurrent.CompletableFuture;
 
 public class FileInputHandler extends AbstractInputHandler {
     public FileInputHandler(String[] command) {

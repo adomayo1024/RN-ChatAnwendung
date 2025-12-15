@@ -1,6 +1,6 @@
 package ChatAnwendung.Impl;
 
-import ChatAnwendung.Impl.Handler.AbstractHandler;
+import ChatAnwendung.Impl.Handler.Common.AbstractHandler;
 
 import java.net.DatagramPacket;
 import java.net.InetAddress;

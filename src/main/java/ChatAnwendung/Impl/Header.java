@@ -5,17 +5,28 @@ public class Header {
     private static final long POLY = 0x42F0E1EBA9EA3693L;
     private static final long[] TABLE = new long[256];
 
+    private static final int headerSize = 38;
+    private static final int versionSize = 1;
+    private static final int typeSize = 1;
+    private static final int ttlSize = 1;
+    private static final int hopsSize = 1;
+    private static final int srcNodeSize = 8;
+    private static final int destNodeSize = 8;
+    private static final int sequenzSize = 4;
+    private static final int fileIdSize = 4;
+    private static final int crcSize = 8;
+    private static final int payloadLengthSize = 2;
     private static final int versionPos = 0;
-    private static final int typePos = 1;
-    private static final int ttlPos = 2;
-    private static final int hopsPos = 3;
-    private static final int srcNodePos = 4;
-    private static final int destNodePos = 12;
-    private static final int sequenzPos = 20;
-    private static final int fileIdPos = 24;
-    private static final int crcPos = 28;
-    private static final int payloadLenghtPos = 36;
-    private static final int payloadPos = 38;
+    private static final int typePos = versionPos + versionSize;
+    private static final int ttlPos = typePos + typeSize;
+    private static final int hopsPos = ttlPos + ttlSize;
+    private static final int srcNodePos = hopsPos + hopsSize;
+    private static final int destNodePos = srcNodePos + srcNodeSize;
+    private static final int sequenzPos = destNodePos + destNodeSize;
+    private static final int fileIdPos = sequenzPos + sequenzSize;
+    private static final int crcPos = fileIdPos + fileIdSize;
+    private static final int payloadLengthPos = crcPos + crcSize;
+    private static final int payloadPos = payloadLengthPos + payloadLengthSize;
 
 
 
@@ -34,13 +45,14 @@ public class Header {
     }
 
 
-    public static byte[] makeHeader(byte type, byte ttl, long destId, int sequenz, int fileId, short payloadLenght) {
+    public static byte[] makeHeader(byte type, byte ttl, long destId, int sequenz, int fileId, short payloadLength, byte[] payload) {
         byte version = 1;
         byte hops = 0;
         long srcID = Storage.getInstance().getID();
 
 
-        byte[] header = new byte[38];
+        byte[] header = new byte[headerSize];
+        byte[] packet = new byte[payloadLength + headerSize];
 
         header[versionPos] = version;
         header[typePos] = type;
@@ -50,21 +62,33 @@ public class Header {
         addLong(destNodePos, destId, header);
         addInt(sequenzPos, sequenz, header);
         addInt(fileIdPos, fileId, header);
-        addShort(payloadLenghtPos, payloadLenght, header);
-        addLong(crcPos, makeChecksumm(header), header);
+        addShort(payloadLengthPos, payloadLength, header);
+        System.arraycopy(header, 0, packet, 0, header.length);
+        System.arraycopy(payload, 0, packet, headerSize, payloadLength);
+        addLong(crcPos, makeChecksum(extractChecksum(packet)), header);
 
         return header;
     }
 
-    public static long makeChecksumm(byte[] header){
+    public static long makeChecksum(byte[] data){
 
         long crc = 0xFFFFFFFFFFFFFFFFL; // Initialwert für CRC64-ECMA
-        for (byte b : header) {
+        for (byte b : data) {
             int idx = ((int) crc ^ (b & 0xFF)) & 0xFF;
             crc = TABLE[idx] ^ (crc >>> 8);
         }
 
         return ~crc;
+    }
+
+    public static byte[] extractChecksum(byte[] header){
+        byte[] headerWithoutChecksum = new byte[headerSize - crcSize];
+        System.arraycopy(header, 0, headerWithoutChecksum, 0, headerSize - crcSize - payloadLengthSize);
+        headerWithoutChecksum[headerWithoutChecksum.length - payloadLengthSize] = header[payloadLengthPos + 1];
+        headerWithoutChecksum[headerWithoutChecksum.length - 1] = header[payloadLengthPos + 1];
+
+        return headerWithoutChecksum;
+
     }
 
     public static void addLong(int pos, long value, byte[] array) {
@@ -130,8 +154,8 @@ public class Header {
         return crcPos;
     }
 
-    public static int getPayloadLenghtPos(){
-        return payloadLenghtPos;
+    public static int getPayloadLengthPos(){
+        return payloadLengthPos;
     }
 
     public static int getPayloadPos(){

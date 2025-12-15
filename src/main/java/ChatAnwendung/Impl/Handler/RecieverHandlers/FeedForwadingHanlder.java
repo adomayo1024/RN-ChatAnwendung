@@ -1,7 +1,6 @@
 package ChatAnwendung.Impl.Handler.RecieverHandlers;
 
 import ChatAnwendung.Impl.Header;
-import ChatAnwendung.Impl.HearbeatSender;
 import ChatAnwendung.Impl.MessageQueue;
 
 import java.net.DatagramPacket;
@@ -22,6 +21,8 @@ public class FeedForwadingHanlder extends AbstractRecieveHanlder{
             hops += 1;
             data[Header.getTtlPos()] = ttl;
             data[Header.getHopsPos()] = hops;
+            long newChecksum = Header.makeChecksum(Header.extractChecksum(data));
+            Header.addLong(Header.getCrcPos(), newChecksum, data);
             MessageQueue.getInstance().push(packet);
         }
     }

@@ -1,4 +1,4 @@
-package ChatAnwendung.Impl.Handler;
+package ChatAnwendung.Impl.Handler.Common;
 
 import ChatAnwendung.Api.Handler;
 import ChatAnwendung.Impl.Exceptions.LoginException;
@@ -45,6 +45,7 @@ public class HandlerFactory {
                 break;
             case "list":
                 handler = new ListHandler(split);
+                break;
             case "":
                 handler = new ExceptionHandler(new LoginException(), HandlerFactory.class);
                 break;

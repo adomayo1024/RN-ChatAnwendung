@@ -20,14 +20,18 @@ public class RoutingEntryImpl implements RoutingEntry {
     private boolean routable;
     private final ReentrantLock mutex;
 
-    public RoutingEntryImpl(long UID, InetAddress adress, int nextHopPort, int hops, long lastSeen) {
+    public RoutingEntryImpl(long UID, InetAddress address, int nextHopPort, int hops, long lastSeen) {
+        this(UID, address, nextHopPort, hops, lastSeen, true);
+    }
+
+    public RoutingEntryImpl(long UID, InetAddress adress, int nextHopPort, int hops, long lastSeen, boolean routable){
         this.UID = UID;
         this.nextHopAdress = adress;
         this.nextHopPort = nextHopPort;
         this.hops = hops;
         this.lastSeen = lastSeen;
-        routable = true;
-        mutex = new ReentrantLock();
+        this.routable = routable;
+        this.mutex = new ReentrantLock();
     }
 
 

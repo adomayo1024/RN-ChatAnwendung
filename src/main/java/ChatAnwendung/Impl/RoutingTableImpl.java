@@ -21,10 +21,6 @@ public class RoutingTableImpl implements RoutingTable {
     private RoutingTableImpl() {
         entries = new HashMap<>();
         mutex = new ReentrantLock(true);
-        if (Storage.getInstance().getSendMode() != SendMode.ALL) {
-            add(new RoutingEntryImpl(0, InetAddress.getLoopbackAddress(), 8080, 1, System.currentTimeMillis()));
-        }
-
     }
 
     public static RoutingTable getInstance(){
@@ -94,12 +90,8 @@ public class RoutingTableImpl implements RoutingTable {
     public void removeUID(long uID) {
         mutex.lock();
         if(entries.containsKey(uID)){
-            if(entries.get(uID).getHops() <= 1){
-                entries.get(uID).setRoutable(false);
-            }
-            else {
-                entries.remove(uID);
-            }
+            entries.remove(uID);
+
         }
         mutex.unlock();
     }

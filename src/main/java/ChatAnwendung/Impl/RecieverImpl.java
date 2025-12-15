@@ -2,7 +2,7 @@ package ChatAnwendung.Impl;
 
 
 import ChatAnwendung.Api.Reciever;
-import ChatAnwendung.Impl.Handler.ExceptionHandler;
+import ChatAnwendung.Impl.Handler.Common.ExceptionHandler;
 import ChatAnwendung.Impl.Handler.RecieverHandlers.RecieverHandlerImpl;
 
 import java.io.IOException;

@@ -1,10 +1,8 @@
 package ChatAnwendung.Impl;
 
 import ChatAnwendung.Api.RoutingEntry;
-import ChatAnwendung.Api.RoutingTable;
-import ChatAnwendung.Impl.Handler.AbstractHandler;
+import ChatAnwendung.Impl.Handler.Common.AbstractHandler;
 
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 import static java.lang.Thread.sleep;
@@ -40,7 +38,7 @@ public class TimeoutHandler extends AbstractHandler {
                 if(sleepTime == 0){
                     sleepTime = timeout;
                 }
-            }while(true);
+            }while(!Thread.currentThread().isInterrupted());
         } catch (InterruptedException e) {
             logger.log(Level.SEVERE, "TimeoutHandler was interrupted");
         }

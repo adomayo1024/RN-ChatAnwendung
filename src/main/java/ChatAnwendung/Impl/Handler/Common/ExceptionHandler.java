@@ -1,4 +1,4 @@
-package ChatAnwendung.Impl.Handler;
+package ChatAnwendung.Impl.Handler.Common;
 
 import ChatAnwendung.Api.Handler;
 

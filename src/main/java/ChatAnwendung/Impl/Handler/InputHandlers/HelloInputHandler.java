@@ -3,12 +3,11 @@ package ChatAnwendung.Impl.Handler.InputHandlers;
 import ChatAnwendung.Api.RoutingEntry;
 import ChatAnwendung.Impl.*;
 import ChatAnwendung.Impl.Exceptions.LoginException;
-import ChatAnwendung.Impl.Handler.ExceptionHandler;
+import ChatAnwendung.Impl.Handler.Common.ExceptionHandler;
 
 import java.net.DatagramPacket;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 public class HelloInputHandler extends AbstractInputHandler {
@@ -27,9 +26,9 @@ public class HelloInputHandler extends AbstractInputHandler {
 
             //InetAddress adress = InetAddress.getByAddress(new byte[] {(byte)255, (byte)255, (byte)255, (byte)255});
 
-            for(RoutingEntry entry : RoutingTableImpl.getInstance().getAllDirectNeighbours()){
+            for(Connection connection : ConnectionsList.getInstance().getAllConnections()){
                 byte[] payload = new byte[0];
-                DatagramPacket packet = makeDatagramPackage(PacketTypes.HELLO, Storage.getInstance().getBroadCastId(), 0, 0, payload, entry.getNextHopAdress(), entry.getNextHopPort());
+                DatagramPacket packet = makeDatagramPackage(PacketTypes.HELLO, Storage.getInstance().getBroadCastId(), 0, 0, payload, connection.address(), connection.port());
                 MessageQueue.getInstance().push(packet);
             }
 

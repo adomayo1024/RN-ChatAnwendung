@@ -1,4 +1,4 @@
-package ChatAnwendung.Impl.Handler;
+package ChatAnwendung.Impl.Handler.Common;
 
 import ChatAnwendung.Api.Handler;
 import ChatAnwendung.Impl.Header;
@@ -22,7 +22,7 @@ public abstract class AbstractHandler implements Handler {
 
     protected DatagramPacket makeDatagramPackage(PacketTypes type, byte ttl, long destId, int sequenz, int fileId, byte[] payload, InetAddress adress, int port) {
 
-        byte[] header = Header.makeHeader((byte) type.ordinal(), ttl, destId, sequenz, fileId, (short) payload.length);
+        byte[] header = Header.makeHeader((byte) type.ordinal(), ttl, destId, sequenz, fileId, (short) payload.length, payload);
 
         byte[] packet = new byte[header.length + payload.length];
 
