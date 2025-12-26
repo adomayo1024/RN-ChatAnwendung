@@ -1,9 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <root level="Info">
-        <appender-ref ref="Console"/>
+
+    <!-- ============================= -->
+    <!-- Allgemeine Properties -->
+    <!-- ============================= -->
+
+    <!-- App-Name (optional) -->
+    <property name="BCP-Anwendung" value="bcp-andwendung"/>
+
+    <!-- Log-Verzeichnis -->
+    <property name="LOG_PATH" value="logs"/>
+
+    <!-- ============================= -->
+    <!-- Pattern (Spring-Boot-ähnlich) -->
+    <!-- ============================= -->
+
+    <property name="LOGBACK_PATTERN"
+              value="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %pid --- [%thread] %logger{36} : %msg%n"/>
+
+    <!-- ============================= -->
+    <!-- Appender -->
+    <!-- ============================= -->
+
+    <!-- Konsole -->
+    <appender name="CONSOLE"
+              class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${LOGBACK_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Datei mit Rotation -->
+    <appender name="FILE"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_PATH}/${APP_NAME}.log</file>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_PATH}/${APP_NAME}.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>14</maxHistory>
+        </rollingPolicy>
+
+        <encoder>
+            <pattern>${LOGBACK_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- ============================= -->
+    <!-- Root Logger -->
+    <!-- ============================= -->
+
+    <!-- Standard: INFO -->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
     </root>
 
-    <pattern>
-        %d{yyyy-MM-dd HH:mm:ss} %-5level [%thread] %logger{36} - %msg%n
-    </pattern>
+    <!-- ============================= -->
+    <!-- Klassen- / Paketsteuerung -->
+    <!-- ============================= -->
+
+    <!-- Komplett AUS für eine Klasse -->
+    <logger name="ChatAnwendung.Impl.ThreadPools" level="OFF"/>
+
+    <!-- DEBUG nur für eine konkrete Klasse -->
+    <logger name="ChatAnwendung.Main" level="DEBUG"/>
+
+    <!-- DEBUG für ein ganzes Paket -->
+    <logger name="ChatAnwendung.Service" level="DEBUG"/>
+
+    <!-- Fremdbibliotheken einschränken -->
+    <logger name="org.slf4j" level="WARN"/>
+    <logger name="org.apache" level="WARN"/>
+
 </configuration>

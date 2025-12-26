@@ -3,27 +3,26 @@ package ChatAnwendung;
 import ChatAnwendung.Impl.*;
 import ChatAnwendung.Impl.Handler.InputHandlers.InputHandlerImpl;
 import ChatAnwendung.Impl.Handler.RecieverHandlers.RecieverHandlerImpl;
+import lombok.extern.slf4j.Slf4j;
 
 import java.net.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+@Slf4j
 public class Main {
-
-
-    private static final Logger logger = Logger.getLogger(Main.class.getName());
 
     public static void main(String[] args) {
 
-        logger.log(Level.INFO, "Starting ChatAnwendung");
+        log.info( "Starting ChatAnwendung");
 
         try(DatagramSocket socket = new DatagramSocket(0)){
 
             Storage.getInstance().setPort(socket.getLocalPort());
-            logger.log(Level.INFO, "Socket opened on Address: " + socket.getLocalAddress() + " and port " + socket.getLocalPort());
-            logger.log(Level.INFO, "You got the ID: " + Storage.getInstance().getUnsignedID());
-            logger.log(Level.INFO, "Sender mode is " + Storage.getInstance().getSendMode());
+            log.info( "Socket opened on Address: " + socket.getLocalAddress() + " and port " + socket.getLocalPort());
+            log.info( "You got the ID: " + Storage.getInstance().getUnsignedID());
+            log.info( "Sender mode is " + Storage.getInstance().getSendMode());
 
             CompletableFuture<Void> inputHandler = CompletableFuture.runAsync(new InputReaderImpl(new InputHandlerImpl()), ThreadPools.getInstance().getThreadPool());
             CompletableFuture<Void> reciever = CompletableFuture.runAsync(new RecieverImpl(socket, new RecieverHandlerImpl()), ThreadPools.getInstance().getThreadPool());
@@ -34,7 +33,7 @@ public class Main {
             throw new RuntimeException();
         } finally{
             ThreadPools.getInstance().shutDown();
-            logger.log(Level.INFO, "Anwendung beendet");
+            log.info( "Anwendung beendet");
         }
     }
 
