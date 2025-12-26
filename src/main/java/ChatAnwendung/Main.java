@@ -29,8 +29,6 @@ public class Main {
             CompletableFuture<Void> reciever = CompletableFuture.runAsync(new RecieverImpl(socket, new RecieverHandlerImpl()), ThreadPools.getInstance().getThreadPool());
             CompletableFuture<Void> sender = CompletableFuture.runAsync(new SenderImpl(socket), ThreadPools.getInstance().getThreadPool());
             inputHandler.join();
-            reciever.cancel(true);
-            sender.cancel(true);
 
         } catch (SocketException e) {
             throw new RuntimeException();
