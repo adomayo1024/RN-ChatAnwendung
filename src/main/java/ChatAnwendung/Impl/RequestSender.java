@@ -1,17 +1,18 @@
 package ChatAnwendung.Impl;
 
 import ChatAnwendung.Impl.Handler.Common.AbstractHandler;
+import lombok.extern.slf4j.Slf4j;
 
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.util.logging.Level;
 
+@Slf4j
 public class RequestSender extends AbstractHandler {
 
     private File file;
 
     public RequestSender(File file) {
-        super(RequestSender.class.getName());
         this.file = file;
     }
 
@@ -38,7 +39,7 @@ public class RequestSender extends AbstractHandler {
 
         file.inkrementRequestCountWithoutResponse();
 
-        logger.log(Level.INFO, "Sent Request for FileID " + fileID + " and sequence: " + sequenz + "from the User: " + Long.toUnsignedString(destUID));
+        log.info( "Sent Request for FileID " + fileID + " and sequence: " + sequenz + "from the User: " + Long.toUnsignedString(destUID));
     }
 
     private boolean timeSinceLastFileDataPackageMoreThanASecond(){

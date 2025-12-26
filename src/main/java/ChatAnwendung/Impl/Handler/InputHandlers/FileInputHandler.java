@@ -11,14 +11,17 @@ import ChatAnwendung.Impl.MessageQueue;
 import ChatAnwendung.Impl.PacketTypes;
 import ChatAnwendung.Impl.RoutingTableImpl;
 import ChatAnwendung.Impl.Storage;
+import lombok.extern.slf4j.Slf4j;
+
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 
+@Slf4j
 public class FileInputHandler extends AbstractInputHandler {
     public FileInputHandler(String[] command) {
-        super(command, FileInputHandler.class.getName());
+        super(command);
     }
 
     @Override

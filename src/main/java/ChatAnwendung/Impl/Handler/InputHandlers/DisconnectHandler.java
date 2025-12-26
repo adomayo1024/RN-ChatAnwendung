@@ -4,13 +4,15 @@ import ChatAnwendung.Impl.Connection;
 import ChatAnwendung.Impl.ConnectionsList;
 import ChatAnwendung.Impl.Exceptions.ArgumentException;
 import ChatAnwendung.Impl.Handler.Common.ExceptionHandler;
+import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+@Slf4j
 public class DisconnectHandler extends AbstractInputHandler {
     public DisconnectHandler(String[] split) {
-        super(split, DisconnectHandler.class.getName());
+        super(split);
     }
 
     public static String help() {

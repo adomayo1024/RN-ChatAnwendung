@@ -3,18 +3,14 @@ package ChatAnwendung.Impl.Handler.Common;
 import ChatAnwendung.Api.Handler;
 import ChatAnwendung.Impl.Header;
 import ChatAnwendung.Impl.PacketTypes;
+import lombok.extern.slf4j.Slf4j;
 
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.util.logging.Logger;
 
+@Slf4j
 public abstract class AbstractHandler implements Handler {
-
-    protected final Logger logger;
-
-    protected AbstractHandler(String name) {
-        this.logger = Logger.getLogger(name);
-    }
 
     protected DatagramPacket makeDatagramPackage(PacketTypes type,  long destId, int sequenz, int fileId, byte[] payload, InetAddress adress, int port) {
         return makeDatagramPackage(type, (byte) 32, destId, sequenz, fileId, payload, adress, port);

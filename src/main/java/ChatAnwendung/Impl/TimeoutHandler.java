@@ -2,17 +2,17 @@ package ChatAnwendung.Impl;
 
 import ChatAnwendung.Api.RoutingEntry;
 import ChatAnwendung.Impl.Handler.Common.AbstractHandler;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.logging.Level;
 
 import static java.lang.Thread.sleep;
 
-
+@Slf4j
 public class TimeoutHandler extends AbstractHandler {
 
     private final int timeout = 45_000;
     public TimeoutHandler() {
-        super(TimeoutHandler.class.getName());
     }
 
     @Override
@@ -40,7 +40,7 @@ public class TimeoutHandler extends AbstractHandler {
                 }
             }while(!Thread.currentThread().isInterrupted());
         } catch (InterruptedException e) {
-            logger.log(Level.SEVERE, "TimeoutHandler was interrupted");
+            log.info( "TimeoutHandler was interrupted");
         }
     }
 }

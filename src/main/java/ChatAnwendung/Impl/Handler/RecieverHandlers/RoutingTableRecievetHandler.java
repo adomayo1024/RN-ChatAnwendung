@@ -3,16 +3,18 @@ package ChatAnwendung.Impl.Handler.RecieverHandlers;
 import ChatAnwendung.Api.RoutingEntry;
 import ChatAnwendung.Impl.RoutingEntryImpl;
 import ChatAnwendung.Impl.RoutingTableImpl;
+import lombok.extern.slf4j.Slf4j;
 
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 
+@Slf4j
 public class RoutingTableRecievetHandler extends AbstractRecieveHanlder {
 
     private final int routingEntrySize = 17;
 
     public RoutingTableRecievetHandler(DatagramPacket packet) {
-        super(RoutingTableRecievetHandler.class.getName(), packet);
+        super(packet);
     }
 
     @Override

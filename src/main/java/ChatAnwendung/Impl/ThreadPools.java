@@ -1,8 +1,11 @@
 package ChatAnwendung.Impl;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.concurrent.*;
 import java.util.concurrent.locks.ReentrantLock;
 
+@Slf4j
 public class ThreadPools {
 
     private static ThreadPools INSTANCE;

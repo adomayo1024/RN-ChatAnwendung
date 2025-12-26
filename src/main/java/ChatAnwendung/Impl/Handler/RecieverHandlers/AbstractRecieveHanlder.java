@@ -2,15 +2,16 @@ package ChatAnwendung.Impl.Handler.RecieverHandlers;
 
 import ChatAnwendung.Impl.Handler.Common.AbstractHandler;
 import ChatAnwendung.Impl.Header;
+import lombok.extern.slf4j.Slf4j;
 
 import java.net.DatagramPacket;
 
+@Slf4j
 public class AbstractRecieveHanlder extends AbstractHandler {
 
     protected final DatagramPacket  packet;
 
-    protected AbstractRecieveHanlder(String name, DatagramPacket packet) {
-        super(name);
+    protected AbstractRecieveHanlder(DatagramPacket packet) {
         this.packet = packet;
     }
 

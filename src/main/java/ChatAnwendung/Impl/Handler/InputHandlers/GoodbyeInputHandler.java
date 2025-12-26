@@ -2,12 +2,14 @@ package ChatAnwendung.Impl.Handler.InputHandlers;
 
 import ChatAnwendung.Api.RoutingEntry;
 import ChatAnwendung.Impl.*;
+import lombok.extern.slf4j.Slf4j;
 
 import java.net.DatagramPacket;
 
+@Slf4j
 public class GoodbyeInputHandler extends AbstractInputHandler {
     public GoodbyeInputHandler(String[] command) {
-        super(command, GoodbyeInputHandler.class.getName());
+        super(command);
     }
 
     @Override

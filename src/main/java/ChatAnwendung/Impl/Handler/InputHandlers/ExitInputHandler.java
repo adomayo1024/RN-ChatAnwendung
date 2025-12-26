@@ -1,25 +1,27 @@
 package ChatAnwendung.Impl.Handler.InputHandlers;
 
 import ChatAnwendung.Impl.Storage;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.util.logging.Level;
 
+@Slf4j
 public class ExitInputHandler extends AbstractInputHandler {
 
     public ExitInputHandler(String[] command) {
-        super(command, ExitInputHandler.class.getName());
+        super(command);
     }
 
     @Override
     public void run() {
-        logger.log(Level.INFO, "beginnung mit schließung");
+        log.info( "beginnung mit schließung");
         try {
             if(Storage.getInstance().isLogin()){
                 GoodbyeInputHandler bye = new GoodbyeInputHandler(new String[]{"bye"});
                 bye.run();
             }
-            logger.log(Level.INFO,  "Werde schließen");
+            log.info(  "Werde schließen");
             Storage.getInstance().getReader().close();
         } catch (IOException e) {
             throw new RuntimeException(e);

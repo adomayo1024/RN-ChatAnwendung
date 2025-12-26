@@ -1,19 +1,19 @@
 package ChatAnwendung.Impl.Handler.InputHandlers;
 
-import ChatAnwendung.Api.RoutingEntry;
 import ChatAnwendung.Impl.*;
 import ChatAnwendung.Impl.Exceptions.LoginException;
 import ChatAnwendung.Impl.Handler.Common.ExceptionHandler;
+import lombok.extern.slf4j.Slf4j;
 
 import java.net.DatagramPacket;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+@Slf4j
 public class HelloInputHandler extends AbstractInputHandler {
 
     public HelloInputHandler(String[] command) {
-        super(command, HelloInputHandler.class.getName());
+        super(command);
     }
 
     @Override

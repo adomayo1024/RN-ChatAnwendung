@@ -7,23 +7,25 @@ import ChatAnwendung.Impl.Handler.Common.ExceptionHandler;
 import ChatAnwendung.Impl.MessageQueue;
 import ChatAnwendung.Impl.PacketTypes;
 import ChatAnwendung.Impl.RoutingTableImpl;
+import lombok.extern.slf4j.Slf4j;
 
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 
+@Slf4j
 public class MessageInputHandler extends AbstractInputHandler {
 
 
     public MessageInputHandler(String[] command) {
-        super(command, MessageInputHandler.class.getName());
+        super(command);
     }
 
     @Override
     public void run()  {
 
-        logger.log(Level.INFO, "Begin with Message");
+        log.info( "Begin with Message");
         long uID = 0;
         try {
             uID = Long.parseUnsignedLong(command[1]);
@@ -49,7 +51,7 @@ public class MessageInputHandler extends AbstractInputHandler {
 
         DatagramPacket packet = makeDatagramPackage(PacketTypes.MESSAGE, uID, 0, 0, payload, adress, port);
 
-        logger.log(Level.INFO, "Message will be send");
+        log.info( "Message will be send");
 
         MessageQueue.getInstance().push(packet);
     }

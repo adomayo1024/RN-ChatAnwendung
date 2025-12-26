@@ -1,12 +1,14 @@
 package ChatAnwendung.Impl.Handler.RecieverHandlers;
 
 import ChatAnwendung.Impl.RoutingTableImpl;
+import lombok.extern.slf4j.Slf4j;
 
 import java.net.DatagramPacket;
 
+@Slf4j
 public class HeartbeatRecieveHandler extends AbstractRecieveHanlder {
     public HeartbeatRecieveHandler(DatagramPacket packet) {
-        super(HeartbeatRecieveHandler.class.getName(), packet);
+        super(packet);
     }
 
     @Override

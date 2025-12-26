@@ -3,19 +3,16 @@ package ChatAnwendung.Impl;
 import ChatAnwendung.Api.RoutingEntry;
 import ChatAnwendung.Api.RoutingTable;
 import ChatAnwendung.Impl.Handler.Common.AbstractHandler;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 public class RoutingTableSender extends AbstractHandler{
 
 
     private final int routingTableEntrySize = 18;
-
-
-    public RoutingTableSender() {
-        super(RoutingTableSender.class.getName());
-    }
 
     @Override
     public void run(){

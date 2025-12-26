@@ -1,5 +1,8 @@
 package ChatAnwendung.Impl;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class Header {
 
     private static final long POLY = 0x42F0E1EBA9EA3693L;

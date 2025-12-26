@@ -1,17 +1,17 @@
 package ChatAnwendung.Impl.Handler.Common;
 
 import ChatAnwendung.Api.Handler;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+@Slf4j
 public class ExceptionHandler implements Handler {
 
     private final Throwable exception;
 
     private final Class<?> thrower;
-
-    private static final  Logger logger = Logger.getLogger(ExceptionHandler.class.getName());
 
     public ExceptionHandler(Throwable e, Class<?> t) {
         exception = e;
@@ -20,10 +20,10 @@ public class ExceptionHandler implements Handler {
 
     @Override
     public void run() {
-        logger.log(Level.WARNING, thrower.getName() + " hat Fehler gemeldet: " +  exception.getMessage());
+        log.warn( thrower.getName() + " hat Fehler gemeldet: " +  exception.getMessage());
     }
 
     public static void handle(Throwable exception, Class<?> thrower){
-        logger.log(Level.WARNING, thrower.getName() + " hat Fehler gemeldet: " +  exception.getMessage());
+        log.warn( thrower.getName() + " hat Fehler gemeldet: " +  exception.getMessage());
     }
 }

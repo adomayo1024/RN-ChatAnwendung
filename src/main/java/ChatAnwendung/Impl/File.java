@@ -1,6 +1,7 @@
 package ChatAnwendung.Impl;
 
 import ChatAnwendung.Impl.Handler.Common.ExceptionHandler;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -12,6 +13,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantLock;
 
+@Slf4j
 public class File {
 
     private int anzahlChunks;

@@ -1,6 +1,7 @@
 package ChatAnwendung.Impl;
 
 import ChatAnwendung.Impl.Handler.Common.ExceptionHandler;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,6 +10,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+@Slf4j
 public class DownloadFiles {
 
     private static  DownloadFiles INSTANCE;
@@ -18,8 +20,6 @@ public class DownloadFiles {
     private Map<Long, Map<Integer, File>> downloadedFiles;
 
     private ReentrantLock mutex;
-
-    private final Logger logger = Logger.getLogger(DownloadFiles.class.getName());
 
     private DownloadFiles() {
         downloadedFiles = new HashMap<>();
@@ -37,7 +37,7 @@ public class DownloadFiles {
     }
 
     public File getFile(long uID, int fileID) throws NullPointerException{
-        logger.log(Level.INFO, "Requesting File: " + fileID + " from User: " + Long.toUnsignedString(uID));
+        log.info("Requesting File: {} from User: {}", fileID, Long.toUnsignedString(uID));
         // TODO kein busy waiting mit Semphore
         while(!fileIsThere(uID, fileID)){
             try {
@@ -50,7 +50,7 @@ public class DownloadFiles {
         mutex.lock();
         File result = downloadedFiles.get(uID).get(fileID);
         mutex.unlock();
-        logger.log(Level.INFO, "Got File: " + fileID + " from User: " + Long.toUnsignedString(uID));
+        log.info("Got File: {} from User: {}", fileID, Long.toUnsignedString(uID));
         return result;
     }
 

@@ -1,14 +1,15 @@
 package ChatAnwendung.Impl.Handler.InputHandlers;
 
 import ChatAnwendung.Api.RoutingEntry;
-import ChatAnwendung.Api.RoutingTable;
 import ChatAnwendung.Impl.Connection;
 import ChatAnwendung.Impl.ConnectionsList;
 import ChatAnwendung.Impl.RoutingTableImpl;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class ListHandler extends AbstractInputHandler {
     public ListHandler(String[] split) {
-        super(split, ListHandler.class.getName());
+        super(split);
     }
 
     public static String help() {

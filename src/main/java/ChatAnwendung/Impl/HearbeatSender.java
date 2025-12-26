@@ -2,15 +2,12 @@ package ChatAnwendung.Impl;
 
 import ChatAnwendung.Api.RoutingEntry;
 import ChatAnwendung.Impl.Handler.Common.AbstractHandler;
+import lombok.extern.slf4j.Slf4j;
 
 import java.net.DatagramPacket;
 
+@Slf4j
 public class HearbeatSender extends AbstractHandler {
-
-
-    public HearbeatSender() {
-        super(HearbeatSender.class.getName());
-    }
 
     @Override
     public void run() {

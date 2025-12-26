@@ -1,0 +1,9 @@
+<configuration>
+    <root level="Info">
+        <appender-ref ref="Console"/>
+    </root>
+
+    <pattern>
+        %d{yyyy-MM-dd HH:mm:ss} %-5level [%thread] %logger{36} - %msg%n
+    </pattern>
+</configuration>

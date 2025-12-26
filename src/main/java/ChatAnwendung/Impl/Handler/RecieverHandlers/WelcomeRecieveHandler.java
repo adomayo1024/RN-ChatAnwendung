@@ -4,13 +4,15 @@ import ChatAnwendung.Api.RoutingEntry;
 import ChatAnwendung.Impl.Header;
 import ChatAnwendung.Impl.RoutingEntryImpl;
 import ChatAnwendung.Impl.RoutingTableImpl;
+import lombok.extern.slf4j.Slf4j;
 
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 
+@Slf4j
 public class WelcomeRecieveHandler extends AbstractRecieveHanlder {
     public WelcomeRecieveHandler(DatagramPacket packet) {
-        super(WelcomeRecieveHandler.class.getName(), packet);
+        super(packet);
     }
 
 

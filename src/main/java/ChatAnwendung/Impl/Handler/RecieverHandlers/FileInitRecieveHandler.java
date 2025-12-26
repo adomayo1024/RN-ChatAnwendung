@@ -3,17 +3,19 @@ package ChatAnwendung.Impl.Handler.RecieverHandlers;
 import ChatAnwendung.Impl.DownloadFiles;
 import ChatAnwendung.Impl.File;
 import ChatAnwendung.Impl.Header;
+import lombok.extern.slf4j.Slf4j;
 
 import java.net.DatagramPacket;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.logging.Level;
 
+@Slf4j
 public class FileInitRecieveHandler extends AbstractRecieveHanlder {
 
 
     public FileInitRecieveHandler(DatagramPacket packet) {
-        super(FileInitRecieveHandler.class.getName(), packet);
+        super(packet);
     }
 
     @Override
@@ -39,7 +41,7 @@ public class FileInitRecieveHandler extends AbstractRecieveHanlder {
 
         DownloadFiles.getInstance().setNewFile(srcUID, fileID, file);
 
-        logger.log(Level.INFO, "Created new File" + fileName +  " for: " + fileID + " from User: " + Long.toUnsignedString(srcUID));
+        log.info("Created new File{} for: {} from User: {}", fileName, fileID, Long.toUnsignedString(srcUID));
 
     }
 

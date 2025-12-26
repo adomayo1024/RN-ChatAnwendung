@@ -1,14 +1,15 @@
 package ChatAnwendung.Impl.Handler.RecieverHandlers;
 
-import ChatAnwendung.Api.Handler;
 import ChatAnwendung.Impl.RoutingTableImpl;
+import lombok.extern.slf4j.Slf4j;
 
 import java.net.DatagramPacket;
 import java.util.logging.Level;
 
+@Slf4j
 public class GoodbyeRecieveHandler extends AbstractRecieveHanlder {
     public GoodbyeRecieveHandler(DatagramPacket packet) {
-        super(GoodbyeRecieveHandler.class.getName(), packet);
+        super(packet);
     }
 
 
@@ -17,7 +18,7 @@ public class GoodbyeRecieveHandler extends AbstractRecieveHanlder {
 
         long srcUID = getSrcUID(packet.getData());
         RoutingTableImpl.getInstance().removeUIDThroughGoodbye(srcUID);
-        logger.log(Level.INFO, "UID: " + Long.toUnsignedString(srcUID) + " removed");
+        log.info("UID: {} removed", Long.toUnsignedString(srcUID));
 
     }
 }

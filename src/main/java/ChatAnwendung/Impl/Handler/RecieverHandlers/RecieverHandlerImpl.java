@@ -6,10 +6,12 @@ import ChatAnwendung.Impl.Header;
 import ChatAnwendung.Impl.SendMode;
 import ChatAnwendung.Impl.Storage;
 import ChatAnwendung.Impl.ThreadPools;
+import lombok.extern.slf4j.Slf4j;
 
 import java.net.DatagramPacket;
 import java.util.concurrent.CompletableFuture;
 
+@Slf4j
 public class RecieverHandlerImpl implements RecieverHanlder {
 
     @Override

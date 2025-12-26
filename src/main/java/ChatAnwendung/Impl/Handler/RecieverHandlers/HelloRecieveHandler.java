@@ -6,13 +6,15 @@ import ChatAnwendung.Impl.MessageQueue;
 import ChatAnwendung.Impl.PacketTypes;
 import ChatAnwendung.Impl.RoutingEntryImpl;
 import ChatAnwendung.Impl.RoutingTableImpl;
+import lombok.extern.slf4j.Slf4j;
 
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 
+@Slf4j
 public class HelloRecieveHandler extends AbstractRecieveHanlder {
     public HelloRecieveHandler(DatagramPacket packet) {
-        super(HelloRecieveHandler.class.getName(), packet);
+        super(packet);
     }
 
 

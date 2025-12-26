@@ -1,6 +1,7 @@
 package ChatAnwendung.Impl;
 
 import ChatAnwendung.Api.Sender;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -8,16 +9,13 @@ import java.net.DatagramSocket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+@Slf4j
 public class SenderImpl implements Sender, Runnable {
 
     private DatagramSocket socket;
 
-    private final Logger logger;
-
     public SenderImpl(DatagramSocket socket) {
-
         this.socket = socket;
-        logger = Logger.getLogger(SenderImpl.class.getName());
     }
 
     @Override
@@ -28,16 +26,16 @@ public class SenderImpl implements Sender, Runnable {
             DatagramPacket p= null;
             try {
 
-            logger.log(Level.INFO, "Packet holen");
+            log.info( "Packet holen");
 
             p = MessageQueue.getInstance().poll();
 
-            logger.log(Level.INFO, "Packet bekommen");
+            log.info( "Packet bekommen");
 
             if(Storage.getInstance().getSendMode() != SendMode.NOTHING){
                 socket.send(p);
             }
-            logger.log(Level.INFO, "send a package to the adress: " + p.getAddress() + " and to port: " + p.getPort() + " of Type: " + SendMode.values()[p.getData()[1]]);
+            log.info( "send a package to the adress: " + p.getAddress() + " and to port: " + p.getPort() + " of Type: " + SendMode.values()[p.getData()[1]]);
 
             } catch (IOException e) {
                 System.out.println(e.getMessage());
@@ -46,6 +44,6 @@ public class SenderImpl implements Sender, Runnable {
             }
         }
 
-        logger.log(Level.INFO, "Sender shutdown");
+        log.info( "Sender shutdown");
     }
 }

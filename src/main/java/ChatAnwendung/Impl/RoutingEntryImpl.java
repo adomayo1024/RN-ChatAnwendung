@@ -1,10 +1,12 @@
 package ChatAnwendung.Impl;
 
 import ChatAnwendung.Api.RoutingEntry;
+import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetAddress;
 import java.util.concurrent.locks.ReentrantLock;
 
+@Slf4j
 public class RoutingEntryImpl implements RoutingEntry {
 
     private long UID;

@@ -4,6 +4,7 @@ package ChatAnwendung.Impl;
 import ChatAnwendung.Api.Reciever;
 import ChatAnwendung.Impl.Handler.Common.ExceptionHandler;
 import ChatAnwendung.Impl.Handler.RecieverHandlers.RecieverHandlerImpl;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -12,11 +13,10 @@ import java.net.SocketException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+@Slf4j
 public class RecieverImpl implements Runnable, Reciever {
 
     DatagramSocket socket;
-
-    private final Logger logger;
 
     private RecieverHandlerImpl handler;
 
@@ -25,7 +25,6 @@ public class RecieverImpl implements Runnable, Reciever {
     public RecieverImpl(DatagramSocket socket, RecieverHandlerImpl handler) {
         this.socket = socket;
         this.handler = handler;
-        logger = Logger.getLogger(RecieverImpl.class.getName());
     }
 
     @Override
@@ -47,18 +46,18 @@ public class RecieverImpl implements Runnable, Reciever {
             try {
                 DatagramPacket request = new DatagramPacket(new byte[PACKETSIZE], PACKETSIZE);
 
-                logger.log(Level.INFO, "Waiting for packet");
+                log.info( "Waiting for packet");
 
                 socket.receive(request);
 
-                logger.log(Level.INFO, "Packet received");
+                log.info( "Packet received");
 
                 handler.handle(request);
 
 
             }catch (SocketException e) {
                 interrupted = true;
-                logger.log(Level.INFO, "Socket closed");
+                log.info( "Socket closed");
             }
             catch (IOException e) {
                 interrupted = true;
@@ -66,7 +65,7 @@ public class RecieverImpl implements Runnable, Reciever {
             }
         }
 
-        logger.log(Level.INFO, "Reciever turned down");
+        log.info( "Reciever turned down");
 
     }
 }

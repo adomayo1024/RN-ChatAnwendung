@@ -1,19 +1,18 @@
 package ChatAnwendung.Impl.Handler.InputHandlers;
 
-import ChatAnwendung.Api.RoutingEntry;
 import ChatAnwendung.Impl.Connection;
 import ChatAnwendung.Impl.ConnectionsList;
 import ChatAnwendung.Impl.Exceptions.ArgumentException;
 import ChatAnwendung.Impl.Handler.Common.ExceptionHandler;
-import ChatAnwendung.Impl.RoutingEntryImpl;
-import ChatAnwendung.Impl.RoutingTableImpl;
+import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+@Slf4j
 public class ConnectHandler extends AbstractInputHandler {
     public ConnectHandler(String[] split) {
-        super(split, ConnectHandler.class.getName());
+        super(split);
     }
 
     @Override

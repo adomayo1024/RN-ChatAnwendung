@@ -1,11 +1,14 @@
 package ChatAnwendung.Impl;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.net.DatagramPacket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.locks.ReentrantLock;
 
+@Slf4j
 public class MessageQueue {
 
     private  static MessageQueue INSTANCE;

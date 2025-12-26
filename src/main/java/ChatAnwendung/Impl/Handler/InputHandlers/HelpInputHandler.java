@@ -1,10 +1,13 @@
 package ChatAnwendung.Impl.Handler.InputHandlers;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class HelpInputHandler extends AbstractInputHandler {
 
 
     public HelpInputHandler(String[] command) {
-        super(command, HelpInputHandler.class.getName());
+        super(command);
     }
 
     @Override

@@ -1,13 +1,15 @@
 package ChatAnwendung.Impl.Handler.RecieverHandlers;
 
 import ChatAnwendung.Impl.Header;
+import lombok.extern.slf4j.Slf4j;
 
 import java.net.DatagramPacket;
 import java.nio.charset.StandardCharsets;
 
+@Slf4j
 public class MessageRecieveHandler extends AbstractRecieveHanlder {
     public MessageRecieveHandler(DatagramPacket packet) {
-        super(MessageRecieveHandler.class.getName(), packet);
+        super(packet);
     }
 
     @Override

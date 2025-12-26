@@ -7,8 +7,7 @@ public abstract class AbstractInputHandler extends AbstractHandler {
     protected String[] command;
 
 
-    public AbstractInputHandler(String[] command, String name){
-        super(name);
+    public AbstractInputHandler(String[] command){
         this.command = command;
     }
 }

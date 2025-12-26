@@ -1,5 +1,7 @@
 package ChatAnwendung.Impl;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.io.BufferedReader;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
@@ -14,6 +16,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.Map;
 
+@Slf4j
 public class Storage {
 
     private static Storage INSTANCE;

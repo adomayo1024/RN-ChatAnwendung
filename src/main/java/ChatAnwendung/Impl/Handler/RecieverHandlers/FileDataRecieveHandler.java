@@ -3,13 +3,15 @@ package ChatAnwendung.Impl.Handler.RecieverHandlers;
 import ChatAnwendung.Impl.DownloadFiles;
 import ChatAnwendung.Impl.File;
 import ChatAnwendung.Impl.Header;
+import lombok.extern.slf4j.Slf4j;
 
 import java.net.DatagramPacket;
 import java.util.logging.Level;
 
+@Slf4j
 public class FileDataRecieveHandler extends AbstractRecieveHanlder {
     public FileDataRecieveHandler(DatagramPacket packet) {
-        super(FileDataRecieveHandler.class.getName(), packet);
+        super(packet);
     }
 
 
@@ -27,7 +29,7 @@ public class FileDataRecieveHandler extends AbstractRecieveHanlder {
             DownloadFiles.getInstance().removeFile(srcUID, fileId);
         }
 
-        logger.log(Level.INFO, "Added Chunk: " + sequenz + "to File: " + file.getName() + "from User: " + Long.toUnsignedString(srcUID));
+        log.info( "Added Chunk: " + sequenz + "to File: " + file.getName() + "from User: " + Long.toUnsignedString(srcUID));
 
     }
 }

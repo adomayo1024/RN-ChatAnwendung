@@ -2,12 +2,14 @@ package ChatAnwendung.Impl.Handler.RecieverHandlers;
 
 import ChatAnwendung.Impl.Header;
 import ChatAnwendung.Impl.MessageQueue;
+import lombok.extern.slf4j.Slf4j;
 
 import java.net.DatagramPacket;
 
+@Slf4j
 public class FeedForwadingHanlder extends AbstractRecieveHanlder{
     public FeedForwadingHanlder(DatagramPacket packet) {
-        super(FeedForwadingHanlder.class.getName(), packet);
+        super(packet);
     }
 
     @Override

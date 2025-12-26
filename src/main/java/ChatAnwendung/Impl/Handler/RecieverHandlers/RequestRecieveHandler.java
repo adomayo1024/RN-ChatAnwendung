@@ -5,15 +5,17 @@ import ChatAnwendung.Impl.Handler.Common.ExceptionHandler;
 import ChatAnwendung.Impl.MessageQueue;
 import ChatAnwendung.Impl.PacketTypes;
 import ChatAnwendung.Impl.Storage;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 
+@Slf4j
 public class RequestRecieveHandler extends AbstractRecieveHanlder {
     public RequestRecieveHandler(DatagramPacket packet) {
-        super(RequestRecieveHandler.class.getName(), packet);
+        super(packet);
     }
 
     @Override
