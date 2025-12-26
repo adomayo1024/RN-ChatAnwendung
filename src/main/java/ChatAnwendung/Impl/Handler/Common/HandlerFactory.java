@@ -23,43 +23,43 @@ public class HandlerFactory {
         switch (command) {
             case "exit":
                 handler = new ExitInputHandler(split);
-                log.info("Input: exit");
+                log.debug("Input: exit");
                 break;
             case "send":
                 handler = new MessageInputHandler(split);
-                log.info( "Input: send");
+                log.debug( "Input: send");
                 break;
             case "file":
                 handler = new FileInputHandler(split);
-                log.info( "Input: file");
+                log.debug( "Input: file");
                 break;
             case "bye":
                 handler = new GoodbyeInputHandler(split);
-                log.info( "Input: bye");
+                log.debug( "Input: bye");
                 break;
             case "hello":
                 handler = new HelloInputHandler(split);
-                log.info( "Input: hello");
+                log.debug( "Input: hello");
                 break;
             case "help":
                 handler = new HelpInputHandler(split);
-                log.info( "Input: help");
+                log.debug( "Input: help");
                 break;
             case "connect":
                 handler = new ConnectHandler(split);
-                log.info( "Input: connect");
+                log.debug( "Input: connect");
                 break;
             case "disconnect":
                 handler = new DisconnectHandler(split);
-                log.info( "Input: disconnect");
+                log.debug( "Input: disconnect");
                 break;
             case "list":
                 handler = new ListHandler(split);
-                log.info( "Input: list");
+                log.debug( "Input: list");
                 break;
             case "":
                 handler = new ExceptionHandler(new LoginException(), HandlerFactory.class);
-                log.info( "Input: empty");
+                log.debug( "Input: empty");
                 break;
             default:
                 handler = new WrongCommandInputHandler(split);
@@ -88,43 +88,43 @@ public class HandlerFactory {
             switch (type){
                 case FILE_INIT -> {
                     handler = new FileInitRecieveHandler(packet);
-                    log.info( "Revieced: File Init");
+                    log.debug( "Revieced: File Init");
                 }
                 case File_End -> {
                     handler = new FileEndRecieveHandler(packet);
-                    log.info( "Revieced: File End");
+                    log.debug( "Revieced: File End");
                 }
                 case MESSAGE -> {
                     handler = new MessageRecieveHandler(packet);
-                    log.info( "Revieced: Message");
+                    log.debug( "Revieced: Message");
                 }
                 case FILE_DATA -> {
                     handler = new FileDataRecieveHandler(packet);
-                    log.info( "Revieced: File Data");
+                    log.debug( "Revieced: File Data");
                 }
                 case RESENDREQUEST -> {
                     handler = new RequestRecieveHandler(packet);
-                    log.info( "Revieced: Resend Request");
+                    log.debug( "Revieced: Resend Request");
                 }
                 case ROUTINGTABLE -> {
                     handler = new RoutingTableRecievetHandler(packet);
-                    log.info( "Revieced: Routing Table");
+                    log.debug( "Revieced: Routing Table");
                 }
                 case HELLO -> {
                     handler = new HelloRecieveHandler(packet);
-                    log.info( "Revieced: Hello");
+                    log.debug( "Revieced: Hello");
                 }
                 case WELCOME -> {
                     handler = new WelcomeRecieveHandler(packet);
-                    log.info( "Revieced: Welcome");
+                    log.debug( "Revieced: Welcome");
                 }
                 case GOODBYE -> {
                     handler = new GoodbyeRecieveHandler(packet);
-                    log.info( "Revieced: Goodbye");
+                    log.debug( "Revieced: Goodbye");
                 }
                 case HEARTBEAT -> {
                     handler = new HeartbeatRecieveHandler(packet);
-                    log.info( "Revieced: Heartbeat");
+                    log.debug( "Revieced: Heartbeat");
                 }
                 default -> {
                     handler = null;

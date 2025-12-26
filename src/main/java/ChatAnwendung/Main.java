@@ -15,14 +15,14 @@ public class Main {
 
     public static void main(String[] args) {
 
-        log.info( "Starting ChatAnwendung");
+        log.debug( "Starting ChatAnwendung");
 
         try(DatagramSocket socket = new DatagramSocket(0)){
 
             Storage.getInstance().setPort(socket.getLocalPort());
-            log.info( "Socket opened on Address: " + socket.getLocalAddress() + " and port " + socket.getLocalPort());
-            log.info( "You got the ID: " + Storage.getInstance().getUnsignedID());
-            log.info( "Sender mode is " + Storage.getInstance().getSendMode());
+            log.debug("Socket opened on Address: {} and port {}", socket.getLocalAddress(), socket.getLocalPort());
+            log.debug("You got the ID: {}", Storage.getInstance().getUnsignedID());
+            log.debug("Sender mode is {}", Storage.getInstance().getSendMode());
 
             CompletableFuture<Void> inputHandler = CompletableFuture.runAsync(new InputReaderImpl(new InputHandlerImpl()), ThreadPools.getInstance().getThreadPool());
             CompletableFuture<Void> reciever = CompletableFuture.runAsync(new RecieverImpl(socket, new RecieverHandlerImpl()), ThreadPools.getInstance().getThreadPool());
@@ -33,7 +33,7 @@ public class Main {
             throw new RuntimeException();
         } finally{
             ThreadPools.getInstance().shutDown();
-            log.info( "Anwendung beendet");
+            log.debug( "Anwendung beendet");
         }
     }
 

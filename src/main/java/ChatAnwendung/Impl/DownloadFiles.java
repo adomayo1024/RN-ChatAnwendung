@@ -37,7 +37,7 @@ public class DownloadFiles {
     }
 
     public File getFile(long uID, int fileID) throws NullPointerException{
-        log.info("Requesting File: {} from User: {}", fileID, Long.toUnsignedString(uID));
+        log.debug("Requesting File: {} from User: {}", fileID, Long.toUnsignedString(uID));
         // TODO kein busy waiting mit Semphore
         while(!fileIsThere(uID, fileID)){
             try {
@@ -50,7 +50,7 @@ public class DownloadFiles {
         mutex.lock();
         File result = downloadedFiles.get(uID).get(fileID);
         mutex.unlock();
-        log.info("Got File: {} from User: {}", fileID, Long.toUnsignedString(uID));
+        log.debug("Got File: {} from User: {}", fileID, Long.toUnsignedString(uID));
         return result;
     }
 

@@ -39,7 +39,7 @@ public class RequestSender extends AbstractHandler {
 
         file.inkrementRequestCountWithoutResponse();
 
-        log.info( "Sent Request for FileID " + fileID + " and sequence: " + sequenz + "from the User: " + Long.toUnsignedString(destUID));
+        log.debug( "Sent Request for FileID " + fileID + " and sequence: " + sequenz + "from the User: " + Long.toUnsignedString(destUID));
     }
 
     private boolean timeSinceLastFileDataPackageMoreThanASecond(){

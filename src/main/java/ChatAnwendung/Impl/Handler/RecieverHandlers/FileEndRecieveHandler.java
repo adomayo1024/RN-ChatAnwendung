@@ -19,7 +19,7 @@ public class FileEndRecieveHandler extends AbstractRecieveHanlder{
         byte[] data = packet.getData();
         int fileID = getFileId(data);
         long srcUID = getSrcUID(data);
-        log.info( "Recieved File End from file: " + fileID + " from User: " + Long.toUnsignedString(srcUID));
+        log.debug( "Recieved File End from file: " + fileID + " from User: " + Long.toUnsignedString(srcUID));
         File file = DownloadFiles.getInstance().getFile(srcUID, fileID);
         file.startRequesting();
     }

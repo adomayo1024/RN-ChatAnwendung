@@ -18,7 +18,7 @@ public class GoodbyeRecieveHandler extends AbstractRecieveHanlder {
 
         long srcUID = getSrcUID(packet.getData());
         RoutingTableImpl.getInstance().removeUIDThroughGoodbye(srcUID);
-        log.info("UID: {} removed", Long.toUnsignedString(srcUID));
+        log.debug("UID: {} removed", Long.toUnsignedString(srcUID));
 
     }
 }

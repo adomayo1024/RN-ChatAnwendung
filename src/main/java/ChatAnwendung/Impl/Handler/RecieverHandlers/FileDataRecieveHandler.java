@@ -29,7 +29,7 @@ public class FileDataRecieveHandler extends AbstractRecieveHanlder {
             DownloadFiles.getInstance().removeFile(srcUID, fileId);
         }
 
-        log.info( "Added Chunk: " + sequenz + "to File: " + file.getName() + "from User: " + Long.toUnsignedString(srcUID));
+        log.debug( "Added Chunk: " + sequenz + "to File: " + file.getName() + "from User: " + Long.toUnsignedString(srcUID));
 
     }
 }

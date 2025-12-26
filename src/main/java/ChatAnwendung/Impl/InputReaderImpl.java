@@ -27,7 +27,7 @@ public class InputReaderImpl implements InputReader, Runnable {
                 inputHandler.handle(stdIn);
             }
         } catch (IOException e) {
-            log.info( "Input Reader is terminated");
+            log.debug( "Input Reader is terminated");
         }
     }
 }

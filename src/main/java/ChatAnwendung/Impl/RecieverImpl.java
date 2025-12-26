@@ -46,18 +46,18 @@ public class RecieverImpl implements Runnable, Reciever {
             try {
                 DatagramPacket request = new DatagramPacket(new byte[PACKETSIZE], PACKETSIZE);
 
-                log.info( "Waiting for packet");
+                log.debug( "Waiting for packet");
 
                 socket.receive(request);
 
-                log.info( "Packet received");
+                log.debug( "Packet received");
 
                 handler.handle(request);
 
 
             }catch (SocketException e) {
                 interrupted = true;
-                log.info( "Socket closed");
+                log.debug( "Socket closed");
             }
             catch (IOException e) {
                 interrupted = true;
@@ -65,7 +65,7 @@ public class RecieverImpl implements Runnable, Reciever {
             }
         }
 
-        log.info( "Reciever turned down");
+        log.debug( "Reciever turned down");
 
     }
 }

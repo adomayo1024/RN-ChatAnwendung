@@ -26,16 +26,16 @@ public class SenderImpl implements Sender, Runnable {
             DatagramPacket p= null;
             try {
 
-            log.info( "Packet holen");
+            log.debug( "Packet holen");
 
             p = MessageQueue.getInstance().poll();
 
-            log.info( "Packet bekommen");
+            log.debug( "Packet bekommen");
 
             if(Storage.getInstance().getSendMode() != SendMode.NOTHING){
                 socket.send(p);
             }
-            log.info( "send a package to the adress: " + p.getAddress() + " and to port: " + p.getPort() + " of Type: " + SendMode.values()[p.getData()[1]]);
+            log.debug( "send a package to the adress: " + p.getAddress() + " and to port: " + p.getPort() + " of Type: " + SendMode.values()[p.getData()[1]]);
 
             } catch (IOException e) {
                 System.out.println(e.getMessage());
@@ -44,6 +44,6 @@ public class SenderImpl implements Sender, Runnable {
             }
         }
 
-        log.info( "Sender shutdown");
+        log.debug( "Sender shutdown");
     }
 }

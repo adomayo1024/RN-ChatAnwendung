@@ -40,7 +40,7 @@ public class TimeoutHandler extends AbstractHandler {
                 }
             }while(!Thread.currentThread().isInterrupted());
         } catch (InterruptedException e) {
-            log.info( "TimeoutHandler was interrupted");
+            log.debug( "TimeoutHandler was interrupted");
         }
     }
 }
