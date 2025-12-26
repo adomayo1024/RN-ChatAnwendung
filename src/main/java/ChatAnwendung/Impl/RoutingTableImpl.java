@@ -52,8 +52,10 @@ public class RoutingTableImpl implements RoutingTable {
             result = true;
         } else if(oldEntry.getHops() > newEntry.getHops()) {
             result = true;
-        } else result = oldEntry.getNextHopAdress().equals(newEntry.getNextHopAdress()) &&
-                oldEntry.getNextHopPort() == newEntry.getNextHopPort();
+        } else {
+            result = oldEntry.getNextHopAdress().equals(newEntry.getNextHopAdress()) &&
+                    oldEntry.getNextHopPort() == newEntry.getNextHopPort();
+        }
         return result;
     }
 

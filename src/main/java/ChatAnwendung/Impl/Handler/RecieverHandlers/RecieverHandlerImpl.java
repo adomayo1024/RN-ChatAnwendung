@@ -18,7 +18,7 @@ public class RecieverHandlerImpl implements RecieverHanlder {
         if(checksumRight(packet)){
             boolean isItForMe = isItForMe(packet);
 
-            if(Storage.getInstance().isLogin() && (Storage.getInstance().getSendMode() == SendMode.SELF && Storage.getInstance().getSendMode() == SendMode.ALL)){
+            if(Storage.getInstance().isLogin() && (Storage.getInstance().getSendMode() == SendMode.SELF || Storage.getInstance().getSendMode() == SendMode.ALL)){
                 CompletableFuture.runAsync(HandlerFactory.getRecieverHandler(packet, isItForMe), ThreadPools.getInstance().getThreadPool());
             }
         }
