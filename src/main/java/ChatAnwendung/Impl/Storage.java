@@ -36,7 +36,7 @@ public class Storage {
 
     private final boolean DEBUG_MODE = false;
 
-    private final SendMode sendMode = SendMode.SELF;
+    private final SendMode sendMode = SendMode.ALL;
 
     private Storage() throws NoSuchAlgorithmException {
         broadcastId = -1L;

@@ -21,7 +21,7 @@ public class Main {
         try(DatagramSocket socket = new DatagramSocket(0)){
 
             Storage.getInstance().setPort(socket.getLocalPort());
-            logger.log(Level.INFO, "Socket opened on port " + socket.getLocalPort());
+            logger.log(Level.INFO, "Socket opened on Address: " + socket.getLocalAddress() + " and port " + socket.getLocalPort());
             logger.log(Level.INFO, "You got the ID: " + Storage.getInstance().getUnsignedID());
             logger.log(Level.INFO, "Sender mode is " + Storage.getInstance().getSendMode());
 
