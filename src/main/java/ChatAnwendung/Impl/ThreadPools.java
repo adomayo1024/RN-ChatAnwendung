@@ -42,8 +42,13 @@ public class ThreadPools {
 
 
     public void shutDown(){
-        threadPool.shutdown();
+        threadPool.shutdownNow();
         fileRequestTimer.shutdownNow();
+        heartBeatTimer.shutdownNow();
+        if(timeoutFuture != null){
+            timeoutFuture.cancel(true);
+        }
+
     }
 
     public  ScheduledExecutorService getFileRequestTimer() {
