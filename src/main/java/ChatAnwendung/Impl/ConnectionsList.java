@@ -10,6 +10,8 @@ public class ConnectionsList {
 
     private static ConnectionsList INSTANCE;
 
+    private static final ReentrantLock getMutex = new ReentrantLock(true);
+
     private List<Connection> connections;
 
     private ReentrantLock mutex;
@@ -28,10 +30,11 @@ public class ConnectionsList {
     }
 
     public static ConnectionsList getInstance(){
+        getMutex.lock();
         if(INSTANCE == null){
             INSTANCE = new ConnectionsList();
         }
-
+        getMutex.unlock();
         return INSTANCE;
     }
 

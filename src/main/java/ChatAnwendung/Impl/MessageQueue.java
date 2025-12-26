@@ -10,6 +10,8 @@ public class MessageQueue {
 
     private  static MessageQueue INSTANCE;
 
+    private static final ReentrantLock getMutex = new ReentrantLock(true);
+
     private final List<DatagramPacket> queue;
 
     private final Semaphore queueSemaphore;
@@ -24,9 +26,11 @@ public class MessageQueue {
 
 
     public static MessageQueue getInstance() {
+        getMutex.lock();
         if(INSTANCE == null){
             INSTANCE = new MessageQueue();
         }
+        getMutex.unlock();
         return INSTANCE;
     }
 

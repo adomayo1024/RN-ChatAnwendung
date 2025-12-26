@@ -1,10 +1,13 @@
 package ChatAnwendung.Impl;
 
 import java.util.concurrent.*;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class ThreadPools {
 
     private static ThreadPools INSTANCE;
+
+    private static final ReentrantLock getMutex = new ReentrantLock(true);
 
     private final ExecutorService threadPool;
 
@@ -24,10 +27,11 @@ public class ThreadPools {
 
 
     public static ThreadPools getInstance(){
+        getMutex.lock();
         if(INSTANCE == null){
             INSTANCE = new ThreadPools();
         }
-
+        getMutex.unlock();
         return INSTANCE;
     }
 

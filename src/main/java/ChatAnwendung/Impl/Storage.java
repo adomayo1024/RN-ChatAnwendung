@@ -18,6 +18,8 @@ public class Storage {
 
     private static Storage INSTANCE;
 
+    private static final ReentrantLock getMutex = new ReentrantLock(true);
+
     private final Long broadcastId;
 
     private long ID;
@@ -46,6 +48,7 @@ public class Storage {
     }
 
     public static Storage getInstance() {
+        getMutex.lock();
         if(INSTANCE == null) {
             try {
                 INSTANCE = new Storage();
@@ -53,7 +56,7 @@ public class Storage {
                 throw new RuntimeException(e);
             }
         }
-
+        getMutex.unlock();
         return INSTANCE;
     }
 

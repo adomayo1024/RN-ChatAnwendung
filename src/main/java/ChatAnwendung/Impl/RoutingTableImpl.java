@@ -14,6 +14,8 @@ public class RoutingTableImpl implements RoutingTable {
 
     private  Map<Long, RoutingEntry> entries;
 
+    private static final ReentrantLock getMutex = new ReentrantLock(true);
+
     private ReentrantLock mutex;
 
     private static RoutingTable INSTANCE;
@@ -24,9 +26,11 @@ public class RoutingTableImpl implements RoutingTable {
     }
 
     public static RoutingTable getInstance(){
+        getMutex.lock();
         if(INSTANCE == null) {
             INSTANCE = new RoutingTableImpl();
         }
+        getMutex.unlock();
         return INSTANCE;
     }
 
