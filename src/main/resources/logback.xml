@@ -60,7 +60,7 @@
     <!-- ============================= -->
 
     <!-- Komplett AUS für eine Klasse -->
-    <logger name="ChatAnwendung.Impl.ThreadPools" level="OFF"/>
+    <logger name="ChatAnwendung.Impl.persistence.ThreadPools" level="OFF"/>
 
     <!-- DEBUG nur für eine konkrete Klasse -->
     <logger name="ChatAnwendung.Main" level="DEBUG"/>

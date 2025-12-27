@@ -1,10 +1,9 @@
 package ChatAnwendung.Impl.Handler.InputHandlers;
 
-import ChatAnwendung.Impl.Storage;
+import ChatAnwendung.Impl.persistence.Storage;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
-import java.util.logging.Level;
 
 @Slf4j
 public class ExitInputHandler extends AbstractInputHandler {

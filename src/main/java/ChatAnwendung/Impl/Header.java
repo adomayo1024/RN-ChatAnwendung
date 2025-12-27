@@ -1,5 +1,6 @@
 package ChatAnwendung.Impl;
 
+import ChatAnwendung.Impl.persistence.Storage;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j

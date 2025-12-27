@@ -4,8 +4,8 @@ import ChatAnwendung.Api.RoutingEntry;
 import ChatAnwendung.Impl.Handler.Common.AbstractHandler;
 import ChatAnwendung.Impl.MessageQueue;
 import ChatAnwendung.Impl.PacketTypes;
-import ChatAnwendung.Impl.RoutingTableImpl;
-import ChatAnwendung.Impl.Storage;
+import ChatAnwendung.Impl.persistence.RoutingTableImpl;
+import ChatAnwendung.Impl.persistence.Storage;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.DatagramPacket;

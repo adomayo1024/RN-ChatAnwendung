@@ -1,13 +1,12 @@
 package ChatAnwendung.Impl;
 
 import ChatAnwendung.Api.Sender;
+import ChatAnwendung.Impl.persistence.Storage;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 @Slf4j
 public class SenderImpl implements Sender, Runnable {

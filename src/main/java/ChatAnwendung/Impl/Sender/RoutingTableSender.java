@@ -2,7 +2,7 @@ package ChatAnwendung.Impl.Sender;
 
 import ChatAnwendung.Api.RoutingEntry;
 import ChatAnwendung.Impl.Handler.Common.AbstractHandler;
-import ChatAnwendung.Impl.RoutingTableImpl;
+import ChatAnwendung.Impl.persistence.RoutingTableImpl;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;

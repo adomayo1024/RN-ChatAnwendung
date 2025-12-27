@@ -2,9 +2,8 @@ package ChatAnwendung.Impl;
 
 import ChatAnwendung.Api.RoutingEntry;
 import ChatAnwendung.Impl.Handler.Common.AbstractHandler;
+import ChatAnwendung.Impl.persistence.RoutingTableImpl;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.logging.Level;
 
 import static java.lang.Thread.sleep;
 

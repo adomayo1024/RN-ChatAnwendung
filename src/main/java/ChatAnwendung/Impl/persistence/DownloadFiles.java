@@ -1,5 +1,6 @@
-package ChatAnwendung.Impl;
+package ChatAnwendung.Impl.persistence;
 
+import ChatAnwendung.Impl.File;
 import ChatAnwendung.Impl.Handler.Common.ExceptionHandler;
 import lombok.extern.slf4j.Slf4j;
 
@@ -7,8 +8,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.*;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 @Slf4j
 public class DownloadFiles {

@@ -1,4 +1,4 @@
-package ChatAnwendung.Impl;
+package ChatAnwendung.Impl.persistence;
 
 import ChatAnwendung.Api.RoutingEntry;
 import ChatAnwendung.Api.RoutingTable;

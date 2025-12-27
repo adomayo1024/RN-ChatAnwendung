@@ -6,13 +6,12 @@ import ChatAnwendung.Impl.Exceptions.UnknowUIDException;
 import ChatAnwendung.Impl.Handler.Common.ExceptionHandler;
 import ChatAnwendung.Impl.MessageQueue;
 import ChatAnwendung.Impl.PacketTypes;
-import ChatAnwendung.Impl.RoutingTableImpl;
+import ChatAnwendung.Impl.persistence.RoutingTableImpl;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
-import java.util.logging.Level;
 
 @Slf4j
 public class MessageInputHandler extends AbstractInputHandler {

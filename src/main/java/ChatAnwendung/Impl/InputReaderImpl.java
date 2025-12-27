@@ -2,11 +2,10 @@ package ChatAnwendung.Impl;
 
 import ChatAnwendung.Api.InputHandler;
 import ChatAnwendung.Api.InputReader;
+import ChatAnwendung.Impl.persistence.Storage;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 @Slf4j
 public class InputReaderImpl implements InputReader, Runnable {

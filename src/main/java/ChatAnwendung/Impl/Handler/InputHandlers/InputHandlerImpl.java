@@ -3,8 +3,8 @@ package ChatAnwendung.Impl.Handler.InputHandlers;
 import ChatAnwendung.Api.Handler;
 import ChatAnwendung.Api.InputHandler;
 import ChatAnwendung.Impl.Handler.Common.HandlerFactory;
-import ChatAnwendung.Impl.Storage;
-import ChatAnwendung.Impl.ThreadPools;
+import ChatAnwendung.Impl.persistence.Storage;
+import ChatAnwendung.Impl.persistence.ThreadPools;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashSet;
