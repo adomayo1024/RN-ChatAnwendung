@@ -1,8 +1,8 @@
 package ChatAnwendung.Impl.Handler.InputHandlers;
 
 import ChatAnwendung.Api.RoutingEntry;
-import ChatAnwendung.Impl.Connection;
-import ChatAnwendung.Impl.ConnectionsList;
+import ChatAnwendung.Impl.persistence.Connection;
+import ChatAnwendung.Impl.persistence.ConnectionsList;
 import ChatAnwendung.Impl.persistence.RoutingTableImpl;
 import lombok.extern.slf4j.Slf4j;
 

@@ -3,6 +3,8 @@ package ChatAnwendung.Impl.Handler.InputHandlers;
 import ChatAnwendung.Impl.*;
 import ChatAnwendung.Impl.Exceptions.LoginException;
 import ChatAnwendung.Impl.Handler.Common.ExceptionHandler;
+import ChatAnwendung.Impl.persistence.Connection;
+import ChatAnwendung.Impl.persistence.ConnectionsList;
 import ChatAnwendung.Impl.persistence.Storage;
 import ChatAnwendung.Impl.persistence.ThreadPools;
 import ChatAnwendung.Impl.Sender.HearbeatSender;

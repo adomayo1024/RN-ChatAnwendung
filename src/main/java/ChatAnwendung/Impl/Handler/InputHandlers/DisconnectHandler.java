@@ -1,7 +1,7 @@
 package ChatAnwendung.Impl.Handler.InputHandlers;
 
-import ChatAnwendung.Impl.Connection;
-import ChatAnwendung.Impl.ConnectionsList;
+import ChatAnwendung.Impl.persistence.Connection;
+import ChatAnwendung.Impl.persistence.ConnectionsList;
 import ChatAnwendung.Impl.Exceptions.ArgumentException;
 import ChatAnwendung.Impl.Handler.Common.ExceptionHandler;
 import lombok.extern.slf4j.Slf4j;

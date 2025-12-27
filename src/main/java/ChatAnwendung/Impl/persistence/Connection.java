@@ -1,4 +1,4 @@
-package ChatAnwendung.Impl;
+package ChatAnwendung.Impl.persistence;
 
 import java.net.InetAddress;
 
