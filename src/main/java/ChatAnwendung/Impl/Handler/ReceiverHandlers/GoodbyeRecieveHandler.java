@@ -1,10 +1,9 @@
-package ChatAnwendung.Impl.Handler.RecieverHandlers;
+package ChatAnwendung.Impl.Handler.ReceiverHandlers;
 
 import ChatAnwendung.Impl.RoutingTableImpl;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.DatagramPacket;
-import java.util.logging.Level;
 
 @Slf4j
 public class GoodbyeRecieveHandler extends AbstractRecieveHanlder {

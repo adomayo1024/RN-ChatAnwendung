@@ -1,4 +1,4 @@
-package ChatAnwendung.Impl.Handler.RecieverHandlers;
+package ChatAnwendung.Impl.Handler.ReceiverHandlers;
 
 import ChatAnwendung.Impl.DownloadFiles;
 import ChatAnwendung.Impl.File;
@@ -8,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import java.net.DatagramPacket;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.logging.Level;
 
 @Slf4j
 public class FileInitRecieveHandler extends AbstractRecieveHanlder {

@@ -1,4 +1,4 @@
-package ChatAnwendung.Impl.Handler.RecieverHandlers;
+package ChatAnwendung.Impl.Handler.ReceiverHandlers;
 
 import ChatAnwendung.Impl.Handler.Common.AbstractHandler;
 import ChatAnwendung.Impl.Header;

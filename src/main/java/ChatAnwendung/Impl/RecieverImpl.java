@@ -3,15 +3,13 @@ package ChatAnwendung.Impl;
 
 import ChatAnwendung.Api.Reciever;
 import ChatAnwendung.Impl.Handler.Common.ExceptionHandler;
-import ChatAnwendung.Impl.Handler.RecieverHandlers.RecieverHandlerImpl;
+import ChatAnwendung.Impl.Handler.ReceiverHandlers.RecieverHandlerImpl;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 @Slf4j
 public class RecieverImpl implements Runnable, Reciever {

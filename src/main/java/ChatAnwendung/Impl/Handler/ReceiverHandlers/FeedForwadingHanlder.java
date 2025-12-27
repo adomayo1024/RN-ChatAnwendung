@@ -1,4 +1,4 @@
-package ChatAnwendung.Impl.Handler.RecieverHandlers;
+package ChatAnwendung.Impl.Handler.ReceiverHandlers;
 
 import ChatAnwendung.Impl.Header;
 import ChatAnwendung.Impl.MessageQueue;

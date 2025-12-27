@@ -5,7 +5,7 @@ import ChatAnwendung.Impl.Exceptions.LoginException;
 import ChatAnwendung.Impl.Handler.InputHandlers.*;
 import ChatAnwendung.Impl.Header;
 import ChatAnwendung.Impl.PacketTypes;
-import ChatAnwendung.Impl.Handler.RecieverHandlers.*;
+import ChatAnwendung.Impl.Handler.ReceiverHandlers.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.DatagramPacket;
@@ -88,43 +88,43 @@ public class HandlerFactory {
             switch (type){
                 case FILE_INIT -> {
                     handler = new FileInitRecieveHandler(packet);
-                    log.debug( "Revieced: File Init");
+                    log.debug( "Received: File Init");
                 }
                 case File_End -> {
                     handler = new FileEndRecieveHandler(packet);
-                    log.debug( "Revieced: File End");
+                    log.debug( "Received: File End");
                 }
                 case MESSAGE -> {
                     handler = new MessageRecieveHandler(packet);
-                    log.debug( "Revieced: Message");
+                    log.debug( "Received: Message");
                 }
                 case FILE_DATA -> {
                     handler = new FileDataRecieveHandler(packet);
-                    log.debug( "Revieced: File Data");
+                    log.debug( "Received: File Data");
                 }
                 case RESENDREQUEST -> {
                     handler = new RequestRecieveHandler(packet);
-                    log.debug( "Revieced: Resend Request");
+                    log.debug( "Received: Resend Request");
                 }
                 case ROUTINGTABLE -> {
                     handler = new RoutingTableRecievetHandler(packet);
-                    log.debug( "Revieced: Routing Table");
+                    log.debug( "Received: Routing Table");
                 }
                 case HELLO -> {
                     handler = new HelloRecieveHandler(packet);
-                    log.debug( "Revieced: Hello");
+                    log.debug( "Received: Hello");
                 }
                 case WELCOME -> {
                     handler = new WelcomeRecieveHandler(packet);
-                    log.debug( "Revieced: Welcome");
+                    log.debug( "Received: Welcome");
                 }
                 case GOODBYE -> {
                     handler = new GoodbyeRecieveHandler(packet);
-                    log.debug( "Revieced: Goodbye");
+                    log.debug( "Received: Goodbye");
                 }
                 case HEARTBEAT -> {
                     handler = new HeartbeatRecieveHandler(packet);
-                    log.debug( "Revieced: Heartbeat");
+                    log.debug( "Received: Heartbeat");
                 }
                 default -> {
                     handler = null;
