@@ -22,7 +22,6 @@ public class Main {
             Storage.getInstance().setPort(socket.getLocalPort());
             log.debug("Socket opened on Address: {} and port {}", socket.getLocalAddress(), socket.getLocalPort());
             log.debug("You got the ID: {}", Storage.getInstance().getUnsignedID());
-            log.debug("Sender mode is {}", Storage.getInstance().getSendMode());
 
             CompletableFuture<Void> inputHandler = CompletableFuture.runAsync(new InputReaderImpl(new InputHandlerImpl()), ThreadPools.getInstance().getThreadPool());
             CompletableFuture<Void> reciever = CompletableFuture.runAsync(new RecieverImpl(socket, new RecieverHandlerImpl()), ThreadPools.getInstance().getThreadPool());
