@@ -26,6 +26,7 @@ public class ConnectionsList {
         getMutex.lock();
         if(INSTANCE == null){
             INSTANCE = new ConnectionsList();
+            log.debug("Created new Connection List: {}" , INSTANCE);
         }
         getMutex.unlock();
         return INSTANCE;
@@ -36,18 +37,24 @@ public class ConnectionsList {
         mutex.lock();
         connections.add(connection);
         mutex.unlock();
+
+        log.debug("Added new Connection to List: {}", this);
     }
 
     public void remove(Connection connection){
         mutex.lock();
         connections.remove(connection);
         mutex.unlock();
+
+        log.debug("Removed Connection from List: {}", this);
     }
 
     public List<Connection> getAllConnections(){
         mutex.lock();
         List<Connection> result = List.copyOf(connections);
         mutex.unlock();
+
+        log.debug("Returned all Connections from List: {}", this);
         return result;
     }
 

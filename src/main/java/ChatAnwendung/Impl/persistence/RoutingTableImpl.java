@@ -31,6 +31,7 @@ public class RoutingTableImpl implements RoutingTable {
         getMutex.lock();
         if(INSTANCE == null) {
             INSTANCE = new RoutingTableImpl();
+            log.debug("Created new RoutingTable: {}", INSTANCE);
         }
         getMutex.unlock();
         return INSTANCE;
@@ -48,6 +49,8 @@ public class RoutingTableImpl implements RoutingTable {
             entries.put(entry.getUID(),entry);
         }
         mutex.unlock();
+
+        log.debug("Added new Entry to RoutingTable: {}", this);
     }
 
     private boolean newEntryIsBetter(RoutingEntry newEntry) {
@@ -86,6 +89,8 @@ public class RoutingTableImpl implements RoutingTable {
         }
         mutex.unlock();
 
+        log.debug("Returned all Entries from RoutingTable: {}", this);
+
         return result;
     }
 
@@ -101,6 +106,9 @@ public class RoutingTableImpl implements RoutingTable {
             entries.remove(uID);
 
         }
+
+        log.debug("Removed UID: {} from RoutingTable: {}", Long.toUnsignedString(uID), this);
+
         mutex.unlock();
     }
 
@@ -118,10 +126,14 @@ public class RoutingTableImpl implements RoutingTable {
                     entry.setNextHopAdress(null);
                     entry.setHops(-1);
                     entry.setRoutable(false);
+
+                    log.debug("Changed RoutingEntry to not routable: {}", Long.toUnsignedString(entry.getUID()));
                 }
             }
             mutex.unlock();
             removeUID(uID);
+
+            log.debug("Removed UID: {} from RoutingTable: {}", Long.toUnsignedString(uID), this);
         }
 
     }
@@ -145,6 +157,8 @@ public class RoutingTableImpl implements RoutingTable {
         }
         mutex.unlock();
 
+        log.debug("Returned all direct Neighbours from RoutingTable: {}", this);
+
         return result;
     }
 
@@ -155,6 +169,8 @@ public class RoutingTableImpl implements RoutingTable {
             entries.get(uID).setLastSeen();
         }
         mutex.unlock();
+
+        log.debug("Set LastSeen for UID: {} in RoutingTable: {}", Long.toUnsignedString(uID), this);
     }
 
     //TODO change name and to entries.clear()
@@ -163,5 +179,6 @@ public class RoutingTableImpl implements RoutingTable {
         for(Long key : entries.keySet()){
             removeUID(key);
         }
+        log.debug("Removed all Entries from RoutingTable: {}", this);
     }
 }

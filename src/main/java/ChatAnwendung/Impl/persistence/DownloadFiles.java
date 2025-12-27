@@ -31,12 +31,13 @@ public class DownloadFiles {
 
         if(INSTANCE == null) {
             INSTANCE = new DownloadFiles();
+            log.debug("Created new DownloadFiles: {}", INSTANCE);
         }
         return INSTANCE;
     }
 
     public File getFile(long uID, int fileID) throws NullPointerException{
-        log.debug("Requesting File: {} from User: {}", fileID, Long.toUnsignedString(uID));
+        log.debug("Requesting File: {} from User: {} from DownloadFiles: {}", fileID, Long.toUnsignedString(uID), this);
         // TODO kein busy waiting mit Semphore
         while(!fileIsThere(uID, fileID)){
             try {
@@ -49,11 +50,14 @@ public class DownloadFiles {
         mutex.lock();
         File result = downloadedFiles.get(uID).get(fileID);
         mutex.unlock();
-        log.debug("Got File: {} from User: {}", fileID, Long.toUnsignedString(uID));
+        log.debug("Got File: {} from User: {} from DownloadFiles: {}", fileID, Long.toUnsignedString(uID), this);
         return result;
     }
 
     private boolean fileIsThere(long uID, int fileID) {
+
+        log.debug("Checking if File: {} from User: {} is in DownloadFiles: {}", fileID, Long.toUnsignedString(uID), this);
+
         return downloadedFiles.containsKey(uID) && downloadedFiles.get(uID).containsKey(fileID);
     }
 
@@ -64,6 +68,8 @@ public class DownloadFiles {
         }
         downloadedFiles.get(uID).put(fileID, file);
         mutex.unlock();
+
+        log.debug("Added new File: {} to User: {} to DownloadFiles: {}", fileID, Long.toUnsignedString(uID), this);
     }
 
     public ScheduledExecutorService getScheduledThreadPool(){
@@ -74,5 +80,7 @@ public class DownloadFiles {
         mutex.lock();
         downloadedFiles.get(srcUID).remove(fileId);
         mutex.unlock();
+
+        log.debug("Removed File: {} from User: {} from DownloadFiles: {}", fileId, Long.toUnsignedString(srcUID), this);
     }
 }

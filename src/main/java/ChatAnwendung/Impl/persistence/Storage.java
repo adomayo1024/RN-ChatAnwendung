@@ -47,6 +47,7 @@ public class Storage {
         if(INSTANCE == null) {
             try {
                 INSTANCE = new Storage();
+                log.debug("Created new Storage: {}", INSTANCE);
             } catch (NoSuchAlgorithmException e) {
                 throw new RuntimeException(e);
             }

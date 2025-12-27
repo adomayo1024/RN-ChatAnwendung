@@ -116,6 +116,23 @@
     <logger name="ChatAnwendung.Impl.Handler.ReceiverHandlers.WelcomeRecieveHandler" level="DEBUG"/>
 
 
+    <!-- Persistence -->
+
+    <logger name="ChatAnwendung.Impl.persistence.Connection" level="DEBUG"/>
+
+    <logger name="ChatAnwendung.Impl.persistence.ConnectionsList" level="DEBUG"/>
+
+    <logger name="ChatAnwendung.Impl.persistence.DownloadFiles" level="DEBUG"/>
+
+    <logger name="ChatAnwendung.Impl.persistence.RoutingEntryImpl" level="DEBUG"/>
+
+    <logger name="ChatAnwendung.Impl.persistence.RoutingTableImpl" level="DEBUG"/>
+
+    <logger name="ChatAnwendung.Impl.persistence.Storage" level="DEBUG"/>
+
+    <logger name="ChatAnwendung.Impl.persistence.ThreadPools" level="DEBUG"/>
+
+
 
 
     <!-- Fremdbibliotheken einschränken -->
