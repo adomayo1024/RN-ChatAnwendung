@@ -26,6 +26,7 @@ public class TimeoutHandler extends AbstractHandler {
                     int lastSeen = (int)(System.currentTimeMillis() - entry.getLastSeen());
                     if(lastSeen >= timeout){
                         RoutingTableImpl.getInstance().removeUID(entry.getUID());
+                        log.debug("RoutingEntry removed for {} because of Timeout", Long.toUnsignedString(entry.getUID()));
                     }
                     else {
                         if(lastSeen > sleepTime){

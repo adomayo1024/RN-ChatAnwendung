@@ -153,6 +153,8 @@
 
     <logger name="ChatAnwendung.Impl.RecieverImpl" level="DEBUG"/>
 
+    <logger name="ChatAnwendung.Impl.TimeoutHandler" level="DEBUG"/>
+
 
 
 
