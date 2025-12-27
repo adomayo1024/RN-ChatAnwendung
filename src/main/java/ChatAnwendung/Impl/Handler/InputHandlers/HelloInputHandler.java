@@ -2,6 +2,7 @@ package ChatAnwendung.Impl.Handler.InputHandlers;
 
 import ChatAnwendung.Impl.*;
 import ChatAnwendung.Impl.Exceptions.LoginException;
+import ChatAnwendung.Impl.FrequentlySender.RoutingTableSender;
 import ChatAnwendung.Impl.Handler.Common.ExceptionHandler;
 import ChatAnwendung.Impl.persistence.Connection;
 import ChatAnwendung.Impl.persistence.ConnectionsList;
@@ -44,6 +45,7 @@ public class HelloInputHandler extends AbstractInputHandler {
 
             ThreadPools.getInstance().setHeartBeatTimerFuture(ThreadPools.getInstance().getHeartBeatTimer().scheduleWithFixedDelay(new HearbeatSender(), 1, 5, TimeUnit.SECONDS));
             ThreadPools.getInstance().setTimeoutFuture(CompletableFuture.runAsync(new TimeoutHandler(), ThreadPools.getInstance().getThreadPool()));
+            ThreadPools.getInstance().setRoutingTabelTimerFuture(ThreadPools.getInstance().getRoutingTabelTimer().scheduleWithFixedDelay(new RoutingTableSender(), 1, 10, TimeUnit.SECONDS));
             log.debug("Finished with login");
         }
     }

@@ -18,7 +18,11 @@ public class ThreadPools {
 
     private final ScheduledExecutorService heartBeatTimer;
 
+    private final ScheduledExecutorService routingTabelTimer;
+
     private ScheduledFuture<?> heartBeatTimerFuture;
+
+    private ScheduledFuture<?> routingTabelTimerFuture;
 
     private CompletableFuture<Void> timeoutFuture;
 
@@ -26,6 +30,7 @@ public class ThreadPools {
         threadPool = Executors.newFixedThreadPool(10);
         fileRequestTimer = Executors.newScheduledThreadPool(3);
         heartBeatTimer = Executors.newScheduledThreadPool(1);
+        routingTabelTimer = Executors.newScheduledThreadPool(1);
     }
 
 
@@ -48,8 +53,12 @@ public class ThreadPools {
         threadPool.shutdownNow();
         fileRequestTimer.shutdownNow();
         heartBeatTimer.shutdownNow();
+        routingTabelTimer.shutdownNow();
         if(timeoutFuture != null){
             timeoutFuture.cancel(true);
+        }
+        if(routingTabelTimerFuture != null){
+            routingTabelTimerFuture.cancel(true);
         }
 
     }
@@ -68,6 +77,22 @@ public class ThreadPools {
 
     public void setHeartBeatTimerFuture(ScheduledFuture<?> heartBeatTimerFuture) {
         this.heartBeatTimerFuture = heartBeatTimerFuture;
+    }
+
+    public ScheduledExecutorService getRoutingTabelTimer() {
+        return routingTabelTimer;
+    }
+
+    public ScheduledFuture<?> getRoutingTabelTimerFuture() {
+        return routingTabelTimerFuture;
+    }
+
+    public void setRoutingTableTimerFuture(ScheduledFuture<?> routingTabelTimerFuture) {
+        this.routingTabelTimerFuture = routingTabelTimerFuture;
+    }
+
+    public void setRoutingTabelTimerFuture(ScheduledFuture<?> routingTabelTimerFuture) {
+        this.routingTabelTimerFuture = routingTabelTimerFuture;
     }
 
     public CompletableFuture<Void> getTimeoutFuture(){
