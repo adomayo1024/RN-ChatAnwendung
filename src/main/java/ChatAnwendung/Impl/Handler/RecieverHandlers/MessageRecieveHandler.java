@@ -14,6 +14,9 @@ public class MessageRecieveHandler extends AbstractRecieveHanlder {
 
     @Override
     public void run(){
+
+        log.debug("Received Message");
+
         byte[] data = packet.getData();
         short payloadLength = getPayloadLength(data);
         StringBuilder terminalOutput = new StringBuilder();
@@ -29,5 +32,7 @@ public class MessageRecieveHandler extends AbstractRecieveHanlder {
         }
 
         System.out.println(terminalOutput);
+
+        log.debug("Message received end");
     }
 }

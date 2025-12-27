@@ -13,8 +13,13 @@ public class HeartbeatRecieveHandler extends AbstractRecieveHanlder {
 
     @Override
     public void run() {
+
+        log.debug("Received Heartbeat");
+
         byte[] data = packet.getData();
         long srcUID = getSrcUID(data);
         RoutingTableImpl.getInstance().setLastSeen(srcUID);
+
+        log.debug("Last seen set for {}", Long.toUnsignedString(srcUID));
     }
 }

@@ -14,6 +14,10 @@ public class FeedForwadingHanlder extends AbstractRecieveHanlder{
 
     @Override
     public void run(){
+
+        log.debug("S" +
+                "tart with feed forwarding");
+
         byte[] data = packet.getData();
         byte ttl = getTtl(data);
         ttl -= 1;
@@ -26,6 +30,8 @@ public class FeedForwadingHanlder extends AbstractRecieveHanlder{
             long newChecksum = Header.makeChecksum(Header.extractChecksum(data));
             Header.addLong(Header.getCrcPos(), newChecksum, data);
             MessageQueue.getInstance().push(packet);
+
+            log.debug("Packet forwarded");
         }
     }
 }

@@ -20,6 +20,9 @@ public class RequestRecieveHandler extends AbstractRecieveHanlder {
 
     @Override
     public void run() {
+
+        log.debug("Received Request");
+
         byte[] data = packet.getData();
         int sequenz = getSequenz(data);
         int fileId = getFileId(data);
@@ -44,6 +47,8 @@ public class RequestRecieveHandler extends AbstractRecieveHanlder {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
+        log.debug("Send Request for FileID {} and sequence: {} from the User: {}", fileId, sequenz, Long.toUnsignedString(srcUID));
 
     }
     private byte[] split(RandomAccessFile file, long sequenz){

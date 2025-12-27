@@ -19,6 +19,9 @@ public class WelcomeRecieveHandler extends AbstractRecieveHanlder {
 
     @Override
     public void run(){
+
+        log.debug("Received Welcome");
+
         byte[] data = packet.getData();
         long srcUID = getSrcUID(data);
         InetAddress srcAdress = packet.getAddress();
@@ -35,6 +38,8 @@ public class WelcomeRecieveHandler extends AbstractRecieveHanlder {
         );
 
         RoutingTableImpl.getInstance().add(entry);
+
+        log.debug("Routing Entry added for {}", Long.toUnsignedString(srcUID));
     }
 
 }

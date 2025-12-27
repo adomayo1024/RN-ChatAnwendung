@@ -1,11 +1,8 @@
 package ChatAnwendung.Impl.Handler.RecieverHandlers;
 
 import ChatAnwendung.Api.RecieverHanlder;
+import ChatAnwendung.Impl.*;
 import ChatAnwendung.Impl.Handler.Common.HandlerFactory;
-import ChatAnwendung.Impl.Header;
-import ChatAnwendung.Impl.SendMode;
-import ChatAnwendung.Impl.Storage;
-import ChatAnwendung.Impl.ThreadPools;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.DatagramPacket;
@@ -17,6 +14,8 @@ public class RecieverHandlerImpl implements RecieverHanlder {
     @Override
     public void handle(DatagramPacket packet) {
 
+        log.debug("Start with handle the packet from the Type {}", PacketTypes.values()[packet.getData()[Header.getTypePos()]]);
+
         if(checksumRight(packet)){
             boolean isItForMe = isItForMe(packet);
 
@@ -24,6 +23,11 @@ public class RecieverHandlerImpl implements RecieverHanlder {
                 CompletableFuture.runAsync(HandlerFactory.getRecieverHandler(packet, isItForMe), ThreadPools.getInstance().getThreadPool());
             }
         }
+        else {
+            log.debug("Checksum is wrong");
+        }
+
+        log.debug("Finished with handle the packet");
     }
 
     private boolean checksumRight(DatagramPacket packet) {

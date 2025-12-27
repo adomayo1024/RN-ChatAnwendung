@@ -21,6 +21,9 @@ public class HelloRecieveHandler extends AbstractRecieveHanlder {
 
     @Override
     public void run(){
+
+        log.debug("Received Hello");
+
         byte[] data = packet.getData();
         long srcUID = getSrcUID(data);
         InetAddress srcAdress = packet.getAddress();
@@ -43,5 +46,7 @@ public class HelloRecieveHandler extends AbstractRecieveHanlder {
                 srcPort);
 
         MessageQueue.getInstance().push(welcomePacket);
+
+        log.debug("Send Welcome packet to: {}" , Long.toUnsignedString(srcUID));
     }
 }

@@ -20,6 +20,9 @@ public class FileInitRecieveHandler extends AbstractRecieveHanlder {
 
     @Override
     public void run(){
+
+        log.debug("Received File Init");
+
         byte[] data = packet.getData();
         int anzahlChunks = getSequenz(data);
         int fileID = getFileId(data);

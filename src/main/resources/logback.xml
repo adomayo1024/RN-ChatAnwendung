@@ -65,6 +65,8 @@
     <!-- DEBUG nur für eine konkrete Klasse -->
     <logger name="ChatAnwendung.Main" level="DEBUG"/>
 
+    <!-- InputHandler -->
+
     <logger name="ChatAnwendung.Impl.Handler.InputHandlers" level="DEBUG"/>
 
     <logger name="ChatAnwendung.Impl.Handler.InputHandlers.ConnectHandler" level="DEBUG"/>
@@ -85,6 +87,33 @@
 
     <logger name="ChatAnwendung.Impl.Handler.InputHandlers.MessageInputHandler" level="DEBUG"/>
 
+    <!-- Receive Handler -->
+
+    <logger name="ChatAnwendung.Impl.Handler.RecieverHandlers" level="DEBUG"/>
+
+    <logger name="ChatAnwendung.Impl.Handler.RecieverHandlers.FeedForwadingHanlder" level="DEBUG"/>
+
+    <logger name="ChatAnwendung.Impl.Handler.RecieverHandlers.FileDataRecieveHandler" level="DEBUG"/>
+
+    <logger name="ChatAnwendung.Impl.Handler.RecieverHandlers.FileEndRecieveHandler" level="DEBUG"/>
+
+    <logger name="ChatAnwendung.Impl.Handler.RecieverHandlers.FileInitRecieveHandler" level="DEBUG"/>
+
+    <logger name="ChatAnwendung.Impl.Handler.RecieverHandlers.GoodbyeRecieveHandler" level="DEBUG"/>
+
+    <logger name="ChatAnwendung.Impl.Handler.RecieverHandlers.HeartbeatRecieveHandler" level="DEBUG"/>
+
+    <logger name="ChatAnwendung.Impl.Handler.RecieverHandlers.HelloRecieveHandler" level="DEBUG"/>
+
+    <logger name="ChatAnwendung.Impl.Handler.RecieverHandlers.MessageRecieveHandler" level="DEBUG"/>
+
+    <logger name="ChatAnwendung.Impl.Handler.RecieverHandlers.RecieverHandlerImpl" level="DEBUG"/>
+
+    <logger name="ChatAnwendung.Impl.Handler.RecieverHandlers.RequestRecieveHandler" level="DEBUG"/>
+
+    <logger name="ChatAnwendung.Impl.Handler.RecieverHandlers.RoutingTableRecievetHandler" level="DEBUG"/>
+
+    <logger name="ChatAnwendung.Impl.Handler.RecieverHandlers.WelcomeRecieveHandler" level="DEBUG"/>
 
 
     <!-- Fremdbibliotheken einschränken -->

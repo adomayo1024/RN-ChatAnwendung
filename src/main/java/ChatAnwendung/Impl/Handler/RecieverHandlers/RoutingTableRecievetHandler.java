@@ -19,6 +19,9 @@ public class RoutingTableRecievetHandler extends AbstractRecieveHanlder {
 
     @Override
     public void run(){
+
+        log.debug("Received Routing Table");
+
         byte[] data = packet.getData();
         InetAddress srcAdress = packet.getAddress();
         int srcPort = packet.getPort();
@@ -34,6 +37,8 @@ public class RoutingTableRecievetHandler extends AbstractRecieveHanlder {
 
             RoutingEntry entry = new RoutingEntryImpl(uID, srcAdress, srcPort, hops + 1, lastSeen);
             RoutingTableImpl.getInstance().add(entry);
+
+            log.debug("Routing Entry added for {}", Long.toUnsignedString(uID));
         }
     }
 
