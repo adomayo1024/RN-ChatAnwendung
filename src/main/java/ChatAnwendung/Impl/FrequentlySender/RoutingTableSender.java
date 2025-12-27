@@ -1,4 +1,4 @@
-package ChatAnwendung.Impl.Sender;
+package ChatAnwendung.Impl.FrequentlySender;
 
 import ChatAnwendung.Api.RoutingEntry;
 import ChatAnwendung.Impl.Handler.Common.AbstractHandler;
@@ -17,6 +17,9 @@ public class RoutingTableSender extends AbstractHandler{
     @Override
     public void run(){
 
+        log.debug("Start with RoutingTable sending");
+
+        // TODO send routing table
         List<RoutingEntry> allEntries = RoutingTableImpl.getInstance().getAllEntries();
         List<RoutingEntry> directNeighboursEntries = RoutingTableImpl.getInstance().getAllDirectNeighbours();
         Map<RoutingEntry, List<RoutingEntry>> lol;

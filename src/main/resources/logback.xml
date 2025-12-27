@@ -118,6 +118,8 @@
 
     <!-- Persistence -->
 
+    <logger name="ChatAnwendung.Impl.persistence" level="DEBUG"/>
+
     <logger name="ChatAnwendung.Impl.persistence.Connection" level="DEBUG"/>
 
     <logger name="ChatAnwendung.Impl.persistence.ConnectionsList" level="DEBUG"/>
@@ -131,6 +133,18 @@
     <logger name="ChatAnwendung.Impl.persistence.Storage" level="DEBUG"/>
 
     <logger name="ChatAnwendung.Impl.persistence.ThreadPools" level="DEBUG"/>
+
+    <!-- Frequently Sender -->
+
+    <logger name="ChatAnwendung.Impl.FrequentlySender" level="DEBUG"/>
+
+    <logger name="ChatAnwendung.Impl.FrequentlySender.HearbeatSender" level="DEBUG"/>
+
+    <logger name="ChatAnwendung.Impl.FrequentlySender.RequestSender" level="DEBUG"/>
+
+    <logger name="ChatAnwendung.Impl.FrequentlySender.RoutingTableSender" level="DEBUG"/>
+
+
 
 
 

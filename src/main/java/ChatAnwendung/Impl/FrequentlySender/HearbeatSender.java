@@ -1,4 +1,4 @@
-package ChatAnwendung.Impl.Sender;
+package ChatAnwendung.Impl.FrequentlySender;
 
 import ChatAnwendung.Api.RoutingEntry;
 import ChatAnwendung.Impl.Handler.Common.AbstractHandler;
@@ -15,6 +15,9 @@ public class HearbeatSender extends AbstractHandler {
 
     @Override
     public void run() {
+
+        log.debug("Start with heartbeat sending");
+
         if(Storage.getInstance().isLogin()){
             for(RoutingEntry entry : RoutingTableImpl.getInstance().getAllDirectNeighbours()){
                 if(entry.isRoutable()){
@@ -29,6 +32,8 @@ public class HearbeatSender extends AbstractHandler {
                             entry.getNextHopAdress(),
                             entry.getNextHopPort());
                     MessageQueue.getInstance().push(packet);
+
+                    log.debug("Heartbeat packet send to {}", Long.toUnsignedString(entry.getUID()));
                 }
             }
         }

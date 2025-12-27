@@ -7,7 +7,7 @@ import ChatAnwendung.Impl.persistence.Connection;
 import ChatAnwendung.Impl.persistence.ConnectionsList;
 import ChatAnwendung.Impl.persistence.Storage;
 import ChatAnwendung.Impl.persistence.ThreadPools;
-import ChatAnwendung.Impl.Sender.HearbeatSender;
+import ChatAnwendung.Impl.FrequentlySender.HearbeatSender;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.DatagramPacket;

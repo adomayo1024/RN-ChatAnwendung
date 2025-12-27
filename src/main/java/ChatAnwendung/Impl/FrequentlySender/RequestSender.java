@@ -1,4 +1,4 @@
-package ChatAnwendung.Impl.Sender;
+package ChatAnwendung.Impl.FrequentlySender;
 
 import ChatAnwendung.Impl.File;
 import ChatAnwendung.Impl.Handler.Common.AbstractHandler;
@@ -21,6 +21,9 @@ public class RequestSender extends AbstractHandler {
 
     @Override
     public void run() {
+
+        log.debug("Start with sending Request");
+
         int sequenz = file.getNextNeededChunk();
         if(sequenz == -1 || timeSinceLastFileDataPackageMoreThanASecond()){
             return;
