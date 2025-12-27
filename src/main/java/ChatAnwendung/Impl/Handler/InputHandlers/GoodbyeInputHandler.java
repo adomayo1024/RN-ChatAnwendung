@@ -42,7 +42,7 @@ public class GoodbyeInputHandler extends AbstractInputHandler {
                         neighbour.getNextHopPort());
                 MessageQueue.getInstance().pushAtFirst(packet);
 
-                log.debug("Goodbye packet send to {}", neighbour.getUID());
+                log.debug("Goodbye packet send to {}", Long.toUnsignedString(neighbour.getUID()));
             }
         }
 
