@@ -37,11 +37,11 @@ public class RecieverImpl implements Runnable, Reciever {
             try {
                 DatagramPacket request = new DatagramPacket(new byte[PACKETSIZE], PACKETSIZE);
 
-                log.debug( "Waiting for packet");
+                log.debug( "Waiting for new package");
 
                 socket.receive(request);
 
-                log.debug( "Packet received");
+                log.debug("new package received");
 
                 handler.handle(request);
 
@@ -56,7 +56,7 @@ public class RecieverImpl implements Runnable, Reciever {
             }
         }
 
-        log.debug( "Reciever turned down");
+        log.debug( "Receiver turned down");
 
     }
 }

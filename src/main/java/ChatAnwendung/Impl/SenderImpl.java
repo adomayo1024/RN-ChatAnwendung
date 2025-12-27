@@ -22,18 +22,18 @@ public class SenderImpl implements Sender, Runnable {
 
         while (!Thread.currentThread().isInterrupted()) {
 
-            DatagramPacket p= null;
+            DatagramPacket p;
             try {
 
-            log.debug( "Packet holen");
+            log.debug("Start polling for new package");
 
             p = MessageQueue.getInstance().poll();
 
-            log.debug( "Packet bekommen");
+            log.debug("New Package for sending found");
 
             socket.send(p);
 
-            log.debug( "send a package to the adress: " + p.getAddress() + " and to port: " + p.getPort() + " of Type: " + PacketTypes.values()[p.getData()[1]]);
+                log.debug("send a package to the address: {} and to port: {} of Type: {}", p.getAddress(), p.getPort(), PacketTypes.values()[p.getData()[1]]);
 
             } catch (IOException e) {
                 System.out.println(e.getMessage());
