@@ -147,6 +147,11 @@
     <logger name="ChatAnwendung.Impl.FrequentlySender.RoutingTableSender" level="DEBUG"/>
 
 
+    <!-- MISC -->
+
+    <logger name="ChatAnwendung.Impl.SenderImpl" level="DEBUG"/>
+
+    <logger name="ChatAnwendung.Impl.RecieverImpl" level="DEBUG"/>
 
 
 
