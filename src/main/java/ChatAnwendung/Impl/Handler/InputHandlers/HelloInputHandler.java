@@ -3,6 +3,7 @@ package ChatAnwendung.Impl.Handler.InputHandlers;
 import ChatAnwendung.Impl.*;
 import ChatAnwendung.Impl.Exceptions.LoginException;
 import ChatAnwendung.Impl.Handler.Common.ExceptionHandler;
+import ChatAnwendung.Impl.Sender.HearbeatSender;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.DatagramPacket;

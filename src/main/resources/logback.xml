@@ -116,6 +116,8 @@
     <logger name="ChatAnwendung.Impl.Handler.ReceiverHandlers.WelcomeRecieveHandler" level="DEBUG"/>
 
 
+
+
     <!-- Fremdbibliotheken einschränken -->
     <logger name="org.slf4j" level="WARN"/>
     <logger name="org.apache" level="WARN"/>

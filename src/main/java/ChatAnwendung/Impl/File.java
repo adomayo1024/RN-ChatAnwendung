@@ -1,6 +1,7 @@
 package ChatAnwendung.Impl;
 
 import ChatAnwendung.Impl.Handler.Common.ExceptionHandler;
+import ChatAnwendung.Impl.Sender.RequestSender;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.FileNotFoundException;
