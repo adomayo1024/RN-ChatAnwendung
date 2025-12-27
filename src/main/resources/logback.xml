@@ -67,7 +67,7 @@
 
     <!-- InputHandler -->
 
-    <logger name="ChatAnwendung.Impl.Handler.InputHandlers" level="OFF"/>
+    <logger name="ChatAnwendung.Impl.Handler.InputHandlers" level="OFF" additivity="true"/>
 
     <logger name="ChatAnwendung.Impl.Handler.InputHandlers.ConnectHandler" level="DEBUG"/>
 
@@ -89,7 +89,7 @@
 
     <!-- Receive Handler -->
 
-    <logger name="ChatAnwendung.Impl.Handler.ReceiverHandlers" level="OFF"/>
+    <logger name="ChatAnwendung.Impl.Handler.ReceiverHandlers" level="OFF" additivity="true"/>
 
     <logger name="ChatAnwendung.Impl.Handler.ReceiverHandlers.FeedForwadingHanlder" level="DEBUG"/>
 
@@ -118,7 +118,7 @@
 
     <!-- Persistence -->
 
-    <logger name="ChatAnwendung.Impl.persistence" level="OFF"/>
+    <logger name="ChatAnwendung.Impl.persistence" level="OFF" additivity="true"/>
 
     <logger name="ChatAnwendung.Impl.persistence.Connection" level="DEBUG"/>
 
@@ -138,7 +138,7 @@
 
     <!-- Frequently Sender -->
 
-    <logger name="ChatAnwendung.Impl.FrequentlySender" level="DEBUG"/>
+    <logger name="ChatAnwendung.Impl.FrequentlySender" level="DEBUG" additivity="true"/>
 
     <logger name="ChatAnwendung.Impl.FrequentlySender.HearbeatSender" level="OFF"/>
 

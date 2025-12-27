@@ -77,6 +77,17 @@ public class RoutingTableSender extends AbstractHandler{
                 System.arraycopy(allRoutingTablePackets.get(relevantEntries.get(i)), 0, payload, (i % maxAmountOfRoutingTableEntries) * routingTableEntrySize, routingTableEntrySize);
             }
 
+            DatagramPacket packet = makeDatagramPackage(PacketTypes.ROUTINGTABLE,
+                    entry.getUID(),
+                    0,
+                    0,
+                    payload,
+                    entry.getNextHopAdress(),
+                    entry.getNextHopPort()
+            );
+            MessageQueue.getInstance().push(packet);
+            log.debug("RoutingTable packet send to {}", Long.toUnsignedString(entry.getUID()));
+
             log.debug("Finished with sending RoutingTable to: {}", entry.getUID());
         }
 
