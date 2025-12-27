@@ -29,14 +29,6 @@ public class RecieverImpl implements Runnable, Reciever {
     @Override
     public void run() {
 
-        if(Storage.getInstance().getSendMode() == SendMode.SELF) {
-            try {
-                socket = new DatagramSocket(8080);
-            } catch (SocketException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
         boolean interrupted = false;
 
         while (!interrupted) {

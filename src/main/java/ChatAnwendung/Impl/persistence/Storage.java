@@ -1,6 +1,5 @@
 package ChatAnwendung.Impl.persistence;
 
-import ChatAnwendung.Impl.SendMode;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.BufferedReader;
@@ -36,8 +35,6 @@ public class Storage {
 
     private final boolean DEBUG_MODE = false;
 
-    private final SendMode sendMode = SendMode.ALL;
-
     private Storage() throws NoSuchAlgorithmException {
         broadcastId = -1L;
         login = false;
@@ -56,10 +53,6 @@ public class Storage {
         }
         getMutex.unlock();
         return INSTANCE;
-    }
-
-    public SendMode getSendMode() {
-        return sendMode;
     }
 
     public void setSendOpenFile(int fileId, String path){

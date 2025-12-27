@@ -1,10 +1,7 @@
 package ChatAnwendung.Impl.persistence;
 
-import ChatAnwendung.Impl.SendMode;
 import lombok.extern.slf4j.Slf4j;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
@@ -22,14 +19,6 @@ public class ConnectionsList {
 
     private ConnectionsList(){
         connections = new ArrayList<>();
-        if(Storage.getInstance().getSendMode() != SendMode.ALL){
-            try {
-                connections.add(new Connection(InetAddress.getByName("127.0.0.1"), 8080));
-            } catch (UnknownHostException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
         mutex = new ReentrantLock();
     }
 

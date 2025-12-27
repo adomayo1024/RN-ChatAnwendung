@@ -21,7 +21,7 @@ public class RecieverHandlerImpl implements RecieverHanlder {
         if(checksumRight(packet)){
             boolean isItForMe = isItForMe(packet);
 
-            if(Storage.getInstance().isLogin() && (Storage.getInstance().getSendMode() == SendMode.SELF || Storage.getInstance().getSendMode() == SendMode.ALL)){
+            if(Storage.getInstance().isLogin()){
                 CompletableFuture.runAsync(HandlerFactory.getRecieverHandler(packet, isItForMe), ThreadPools.getInstance().getThreadPool());
             }
         }
@@ -41,11 +41,8 @@ public class RecieverHandlerImpl implements RecieverHanlder {
     }
 
     private boolean isItForMe(DatagramPacket packet){
-        if(Storage.getInstance().getSendMode() == SendMode.SELF) {
-            return true;
-        }
-        long destUID = makeBytesToLong(packet.getData(), Header.getDestNodePos());
 
+        long destUID = makeBytesToLong(packet.getData(), Header.getDestNodePos());
 
         return destUID == Storage.getInstance().getID() || destUID == -1;
     }
