@@ -157,6 +157,7 @@ public class RoutingTableImpl implements RoutingTable {
         mutex.unlock();
     }
 
+    //TODO change name and to entries.clear()
     @Override
     public void removeAllExceptHops1() {
         for(Long key : entries.keySet()){

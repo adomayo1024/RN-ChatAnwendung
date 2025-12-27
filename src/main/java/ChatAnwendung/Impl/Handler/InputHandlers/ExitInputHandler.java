@@ -15,17 +15,20 @@ public class ExitInputHandler extends AbstractInputHandler {
 
     @Override
     public void run() {
-        log.debug( "beginnung mit schließung");
+
+        log.debug("Start with shutdown");
+
         try {
             if(Storage.getInstance().isLogin()){
                 GoodbyeInputHandler bye = new GoodbyeInputHandler(new String[]{"bye"});
                 bye.run();
             }
-            log.debug(  "Werde schließen");
             Storage.getInstance().getReader().close();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
+        log.debug("Initialization finished");
     }
 
 

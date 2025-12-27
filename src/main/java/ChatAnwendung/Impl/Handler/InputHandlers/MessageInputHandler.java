@@ -25,7 +25,8 @@ public class MessageInputHandler extends AbstractInputHandler {
     @Override
     public void run()  {
 
-        log.debug( "Begin with Message");
+        log.debug("Start with Message sending");
+
         long uID = 0;
         try {
             uID = Long.parseUnsignedLong(command[1]);
@@ -51,9 +52,9 @@ public class MessageInputHandler extends AbstractInputHandler {
 
         DatagramPacket packet = makeDatagramPackage(PacketTypes.MESSAGE, uID, 0, 0, payload, adress, port);
 
-        log.debug( "Message will be send");
-
         MessageQueue.getInstance().push(packet);
+
+        log.debug("Message send to {}", Long.toUnsignedString(uID));
     }
 
 

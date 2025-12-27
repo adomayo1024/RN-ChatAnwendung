@@ -24,6 +24,8 @@ public class DisconnectHandler extends AbstractInputHandler {
     @Override
     public void run(){
 
+        log.debug("start with disconnect: {} : {}", command[1], command[2]);
+
         InetAddress address;
         int port;
 
@@ -36,6 +38,8 @@ public class DisconnectHandler extends AbstractInputHandler {
         } catch (UnknownHostException e) {
             ExceptionHandler.handle(new ArgumentException(e.getMessage()), this.getClass());
         }
+
+        log.debug("end with disconnect: {} : {}", command[1], command[2]);
 
     }
 

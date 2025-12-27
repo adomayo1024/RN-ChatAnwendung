@@ -27,6 +27,8 @@ public class FileInputHandler extends AbstractInputHandler {
     @Override
     public void run() {
 
+        log.debug("Start with file transfer");
+
         String path = command[1];
 
         long uID = 0;
@@ -54,9 +56,9 @@ public class FileInputHandler extends AbstractInputHandler {
                 Storage.getInstance().setSendOpenFile(fileId, path);
                 byte[] wholeFile = new byte[1300 * anzahlChunks];
 
-
                 sendFileInitPacket(anzahlChunks, length, path, uID, fileId, adress, port);
 
+                log.debug("File init packet send");
 
                 for(int sequenz = 0; sequenz < anzahlChunks; sequenz++){
                     byte[] payload = split(file, sequenz, anzahlChunks);
@@ -70,6 +72,8 @@ public class FileInputHandler extends AbstractInputHandler {
                             adress,
                             port);
                     MessageQueue.getInstance().push(packet);
+
+                    log.debug("File data packet number {} send", sequenz);
                 }
 
                 sendFileEnd(uID, fileId, adress, port);
@@ -79,6 +83,7 @@ public class FileInputHandler extends AbstractInputHandler {
         }
 
 
+        log.debug("End with file transfer");
 
 
     }

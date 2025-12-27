@@ -1,7 +1,5 @@
 package ChatAnwendung.Api;
 
-import ChatAnwendung.Impl.RoutingEntryImpl;
-
 import java.net.InetAddress;
 import java.util.List;
 

@@ -18,6 +18,9 @@ public class ListHandler extends AbstractInputHandler {
 
     @Override
     public void run(){
+
+        log.debug("Start with list");
+
         boolean allFlagSet = false;
         boolean connectionFlagSet = false;
 
@@ -44,5 +47,7 @@ public class ListHandler extends AbstractInputHandler {
                 System.out.println(connection.address().toString() + ":" + connection.port());
             }
         }
+
+        log.debug("End with list");
     }
 }

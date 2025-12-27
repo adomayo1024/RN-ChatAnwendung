@@ -65,8 +65,27 @@
     <!-- DEBUG nur für eine konkrete Klasse -->
     <logger name="ChatAnwendung.Main" level="DEBUG"/>
 
-    <!-- DEBUG für ein ganzes Paket -->
-    <logger name="ChatAnwendung.Service" level="DEBUG"/>
+    <logger name="ChatAnwendung.Impl.Handler.InputHandlers" level="DEBUG"/>
+
+    <logger name="ChatAnwendung.Impl.Handler.InputHandlers.ConnectHandler" level="DEBUG"/>
+
+    <logger name="ChatAnwendung.Impl.Handler.InputHandlers.DisconnectHandler" level="DEBUG"/>
+
+    <logger name="ChatAnwendung.Impl.Handler.InputHandlers.ExitInputHandler" level="DEBUG"/>
+
+    <logger name="ChatAnwendung.Impl.Handler.InputHandlers.FileInputHandler" level="DEBUG"/>
+
+    <logger name="ChatAnwendung.Impl.Handler.InputHandlers.GoodbyeInputHandler" level="DEBUG"/>
+
+    <logger name="ChatAnwendung.Impl.Handler.InputHandlers.HelloInputHandler" level="DEBUG"/>
+
+    <logger name="ChatAnwendung.Impl.Handler.InputHandlers.InputHandlerImpl" level="DEBUG"/>
+
+    <logger name="ChatAnwendung.Impl.Handler.InputHandlers.ListHandler" level="DEBUG"/>
+
+    <logger name="ChatAnwendung.Impl.Handler.InputHandlers.MessageInputHandler" level="DEBUG"/>
+
+
 
     <!-- Fremdbibliotheken einschränken -->
     <logger name="org.slf4j" level="WARN"/>

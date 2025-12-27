@@ -14,11 +14,16 @@ public class GoodbyeInputHandler extends AbstractInputHandler {
 
     @Override
     public void run() {
+
+        log.debug("Start logout");
+
         ThreadPools.getInstance().getHeartBeatTimerFuture().cancel(false);
         ThreadPools.getInstance().getTimeoutFuture().cancel(true);
         Storage.getInstance().logout();
         ThreadPools.getInstance().setHeartBeatTimerFuture(null);
         ThreadPools.getInstance().setTimeoutFuture(null);
+
+        log.debug("Finished with canceling heartbeats and timeout");
 
         for (RoutingEntry neighbour : RoutingTableImpl.getInstance().getAllDirectNeighbours()) {
 
@@ -33,6 +38,8 @@ public class GoodbyeInputHandler extends AbstractInputHandler {
                         neighbour.getNextHopAdress(),
                         neighbour.getNextHopPort());
                 MessageQueue.getInstance().pushAtFirst(packet);
+
+                log.debug("Goodbye packet send to {}", neighbour.getUID());
             }
         }
 

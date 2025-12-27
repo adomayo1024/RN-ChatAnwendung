@@ -31,6 +31,7 @@ public class MessageQueue {
     public static MessageQueue getInstance() {
         getMutex.lock();
         if(INSTANCE == null){
+            log.debug("Creating new MessageQueue");
             INSTANCE = new MessageQueue();
         }
         getMutex.unlock();
@@ -42,6 +43,7 @@ public class MessageQueue {
         queueMutex.lock();
         DatagramPacket packet = queue.removeFirst();
         queueMutex.unlock();
+        log.debug("Removed one packet new MessageQueue size: {}", queue.size());
         return packet;
     }
 
@@ -50,6 +52,7 @@ public class MessageQueue {
         queue.add(packet);
         queueMutex.unlock();
         queueSemaphore.release();
+        log.debug("Added one packet new MessageQueue size: {}", queue.size());
     }
 
     public void pushAtFirst(DatagramPacket packet) {

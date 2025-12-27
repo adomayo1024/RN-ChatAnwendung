@@ -13,6 +13,7 @@ public class WrongCommandInputHandler extends AbstractInputHandler {
 
     @Override
     public void run(){
+
         System.out.println("Unknown Command: " + command[0]);
     }
 }

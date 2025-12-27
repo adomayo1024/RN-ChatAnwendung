@@ -18,6 +18,9 @@ public class HelloInputHandler extends AbstractInputHandler {
 
     @Override
     public void run() {
+
+        log.debug("Start login");
+
         if(Storage.getInstance().isLogin()){
              ExceptionHandler.handle(new LoginException(), this.getClass());
         }
@@ -30,10 +33,13 @@ public class HelloInputHandler extends AbstractInputHandler {
                 byte[] payload = new byte[0];
                 DatagramPacket packet = makeDatagramPackage(PacketTypes.HELLO, Storage.getInstance().getBroadCastId(), 0, 0, payload, connection.address(), connection.port());
                 MessageQueue.getInstance().push(packet);
+
+                log.debug("Hello packet send to {}", connection.address());
             }
 
             ThreadPools.getInstance().setHeartBeatTimerFuture(ThreadPools.getInstance().getHeartBeatTimer().scheduleWithFixedDelay(new HearbeatSender(), 1, 5, TimeUnit.SECONDS));
             ThreadPools.getInstance().setTimeoutFuture(CompletableFuture.runAsync(new TimeoutHandler(), ThreadPools.getInstance().getThreadPool()));
+            log.debug("Finished with login");
         }
     }
 

@@ -22,6 +22,9 @@ public class InputHandlerImpl implements InputHandler {
 
     @Override
     public void handle(String stdIn) {
+
+        log.debug("Handle input: " + stdIn);
+
         if(!Storage.getInstance().isLogin()) {
             String[] string = stdIn.split(" ");
             if (!isLogoutCommand(string[0])){
@@ -31,6 +34,8 @@ public class InputHandlerImpl implements InputHandler {
 
         Handler handler = HandlerFactory.getInputHandler(stdIn);
         CompletableFuture.runAsync(handler, ThreadPools.getInstance().getThreadPool());
+
+        log.debug("Finished with input handling");
     }
 
 

@@ -11,6 +11,6 @@ public class UnknowUIDException extends Throwable {
 
     @Override
     public String getMessage() {
-        return "Unknow UID: " + uID;
+        return "Unknow UID: " + Long.toUnsignedString(uID);
     }
 }

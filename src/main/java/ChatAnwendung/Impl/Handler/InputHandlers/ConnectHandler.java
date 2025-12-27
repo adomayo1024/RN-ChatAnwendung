@@ -18,6 +18,8 @@ public class ConnectHandler extends AbstractInputHandler {
     @Override
     public void run(){
 
+        log.debug("start with connect: {} : {}", command[1], command[2]);
+
         InetAddress address;
         int port;
 
@@ -30,6 +32,8 @@ public class ConnectHandler extends AbstractInputHandler {
         } catch (UnknownHostException e) {
             ExceptionHandler.handle(new ArgumentException(e.getMessage()), this.getClass());
         }
+
+        log.debug("end with connect: {} : {}", command[1], command[2]);
     }
 
     public static String help() {
