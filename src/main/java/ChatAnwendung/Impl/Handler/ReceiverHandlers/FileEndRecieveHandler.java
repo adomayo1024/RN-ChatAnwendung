@@ -1,7 +1,7 @@
 package ChatAnwendung.Impl.Handler.ReceiverHandlers;
 
 import ChatAnwendung.Impl.persistence.DownloadFiles;
-import ChatAnwendung.Impl.File;
+import ChatAnwendung.Impl.persistence.File;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.DatagramPacket;

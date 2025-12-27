@@ -1,6 +1,6 @@
 package ChatAnwendung.Impl.FrequentlySender;
 
-import ChatAnwendung.Impl.File;
+import ChatAnwendung.Impl.persistence.File;
 import ChatAnwendung.Impl.Handler.Common.AbstractHandler;
 import ChatAnwendung.Impl.MessageQueue;
 import ChatAnwendung.Impl.PacketTypes;

@@ -1,4 +1,4 @@
-package ChatAnwendung.Impl;
+package ChatAnwendung.Impl.persistence;
 
 import ChatAnwendung.Impl.Handler.Common.ExceptionHandler;
 import ChatAnwendung.Impl.FrequentlySender.RequestSender;
@@ -65,6 +65,8 @@ public class File {
         finally {
             mutex.unlock();
         }
+
+        log.debug("Created new File: {}", name);
     }
 
     public boolean addChunk(byte[] chunk, int sequenz) {
@@ -85,9 +87,12 @@ public class File {
 
             dekrementRequestCountWithoutResponse();
             recievedLastChunk.set(System.currentTimeMillis());
+
+            log.debug("Added Chunk {} to File: {}", sequenz, name);
         }
 
 
+        //TODO make own Method
         boolean finished = finished();
         if(finished) {
             executor.shutdown();
@@ -128,6 +133,9 @@ public class File {
         if(written){
             i = -1;
         }
+
+        log.debug("Next needed Chunk: {}", i);
+
         return i;
 
     }

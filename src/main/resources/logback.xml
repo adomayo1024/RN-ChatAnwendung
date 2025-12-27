@@ -126,6 +126,8 @@
 
     <logger name="ChatAnwendung.Impl.persistence.DownloadFiles" level="DEBUG"/>
 
+    <logger name="ChatAnwendung.Impl.persistence.File" level="DEBUG"/>
+
     <logger name="ChatAnwendung.Impl.persistence.RoutingEntryImpl" level="DEBUG"/>
 
     <logger name="ChatAnwendung.Impl.persistence.RoutingTableImpl" level="DEBUG"/>

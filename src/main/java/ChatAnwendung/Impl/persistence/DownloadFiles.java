@@ -1,6 +1,5 @@
 package ChatAnwendung.Impl.persistence;
 
-import ChatAnwendung.Impl.File;
 import ChatAnwendung.Impl.Handler.Common.ExceptionHandler;
 import lombok.extern.slf4j.Slf4j;
 
