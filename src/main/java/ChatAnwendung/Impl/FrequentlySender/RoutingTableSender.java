@@ -44,12 +44,12 @@ public class RoutingTableSender extends AbstractHandler{
 
         for(RoutingEntry entry : directNeighboursEntries){
             List<RoutingEntry> relevantEntries = allEntries.stream()
-                    .filter((r) -> !r.getNextHopAdress().equals(entry.getNextHopAdress()) && r.getNextHopPort()!= entry.getNextHopPort())
+                    .filter((r) -> !(r.getNextHopAdress().equals(entry.getNextHopAdress())) || r.getNextHopPort()!= entry.getNextHopPort())
                     .toList();
             int countEntries = relevantEntries.size();
 
 
-            byte[] payload = new byte[Math.min(countEntries, maxAmountOfRoutingTableEntries)];
+            byte[] payload = new byte[Math.min(countEntries, maxAmountOfRoutingTableEntries) * routingTableEntrySize];
             for(int i = 0; i < countEntries; i++){
                 //TODO if stimmt wahrscheinlich nicht
                 if(i != 0 && i % maxAmountOfRoutingTableEntries == 0){
