@@ -1,7 +1,9 @@
 package ChatAnwendung.Impl.Handler.ReceiverHandlers;
 
+import ChatAnwendung.Api.RoutingTable;
 import ChatAnwendung.Impl.Header;
 import ChatAnwendung.Impl.MessageQueue;
+import ChatAnwendung.Impl.persistence.RoutingTableImpl;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.DatagramPacket;
@@ -29,6 +31,8 @@ public class FeedForwadingHanlder extends AbstractRecieveHanlder{
             data[Header.getHopsPos()] = hops;
             long newChecksum = Header.makeChecksum(Header.extractChecksum(data));
             Header.addLong(Header.getCrcPos(), newChecksum, data);
+            packet.setAddress(RoutingTableImpl.getInstance().getNextHopAdressForUID(getSrcUID(data)));
+            packet.setPort(RoutingTableImpl.getInstance().getNextHopPortForUID(getSrcUID(data)));
             MessageQueue.getInstance().push(packet);
 
             log.debug("Packet forwarded");
