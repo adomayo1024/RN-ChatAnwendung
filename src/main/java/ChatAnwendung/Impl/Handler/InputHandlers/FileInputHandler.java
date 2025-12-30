@@ -82,6 +82,7 @@ public class FileInputHandler extends AbstractInputHandler {
             }
         }
 
+        System.out.println("File send");
 
         log.debug("End with file transfer");
 

@@ -47,6 +47,8 @@ public class HelloInputHandler extends AbstractInputHandler {
             ThreadPools.getInstance().setTimeoutFuture(CompletableFuture.runAsync(new TimeoutHandler(), ThreadPools.getInstance().getThreadPool()));
             ThreadPools.getInstance().setRoutingTabelTimerFuture(ThreadPools.getInstance().getRoutingTabelTimer().scheduleWithFixedDelay(new RoutingTableSender(), 1, 10, TimeUnit.SECONDS));
             log.debug("Finished with login");
+
+            System.out.println("Login successful");
         }
     }
 

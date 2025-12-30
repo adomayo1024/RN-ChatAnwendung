@@ -48,7 +48,9 @@ public class GoodbyeInputHandler extends AbstractInputHandler {
             }
         }
 
-        RoutingTableImpl.getInstance().removeAllExceptHops1();
+        System.out.println("Logout successful");
+
+        RoutingTableImpl.getInstance().removeAll();
     }
 
     public static String help(){

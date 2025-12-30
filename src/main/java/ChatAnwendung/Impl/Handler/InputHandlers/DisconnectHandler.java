@@ -39,6 +39,8 @@ public class DisconnectHandler extends AbstractInputHandler {
             ExceptionHandler.handle(new ArgumentException(e.getMessage()), this.getClass());
         }
 
+        log.info("Disconnect with: {}:{}", command[1], command[2]);
+
         log.debug("end with disconnect: {} : {}", command[1], command[2]);
 
     }

@@ -33,6 +33,8 @@ public class ConnectHandler extends AbstractInputHandler {
             ExceptionHandler.handle(new ArgumentException(e.getMessage()), this.getClass());
         }
 
+        log.info("Connect with: {}:{}", command[1], command[2]);
+
         log.debug("end with connect: {} : {}", command[1], command[2]);
     }
 

@@ -23,5 +23,5 @@ public interface RoutingTable {
 
     void setLastSeen(long uID);
 
-    void removeAllExceptHops1();
+    void removeAll();
 }

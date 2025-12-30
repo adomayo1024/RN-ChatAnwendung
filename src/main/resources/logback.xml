@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration>
+<configuration debug="true">
 
     <!-- ============================= -->
     <!-- Allgemeine Properties -->
@@ -46,114 +46,60 @@
     </appender>
 
     <!-- ============================= -->
-    <!-- Root Logger -->
-    <!-- ============================= -->
-
-    <!-- Standard: INFO -->
-    <root level="INFO">
-        <appender-ref ref="CONSOLE"/>
-        <appender-ref ref="FILE"/>
-    </root>
-
-    <!-- ============================= -->
     <!-- Klassen- / Paketsteuerung -->
     <!-- ============================= -->
 
-    <!-- Komplett AUS für eine Klasse -->
-    <logger name="ChatAnwendung.Impl.persistence.ThreadPools" level="OFF"/>
-
-    <!-- DEBUG nur für eine konkrete Klasse -->
-    <logger name="ChatAnwendung.Main" level="DEBUG"/>
+    <!-- gesamtes Projekt-->
+    <logger name="ChatAnwendung" level="DEBUG">
+        <appender-ref ref="FILE"/>
+    </logger>
 
     <!-- InputHandler -->
 
-    <logger name="ChatAnwendung.Impl.Handler.InputHandlers" level="OFF" additivity="true"/>
+    <logger name="ChatAnwendung.Impl.Handler.InputHandlers" level="DEBUG" additivity="true">
+        <appender-ref ref="FILE"/>
+    </logger>
 
-    <logger name="ChatAnwendung.Impl.Handler.InputHandlers.ConnectHandler" level="DEBUG"/>
-
-    <logger name="ChatAnwendung.Impl.Handler.InputHandlers.DisconnectHandler" level="DEBUG"/>
-
-    <logger name="ChatAnwendung.Impl.Handler.InputHandlers.ExitInputHandler" level="DEBUG"/>
-
-    <logger name="ChatAnwendung.Impl.Handler.InputHandlers.FileInputHandler" level="DEBUG"/>
-
-    <logger name="ChatAnwendung.Impl.Handler.InputHandlers.GoodbyeInputHandler" level="DEBUG"/>
-
-    <logger name="ChatAnwendung.Impl.Handler.InputHandlers.HelloInputHandler" level="DEBUG"/>
-
-    <logger name="ChatAnwendung.Impl.Handler.InputHandlers.InputHandlerImpl" level="DEBUG"/>
-
-    <logger name="ChatAnwendung.Impl.Handler.InputHandlers.ListHandler" level="DEBUG"/>
-
-    <logger name="ChatAnwendung.Impl.Handler.InputHandlers.MessageInputHandler" level="DEBUG"/>
+    <logger name="ChatAnwendung.Impl.Handler.Common.ExceptionHandler" level="WARN">
+        <appender-ref ref="CONSOLE"/>
+    </logger>
 
     <!-- Receive Handler -->
 
-    <logger name="ChatAnwendung.Impl.Handler.ReceiverHandlers" level="OFF" additivity="true"/>
+    <logger name="ChatAnwendung.Impl.Handler.ReceiverHandlers" level="DEBUG" additivity="true">
+        <appender-ref ref="FILE"/>
+    </logger>
 
-    <logger name="ChatAnwendung.Impl.Handler.ReceiverHandlers.FeedForwadingHanlder" level="DEBUG"/>
-
-    <logger name="ChatAnwendung.Impl.Handler.ReceiverHandlers.FileDataRecieveHandler" level="DEBUG"/>
-
-    <logger name="ChatAnwendung.Impl.Handler.ReceiverHandlers.FileEndRecieveHandler" level="DEBUG"/>
-
-    <logger name="ChatAnwendung.Impl.Handler.ReceiverHandlers.FileInitRecieveHandler" level="DEBUG"/>
-
-    <logger name="ChatAnwendung.Impl.Handler.ReceiverHandlers.GoodbyeRecieveHandler" level="DEBUG"/>
-
-    <logger name="ChatAnwendung.Impl.Handler.ReceiverHandlers.HeartbeatRecieveHandler" level="DEBUG"/>
-
-    <logger name="ChatAnwendung.Impl.Handler.ReceiverHandlers.HelloRecieveHandler" level="DEBUG"/>
-
-    <logger name="ChatAnwendung.Impl.Handler.ReceiverHandlers.MessageRecieveHandler" level="DEBUG"/>
-
-    <logger name="ChatAnwendung.Impl.Handler.ReceiverHandlers.RecieverHandlerImpl" level="DEBUG"/>
-
-    <logger name="ChatAnwendung.Impl.Handler.ReceiverHandlers.RequestRecieveHandler" level="DEBUG"/>
-
-    <logger name="ChatAnwendung.Impl.Handler.ReceiverHandlers.RoutingTableRecievetHandler" level="DEBUG"/>
-
-    <logger name="ChatAnwendung.Impl.Handler.ReceiverHandlers.WelcomeRecieveHandler" level="DEBUG"/>
 
 
     <!-- Persistence -->
 
-    <logger name="ChatAnwendung.Impl.persistence" level="OFF" additivity="true"/>
+    <logger name="ChatAnwendung.Impl.persistence" level="DEBUG" additivity="true">
+        <appender-ref ref="FILE"/>
+    </logger>
 
-    <logger name="ChatAnwendung.Impl.persistence.Connection" level="DEBUG"/>
-
-    <logger name="ChatAnwendung.Impl.persistence.ConnectionsList" level="DEBUG"/>
-
-    <logger name="ChatAnwendung.Impl.persistence.DownloadFiles" level="DEBUG"/>
-
-    <logger name="ChatAnwendung.Impl.persistence.File" level="DEBUG"/>
-
-    <logger name="ChatAnwendung.Impl.persistence.RoutingEntryImpl" level="DEBUG"/>
-
-    <logger name="ChatAnwendung.Impl.persistence.RoutingTableImpl" level="DEBUG"/>
-
-    <logger name="ChatAnwendung.Impl.persistence.Storage" level="DEBUG"/>
-
-    <logger name="ChatAnwendung.Impl.persistence.ThreadPools" level="DEBUG"/>
 
     <!-- Frequently Sender -->
 
-    <logger name="ChatAnwendung.Impl.FrequentlySender" level="DEBUG" additivity="true"/>
+    <logger name="ChatAnwendung.Impl.FrequentlySender" level="DEBUG" additivity="true">
+        <appender-ref ref="FILE"/>
+    </logger>
 
-    <logger name="ChatAnwendung.Impl.FrequentlySender.HearbeatSender" level="OFF"/>
-
-    <logger name="ChatAnwendung.Impl.FrequentlySender.RequestSender" level="OFF"/>
-
-    <logger name="ChatAnwendung.Impl.FrequentlySender.RoutingTableSender" level="DEBUG"/>
 
 
     <!-- MISC -->
 
-    <logger name="ChatAnwendung.Impl.SenderImpl" level="DEBUG"/>
+    <logger name="ChatAnwendung.Impl.RecieverImpl" level="DEBUG">
+        <appender-ref ref="FILE"/>
+    </logger>
 
-    <logger name="ChatAnwendung.Impl.RecieverImpl" level="DEBUG"/>
+    <logger name="ChatAnwendung.Impl.TimeoutHandler" level="DEBUG">
+        <appender-ref ref="FILE"/>
+    </logger>
 
-    <logger name="ChatAnwendung.Impl.TimeoutHandler" level="DEBUG"/>
+    <logger name="ChatAnwendung.Main" level="DEBUG">
+        <appender-ref ref="FILE"/>
+    </logger>
 
 
 

@@ -33,6 +33,7 @@ public class Main {
         } finally{
             ThreadPools.getInstance().shutDown();
             log.debug( "Anwendung beendet");
+            System.out.println("Anwendung beendet");
         }
     }
 

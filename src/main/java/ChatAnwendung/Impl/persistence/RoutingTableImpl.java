@@ -175,7 +175,7 @@ public class RoutingTableImpl implements RoutingTable {
 
     //TODO change name and to entries.clear()
     @Override
-    public void removeAllExceptHops1() {
+    public void removeAll() {
         for(Long key : entries.keySet()){
             removeUID(key);
         }
