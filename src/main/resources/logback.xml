@@ -70,7 +70,21 @@
         <appender-ref ref="FILE"/>
     </logger>
 
+    <logger name="ChatAnwendung.Impl.Handler.ReceiverHandlers.FileInitRecieveHandler" level="DEBUG">
+        <appender-ref ref="CONSOLE"/>
+    </logger>
 
+    <logger name="ChatAnwendung.Impl.Handler.ReceiverHandlers.FileEndRecieveHandler" level="DEBUG">
+        <appender-ref ref="CONSOLE"/>
+    </logger>
+
+    <logger name="ChatAnwendung.Impl.Handler.ReceiverHandlers.FileDataRecieveHandler" level="DEBUG">
+        <appender-ref ref="CONSOLE"/>
+    </logger>
+
+    <logger name="ChatAnwendung.Impl.Handler.ReceiverHandlers.RequestRecieveHandler" level="DEBUG">
+        <appender-ref ref="CONSOLE"/>
+    </logger>
 
     <!-- Persistence -->
 
@@ -78,11 +92,23 @@
         <appender-ref ref="FILE"/>
     </logger>
 
+    <logger name="ChatAnwendung.Impl.persistence.File" level="DEBUG">
+        <appender-ref ref="CONSOLE"/>
+    </logger>
+
+    <logger name="ChatAnwendung.Impl.persistence.DownloadFiles" level="DEBUG">
+        <appender-ref ref="CONSOLE"/>
+    </logger>
+
 
     <!-- Frequently Sender -->
 
     <logger name="ChatAnwendung.Impl.FrequentlySender" level="DEBUG" additivity="true">
         <appender-ref ref="FILE"/>
+    </logger>
+
+    <logger name="ChatAnwendung.Impl.FrequentlySender.RequestSender" level="DEBUG">
+        <appender-ref reg ="CONSOLE"/>
     </logger>
 
 
@@ -97,8 +123,8 @@
         <appender-ref ref="FILE"/>
     </logger>
 
-    <logger name="ChatAnwendung.Main" level="DEBUG">
-        <appender-ref ref="FILE"/>
+    <logger name="ChatAnwendung.Main" level="INFO">
+        <appender-ref ref="CONSOLE"/>
     </logger>
 
 

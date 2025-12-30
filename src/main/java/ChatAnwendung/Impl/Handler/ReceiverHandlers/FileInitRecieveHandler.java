@@ -43,6 +43,8 @@ public class FileInitRecieveHandler extends AbstractRecieveHanlder {
 
         DownloadFiles.getInstance().setNewFile(srcUID, fileID, file);
 
+        file.startRequesting();
+
         log.debug("Created new File{} for: {} from User: {}", fileName, fileID, Long.toUnsignedString(srcUID));
 
     }

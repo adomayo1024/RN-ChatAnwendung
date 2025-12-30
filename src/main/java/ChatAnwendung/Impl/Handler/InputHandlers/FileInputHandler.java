@@ -33,7 +33,7 @@ public class FileInputHandler extends AbstractInputHandler {
 
         long uID = 0;
         try {
-            uID = Long.parseLong(command[2]);
+            uID = Long.parseUnsignedLong(command[2]);
         } catch (NumberFormatException e) {
             ExceptionHandler.handle(new NotAUIDException(e.getMessage()), this.getClass());
             return;

@@ -25,7 +25,7 @@ public class RequestSender extends AbstractHandler {
         log.debug("Start with sending Request");
 
         int sequenz = file.getNextNeededChunk();
-        if(sequenz == -1 || timeSinceLastFileDataPackageMoreThanASecond()){
+        if(sequenz == -1 || !timeSinceLastFileDataPackageMoreThanASecond()){
             return;
         }
         byte[] payload = new byte[0];
@@ -45,7 +45,7 @@ public class RequestSender extends AbstractHandler {
 
         file.inkrementRequestCountWithoutResponse();
 
-        log.debug( "Sent Request for FileID " + fileID + " and sequence: " + sequenz + "from the User: " + Long.toUnsignedString(destUID));
+        log.debug("Sent Request for FileID {} and sequence: {}from the User: {}", fileID, sequenz, Long.toUnsignedString(destUID));
     }
 
     private boolean timeSinceLastFileDataPackageMoreThanASecond(){

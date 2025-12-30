@@ -1,11 +1,11 @@
 package ChatAnwendung.Impl.persistence;
 
-import ChatAnwendung.Impl.Handler.Common.ExceptionHandler;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 
 @Slf4j
@@ -17,10 +17,19 @@ public class DownloadFiles {
 
     private Map<Long, Map<Integer, File>> downloadedFiles;
 
+    private Map<Long, Map<Integer, Semaphore>> semaphorForFiles;
+
+    private Map<Long, Map<Integer, AtomicInteger>> wartendenThreads;
+
+    private Map<Long, Map<Integer, Boolean>> finishedFiles;
+
     private ReentrantLock mutex;
 
     private DownloadFiles() {
         downloadedFiles = new HashMap<>();
+        semaphorForFiles = new HashMap<>();
+        wartendenThreads = new HashMap<>();
+        finishedFiles = new HashMap<>();
         mutex = new ReentrantLock(true);
         timer = ThreadPools.getInstance().getFileRequestTimer();
     }
@@ -37,13 +46,13 @@ public class DownloadFiles {
 
     public File getFile(long uID, int fileID) throws NullPointerException{
         log.debug("Requesting File: {} from User: {} from DownloadFiles: {}", fileID, Long.toUnsignedString(uID), this);
-        // TODO kein busy waiting mit Semphore
-        while(!fileIsThere(uID, fileID)){
-            try {
-                Thread.sleep(50);
-            } catch (InterruptedException e) {
-                ExceptionHandler.handle(e, this.getClass());
-            }
+
+        if(finishedFiles.containsKey(uID) && finishedFiles.get(uID).getOrDefault(fileID, false)){
+            return null;
+        }
+
+        if(!downloadedFiles.containsKey(uID) || !downloadedFiles.get(uID).containsKey(fileID)){
+            waitForFile(uID, fileID);
         }
 
         mutex.lock();
@@ -53,19 +62,29 @@ public class DownloadFiles {
         return result;
     }
 
-    private boolean fileIsThere(long uID, int fileID) {
+    private void waitForFile(long uID, int fileID) {
 
-        log.debug("Checking if File: {} from User: {} is in DownloadFiles: {}", fileID, Long.toUnsignedString(uID), this);
+            Semaphore sem = semaphorForFiles.computeIfAbsent(uID, k -> new HashMap<>()).computeIfAbsent(fileID, k -> new Semaphore(0));
 
-        return downloadedFiles.containsKey(uID) && downloadedFiles.get(uID).containsKey(fileID);
+            if(sem.availablePermits() <= 0){
+                try {
+                    wartendenThreads.computeIfAbsent(uID, k -> new HashMap<>()).computeIfAbsent(fileID, k -> new AtomicInteger(0)).incrementAndGet();
+                    sem.acquire();
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
     }
 
     public void setNewFile(long uID, int fileID, File file){
         mutex.lock();
         if(!downloadedFiles.containsKey(uID)){
             downloadedFiles.put(uID, new HashMap<>());
+            semaphorForFiles.put(uID, new HashMap<>());
         }
         downloadedFiles.get(uID).put(fileID, file);
+        int wartendeThreads = wartendenThreads.getOrDefault(uID, new HashMap<>()).getOrDefault(fileID, new AtomicInteger(1)).get();
+        semaphorForFiles.get(uID).computeIfAbsent(fileID, k -> new Semaphore(0)).release(wartendeThreads);
         mutex.unlock();
 
         log.debug("Added new File: {} to User: {} to DownloadFiles: {}", fileID, Long.toUnsignedString(uID), this);
@@ -77,7 +96,8 @@ public class DownloadFiles {
 
     public void removeFile(long srcUID, int fileId) {
         mutex.lock();
-        downloadedFiles.get(srcUID).remove(fileId);
+        finishedFiles.computeIfAbsent(srcUID, k -> new HashMap<>()).put(fileId, true);
+        downloadedFiles.get(srcUID).remove(fileId).stopRequesting();
         mutex.unlock();
 
         log.debug("Removed File: {} from User: {} from DownloadFiles: {}", fileId, Long.toUnsignedString(srcUID), this);

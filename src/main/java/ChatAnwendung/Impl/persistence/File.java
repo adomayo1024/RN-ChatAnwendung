@@ -35,9 +35,13 @@ public class File {
 
     private final ScheduledExecutorService executor;
 
-    private ReentrantLock mutex;
+    private ReentrantLock writedChunksMutex;
+
+    private ReentrantLock fileMutex;
 
     private AtomicLong recievedLastChunk;
+
+    private ScheduledFuture<?> requestFuture;
 
     public File(int anzahlChunks, int length, String name, int fileId, long srcUID, ScheduledExecutorService executor){
         this.anzahlChunks = anzahlChunks;
@@ -47,14 +51,15 @@ public class File {
         this.writedChunks = new boolean[anzahlChunks];
         this.srcUID = srcUID;
         this.executor = executor;
-        this.mutex = new ReentrantLock(true);
+        this.writedChunksMutex = new ReentrantLock(true);
+        this.fileMutex = new ReentrantLock(true);
         makeFile();
         recievedLastChunk = new AtomicLong(System.currentTimeMillis());
         requestSendedWithoutAResponse = new AtomicInteger(0);
     }
 
     private void makeFile() {
-        mutex.lock();
+        writedChunksMutex.lock();
         try(RandomAccessFile file = new RandomAccessFile(name, "rw")) {
             file.setLength(length);
         } catch (FileNotFoundException e) {
@@ -63,26 +68,28 @@ public class File {
             throw new RuntimeException(e);
         }
         finally {
-            mutex.unlock();
+            writedChunksMutex.unlock();
         }
 
         log.debug("Created new File: {}", name);
     }
 
-    public boolean addChunk(byte[] chunk, int sequenz) {
+    public void addChunk(byte[] chunk, int sequenz) {
         if(!writedChunks[sequenz]){
-            mutex.lock();
+            fileMutex.lock();
             try(RandomAccessFile file = new RandomAccessFile(name, "rw")){
                 int pos = sequenz * 1300;
                 file.seek(pos);
                 file.write(chunk);
+                writedChunksMutex.lock();
                 writedChunks[sequenz] = true;
             } catch (IOException e) {
                 writedChunks[sequenz] = false;
                 ExceptionHandler.handle(e, this.getClass());
             }
             finally {
-                mutex.unlock();
+                fileMutex.unlock();
+                writedChunksMutex.unlock();
             }
 
             dekrementRequestCountWithoutResponse();
@@ -90,28 +97,18 @@ public class File {
 
             log.debug("Added Chunk {} to File: {}", sequenz, name);
         }
-
-
-        //TODO make own Method
-        boolean finished = finished();
-        if(finished) {
-            executor.shutdown();
-            System.out.println("File " + name + " is finished");
-        }
-
-        return finished;
     }
 
     public boolean finished(){
         boolean result;
         int i = 0;
-        mutex.lock();
+        writedChunksMutex.lock();
 
         do{
             result = writedChunks[i++];
         }while(i < writedChunks.length && result);
 
-        mutex.unlock();
+        writedChunksMutex.unlock();
 
         return result;
     }
@@ -126,10 +123,12 @@ public class File {
 
     public int getNextNeededChunk(){
         int i = 0;
+        writedChunksMutex.lock();
         boolean written = writedChunks[i];
         while(written && i < writedChunks.length){
-            written = writedChunks[i++];
+            written = writedChunks[++i];
         }
+        writedChunksMutex.unlock();
         if(written){
             i = -1;
         }
@@ -162,6 +161,10 @@ public class File {
     }
 
     public void startRequesting(){
-        executor.scheduleAtFixedRate(new RequestSender(this), 1, 1, TimeUnit.SECONDS);
+        requestFuture = executor.scheduleAtFixedRate(new RequestSender(this), 1, 1, TimeUnit.SECONDS);
+    }
+
+    public void stopRequesting() {
+        requestFuture.cancel(true);
     }
 }
