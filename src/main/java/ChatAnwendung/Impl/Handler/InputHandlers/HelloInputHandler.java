@@ -28,7 +28,7 @@ public class HelloInputHandler extends AbstractInputHandler {
         log.debug("Start login");
 
         if(Storage.getInstance().isLogin()){
-             ExceptionHandler.handle(new LoginException(), this.getClass());
+             ExceptionHandler.handle(new LoginException("Your are already logged in"), this.getClass());
         }
         else {
             Storage.getInstance().login();

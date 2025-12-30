@@ -49,7 +49,7 @@ public class HandlerFactory {
                 handler = new ListHandler(split);
                 break;
             case "":
-                handler = new ExceptionHandler(new LoginException(), HandlerFactory.class);
+                handler = new ExceptionHandler(new LoginException("Your are not login. Allowed Commands are help, connect, disconnect, hello, exit"), HandlerFactory.class);
                 break;
             default:
                 handler = new WrongCommandInputHandler(split);
