@@ -15,18 +15,18 @@ public class RoutingEntryImpl implements RoutingEntry {
 
     private int nextHopPort;
 
-    private int hops;
+    private byte hops;
 
     private long lastSeen;
 
     private boolean routable;
     private final ReentrantLock mutex;
 
-    public RoutingEntryImpl(long UID, InetAddress address, int nextHopPort, int hops, long lastSeen) {
+    public RoutingEntryImpl(long UID, InetAddress address, int nextHopPort, byte hops, long lastSeen) {
         this(UID, address, nextHopPort, hops, lastSeen, true);
     }
 
-    public RoutingEntryImpl(long UID, InetAddress adress, int nextHopPort, int hops, long lastSeen, boolean routable){
+    public RoutingEntryImpl(long UID, InetAddress adress, int nextHopPort, byte hops, long lastSeen, boolean routable){
         this.UID = UID;
         this.nextHopAdress = adress;
         this.nextHopPort = nextHopPort;
@@ -67,12 +67,12 @@ public class RoutingEntryImpl implements RoutingEntry {
     }
 
     @Override
-    public int getHops() {
+    public byte getHops() {
         return hops;
     }
 
     @Override
-    public void setHops(int hops){
+    public void setHops(byte hops){
         mutex.lock();
         this.hops = hops;
         mutex.unlock();

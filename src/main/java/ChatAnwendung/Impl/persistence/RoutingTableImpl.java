@@ -124,7 +124,7 @@ public class RoutingTableImpl implements RoutingTable {
                 if(adressFromUID.equals(entry.getNextHopAdress()) && entry.getNextHopPort() == portFromUID){
                     entry.setNextHopPort(-1);
                     entry.setNextHopAdress(null);
-                    entry.setHops(-1);
+                    entry.setHops((byte)-1);
                     entry.setRoutable(false);
 
                     log.debug("Changed RoutingEntry to not routable: {}", Long.toUnsignedString(entry.getUID()));

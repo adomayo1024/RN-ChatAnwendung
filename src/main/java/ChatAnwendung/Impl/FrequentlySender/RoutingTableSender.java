@@ -17,7 +17,7 @@ import java.util.Map;
 public class RoutingTableSender extends AbstractHandler{
 
 
-    private final int routingTableEntrySize = 18;
+    private final int routingTableEntrySize = 17;
     private final int maxAmountOfRoutingTableEntries = 54;
 
     @Override
@@ -33,8 +33,8 @@ public class RoutingTableSender extends AbstractHandler{
             byte[] routingEntryPayload = new byte[routingTableEntrySize];
 
             Header.addLong(0, entry.getUID(), routingEntryPayload);
-            Header.addShort(8, (short) entry.getHops(), routingEntryPayload);
-            Header.addLong(10, entry.getLastSeen(), routingEntryPayload);
+            routingEntryPayload[8] = entry.getHops();
+            Header.addLong(9, entry.getLastSeen(), routingEntryPayload);
 
             allRoutingTablePackets.put(entry, routingEntryPayload);
 

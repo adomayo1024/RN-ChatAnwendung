@@ -57,7 +57,7 @@
     <!-- InputHandler -->
 
     <logger name="ChatAnwendung.Impl.Handler.InputHandlers" level="DEBUG" additivity="true">
-        <appender-ref ref="FILE"/>
+            <appender-ref ref="CONSOLE"/>
     </logger>
 
     <logger name="ChatAnwendung.Impl.Handler.Common.ExceptionHandler" level="WARN">
@@ -67,7 +67,7 @@
     <!-- Receive Handler -->
 
     <logger name="ChatAnwendung.Impl.Handler.ReceiverHandlers" level="DEBUG" additivity="true">
-        <appender-ref ref="FILE"/>
+        <appender-ref ref="CONSOLE"/>
     </logger>
 
     <logger name="ChatAnwendung.Impl.Handler.ReceiverHandlers.FileInitRecieveHandler" level="DEBUG">
@@ -89,7 +89,7 @@
     <!-- Persistence -->
 
     <logger name="ChatAnwendung.Impl.persistence" level="DEBUG" additivity="true">
-        <appender-ref ref="FILE"/>
+        <appender-ref ref="CONSOLE"/>
     </logger>
 
     <logger name="ChatAnwendung.Impl.persistence.File" level="DEBUG">
@@ -104,7 +104,7 @@
     <!-- Frequently Sender -->
 
     <logger name="ChatAnwendung.Impl.FrequentlySender" level="DEBUG" additivity="true">
-        <appender-ref ref="FILE"/>
+        <appender-ref ref="CONSOLE"/>
     </logger>
 
     <logger name="ChatAnwendung.Impl.FrequentlySender.RequestSender" level="DEBUG">
@@ -116,11 +116,11 @@
     <!-- MISC -->
 
     <logger name="ChatAnwendung.Impl.RecieverImpl" level="DEBUG">
-        <appender-ref ref="FILE"/>
+        <appender-ref ref="CONSOLE"/>
     </logger>
 
     <logger name="ChatAnwendung.Impl.TimeoutHandler" level="DEBUG">
-        <appender-ref ref="FILE"/>
+        <appender-ref ref="CONSOLE"/>
     </logger>
 
     <logger name="ChatAnwendung.Main" level="INFO">

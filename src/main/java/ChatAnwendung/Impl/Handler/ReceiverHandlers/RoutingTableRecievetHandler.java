@@ -33,10 +33,10 @@ public class RoutingTableRecievetHandler extends AbstractRecieveHanlder {
 
         for(int offset = 0; offset < payloadLength; offset += routingEntrySize){
             long uID = makeBytesToLong(payload, offset);
-            short hops = makeBytesToShort(payload, 8 + offset);
+            byte hops = payload[8 + offset];
             long lastSeen = makeBytesToLong(payload, 9 + offset);
 
-            RoutingEntry entry = new RoutingEntryImpl(uID, srcAdress, srcPort, hops + 1, lastSeen);
+            RoutingEntry entry = new RoutingEntryImpl(uID, srcAdress, srcPort, (byte) (hops + 1), lastSeen);
             RoutingTableImpl.getInstance().add(entry);
 
             log.debug("Routing Entry added for {}", Long.toUnsignedString(uID));

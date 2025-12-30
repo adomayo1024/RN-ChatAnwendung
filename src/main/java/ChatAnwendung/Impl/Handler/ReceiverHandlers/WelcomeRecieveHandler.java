@@ -33,7 +33,7 @@ public class WelcomeRecieveHandler extends AbstractRecieveHanlder {
                 srcUID,
                 srcAdress,
                 srcPort,
-                hops + 1,
+                (byte)(hops + 1),
                 lastSeen
         );
 
@@ -43,3 +43,4 @@ public class WelcomeRecieveHandler extends AbstractRecieveHanlder {
     }
 
 }
+

@@ -13,9 +13,9 @@ public interface RoutingEntry {
 
     void setNextHopAdress(InetAddress adress);
 
-    int getHops();
+    byte getHops();
 
-    void setHops(int hops);
+    void setHops(byte hops);
 
     boolean isRoutable();
 
