@@ -36,12 +36,12 @@ public class Header {
 
     static {
         for (int i = 0; i < 256; i++) {
-            long crc = i;
-            for (int j = 0; j < 8; j++) {
-                if ((crc & 1) != 0) {
-                    crc = (crc >>> 1) ^ POLY;
+            long crc = ((long) i) << 56;
+            for (int bit = 0; bit < 8; bit++) {
+                if ((crc & 0x8000000000000000L) != 0) {
+                    crc = (crc << 1) ^ POLY;
                 } else {
-                    crc >>>= 1;
+                    crc <<= 1;
                 }
             }
             TABLE[i] = crc;
@@ -76,13 +76,12 @@ public class Header {
 
     public static long makeChecksum(byte[] data){
 
-        long crc = 0xFFFFFFFFFFFFFFFFL; // Initialwert für CRC64-ECMA
+        long crc = 0L;
         for (byte b : data) {
-            int idx = ((int) crc ^ (b & 0xFF)) & 0xFF;
-            crc = TABLE[idx] ^ (crc >>> 8);
+            int index = ((int) (crc >>> 56) ^ (b & 0xFF)) & 0xFF;
+            crc = TABLE[index] ^ (crc << 8);
         }
-
-        return ~crc;
+        return crc;
     }
 
     public static byte[] extractChecksum(byte[] header){
