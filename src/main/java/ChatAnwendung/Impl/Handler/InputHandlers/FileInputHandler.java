@@ -77,14 +77,13 @@ public class FileInputHandler extends AbstractInputHandler {
                 }
 
                 sendFileEnd(uID, fileId, adress, port);
+                System.out.println("File send");
+
+                log.debug("End with file transfer");
             } catch (IOException e) {
                 ExceptionHandler.handle(e, this.getClass());
             }
         }
-
-        System.out.println("File send");
-
-        log.debug("End with file transfer");
 
 
     }
