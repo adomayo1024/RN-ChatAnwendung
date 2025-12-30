@@ -36,13 +36,15 @@ public class Header {
 
     static {
         for (int i = 0; i < 256; i++) {
-            long crc = ((long) i) << 56;
-            for (int bit = 0; bit < 8; bit++) {
-                if ((crc & 0x8000000000000000L) != 0) {
+            long c = (long) i << 56;
+            long crc = 0;
+            for (int j = 0; j < 8; j++) {
+                if (((crc ^ c) & 0x8000000000000000L) != 0) {
                     crc = (crc << 1) ^ POLY;
                 } else {
                     crc <<= 1;
                 }
+                c <<= 1;
             }
             TABLE[i] = crc;
         }
@@ -78,7 +80,7 @@ public class Header {
 
         long crc = 0L;
         for (byte b : data) {
-            int index = ((int) (crc >>> 56) ^ (b & 0xFF)) & 0xFF;
+            int index = ((int) (crc >>> 56) ^ b) & 0xFF;
             crc = TABLE[index] ^ (crc << 8);
         }
         return crc;
