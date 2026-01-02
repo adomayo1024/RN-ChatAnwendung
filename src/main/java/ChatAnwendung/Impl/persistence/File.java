@@ -74,15 +74,22 @@ public class File {
         log.debug("Created new File: {}", name);
     }
 
-    public void addChunk(byte[] chunk, int sequenz) {
+    public boolean addChunk(byte[] chunk, int sequenz) {
+
+        boolean added = false;
         if(!writedChunks[sequenz]){
             fileMutex.lock();
-            try(RandomAccessFile file = new RandomAccessFile(name, "rw")){
+            try(RandomAccessFile file = new RandomAccessFile(name, "w")){
                 int pos = sequenz * 1300;
                 file.seek(pos);
                 file.write(chunk);
                 writedChunksMutex.lock();
                 writedChunks[sequenz] = true;
+                file.close();
+                added = true;
+                dekrementRequestCountWithoutResponse();
+                recievedLastChunk.set(System.currentTimeMillis());
+                log.debug("Added Chunk {} to File: {}", sequenz, name);
             } catch (IOException e) {
                 writedChunks[sequenz] = false;
                 ExceptionHandler.handle(e, this.getClass());
@@ -92,11 +99,9 @@ public class File {
                 writedChunksMutex.unlock();
             }
 
-            dekrementRequestCountWithoutResponse();
-            recievedLastChunk.set(System.currentTimeMillis());
-
-            log.debug("Added Chunk {} to File: {}", sequenz, name);
         }
+
+        return added;
     }
 
     public boolean finished(){
