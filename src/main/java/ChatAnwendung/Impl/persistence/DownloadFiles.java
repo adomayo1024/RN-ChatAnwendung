@@ -13,6 +13,8 @@ public class DownloadFiles {
 
     private static  DownloadFiles INSTANCE;
 
+    private static ReentrantLock getMutex = new ReentrantLock(true);
+
     private  ScheduledExecutorService timer;
 
     private Map<Long, Map<Integer, File>> downloadedFiles;
@@ -37,10 +39,12 @@ public class DownloadFiles {
 
     public static DownloadFiles getInstance(){
 
+        getMutex.lock();
         if(INSTANCE == null) {
             INSTANCE = new DownloadFiles();
             log.debug("Created new DownloadFiles: {}", INSTANCE);
         }
+        getMutex.unlock();
         return INSTANCE;
     }
 
@@ -80,7 +84,7 @@ public class DownloadFiles {
         mutex.lock();
         if(!downloadedFiles.containsKey(uID)){
             downloadedFiles.put(uID, new HashMap<>());
-            semaphorForFiles.put(uID, new HashMap<>());
+            semaphorForFiles.putIfAbsent(uID, new HashMap<>());
         }
         downloadedFiles.get(uID).put(fileID, file);
         int wartendeThreads = wartendenThreads.getOrDefault(uID, new HashMap<>()).getOrDefault(fileID, new AtomicInteger(1)).get();
@@ -92,6 +96,15 @@ public class DownloadFiles {
 
     public ScheduledExecutorService getScheduledThreadPool(){
         return timer;
+    }
+
+    public void removeAll(){
+        for(Long srcId : downloadedFiles.keySet()){
+            for(Integer fileId : downloadedFiles.get(srcId).keySet()){
+                removeFile(srcId, fileId);
+            }
+            downloadedFiles.remove(srcId);
+        }
     }
 
     public void removeFile(long srcUID, int fileId) {

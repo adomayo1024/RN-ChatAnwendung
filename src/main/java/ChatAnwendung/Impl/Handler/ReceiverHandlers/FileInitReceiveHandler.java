@@ -10,10 +10,10 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ScheduledExecutorService;
 
 @Slf4j
-public class FileInitRecieveHandler extends AbstractRecieveHanlder {
+public class FileInitReceiveHandler extends AbstractRecieveHanlder {
 
 
-    public FileInitRecieveHandler(DatagramPacket packet) {
+    public FileInitReceiveHandler(DatagramPacket packet) {
         super(packet);
     }
 

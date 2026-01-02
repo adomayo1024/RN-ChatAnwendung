@@ -59,7 +59,7 @@ public class File {
     }
 
     private void makeFile() {
-        writedChunksMutex.lock();
+        fileMutex.lock();
         try(RandomAccessFile file = new RandomAccessFile(name, "rw")) {
             file.setLength(length);
         } catch (FileNotFoundException e) {
@@ -68,7 +68,7 @@ public class File {
             throw new RuntimeException(e);
         }
         finally {
-            writedChunksMutex.unlock();
+            fileMutex.unlock();
         }
 
         log.debug("Created new File: {}", name);
