@@ -89,7 +89,7 @@ public class Header {
     public static byte[] extractChecksum(byte[] header){
         byte[] headerWithoutChecksum = new byte[headerSize - crcSize];
         System.arraycopy(header, 0, headerWithoutChecksum, 0, headerSize - crcSize - payloadLengthSize);
-        headerWithoutChecksum[headerWithoutChecksum.length - payloadLengthSize] = header[payloadLengthPos + 1];
+        headerWithoutChecksum[headerWithoutChecksum.length - payloadLengthSize] = header[payloadLengthPos];
         headerWithoutChecksum[headerWithoutChecksum.length - 1] = header[payloadLengthPos + 1];
 
         return headerWithoutChecksum;
