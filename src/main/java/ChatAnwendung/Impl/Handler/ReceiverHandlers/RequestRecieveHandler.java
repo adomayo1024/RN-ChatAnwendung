@@ -66,7 +66,7 @@ public class RequestRecieveHandler extends AbstractRecieveHanlder {
             else{
                 chunk = new byte[1300];
             }
-            file.seek(sequenz);
+            file.seek(sequenz * 1300);
             file.read(chunk);
         } catch (IOException | IllegalSequnzNumberException e) {
             ExceptionHandler.handle(e, this.getClass());
