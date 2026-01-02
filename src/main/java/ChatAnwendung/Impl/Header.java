@@ -1,6 +1,7 @@
 package ChatAnwendung.Impl;
 
 import ChatAnwendung.Impl.persistence.Storage;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -9,27 +10,49 @@ public class Header {
     private static final long POLY = 0x42F0E1EBA9EA3693L;
     private static final long[] TABLE = new long[256];
 
+    @Getter
     private static final int headerSize = 38;
+    @Getter
     private static final int versionSize = 1;
+    @Getter
     private static final int typeSize = 1;
+    @Getter
     private static final int ttlSize = 1;
+    @Getter
     private static final int hopsSize = 1;
+    @Getter
     private static final int srcNodeSize = 8;
+    @Getter
     private static final int destNodeSize = 8;
+    @Getter
     private static final int sequenzSize = 4;
+    @Getter
     private static final int fileIdSize = 4;
+    @Getter
     private static final int crcSize = 8;
+    @Getter
     private static final int payloadLengthSize = 2;
+    @Getter
     private static final int versionPos = 0;
+    @Getter
     private static final int typePos = versionPos + versionSize;
+    @Getter
     private static final int ttlPos = typePos + typeSize;
+    @Getter
     private static final int hopsPos = ttlPos + ttlSize;
+    @Getter
     private static final int srcNodePos = hopsPos + hopsSize;
+    @Getter
     private static final int destNodePos = srcNodePos + srcNodeSize;
+    @Getter
     private static final int sequenzPos = destNodePos + destNodeSize;
+    @Getter
     private static final int fileIdPos = sequenzPos + sequenzSize;
+    @Getter
     private static final int crcPos = fileIdPos + fileIdSize;
+    @Getter
     private static final int payloadLengthPos = crcPos + crcSize;
+    @Getter
     private static final int payloadPos = payloadLengthPos + payloadLengthSize;
 
 
@@ -119,52 +142,4 @@ public class Header {
         array[pos] = (byte) (value >> 8);
         array[pos + 1] = (byte) (value);
     }
-
-
-    //----------------------GETTER-------------------------
-
-    public static int getVersionPos(){
-        return versionPos;
-    }
-
-    public static int getTypePos(){
-        return typePos;
-    }
-
-    public static int getTtlPos(){
-        return ttlPos;
-    }
-
-    public static int getHopsPos(){
-        return hopsPos;
-    }
-
-    public static int getSrcNodePos(){
-        return srcNodePos;
-    }
-
-    public static int getDestNodePos(){
-        return destNodePos;
-    }
-
-    public static int getSequenzPos(){
-        return sequenzPos;
-    }
-
-    public static int getFileIdPos(){
-        return fileIdPos;
-    }
-
-    public static int getCrcPos(){
-        return crcPos;
-    }
-
-    public static int getPayloadLengthPos(){
-        return payloadLengthPos;
-    }
-
-    public static int getPayloadPos(){
-        return payloadPos;
-    }
-
 }
