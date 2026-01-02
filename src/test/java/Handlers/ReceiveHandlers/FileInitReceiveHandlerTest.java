@@ -3,11 +3,11 @@ package Handlers.ReceiveHandlers;
 import ChatAnwendung.Impl.Handler.ReceiverHandlers.FileDataRecieveHandler;
 import ChatAnwendung.Impl.Handler.ReceiverHandlers.FileInitReceiveHandler;
 import ChatAnwendung.Impl.Header;
+import ChatAnwendung.Impl.MessageQueue;
 import ChatAnwendung.Impl.persistence.DownloadFiles;
+import ChatAnwendung.Impl.persistence.Storage;
 import ChatAnwendung.Impl.persistence.ThreadPools;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -44,7 +44,7 @@ public class FileInitReceiveHandlerTest {
         byte[] nameBytes = name.getBytes();
         int fileId = 24;
         long srcId = 123;
-        int sequenz = 10;
+        int sequenz = 1;
         int fileSize = 30;
         short payloadLength = (short) (nameBytes.length + 4);
         byte[] packetBytes = new byte[Header.getHeaderSize() + nameBytes.length + 4];
@@ -112,7 +112,7 @@ public class FileInitReceiveHandlerTest {
         assertEquals(fileId, DownloadFiles.getInstance().getFile(srcId, fileId).getFileId());
         assertEquals(srcId, DownloadFiles.getInstance().getFile(srcId, fileId).getSrcUID());
         fileData.join();
-        assertEquals(1, DownloadFiles.getInstance().getFile(srcId, fileId).getNextNeededChunk());
+        assertEquals(0, DownloadFiles.getInstance().getFile(srcId, fileId).getNextNeededChunk());
         DownloadFiles.getInstance().removeFile(srcId, fileId);
     }
 }
