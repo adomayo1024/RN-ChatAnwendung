@@ -28,13 +28,16 @@ public class FileDataRecieveHandler extends AbstractRecieveHanlder {
         System.arraycopy(data, Header.getPayloadPos(), payload, 0, payloadLength);
         File file = DownloadFiles.getInstance().getFile(srcUID, fileId);
         if(file != null){
-            file.addChunk(payload, sequenz);
+            if (file.addChunk(payload, sequenz)) {
+                log.debug("Added Chunk: {} to File: {}from User: {}", sequenz, file.getName(), Long.toUnsignedString(srcUID));
+            }
             if(file.finished()){
                 DownloadFiles.getInstance().removeFile(srcUID, fileId);
             }
         }
-
-        log.debug("Added Chunk: {} to File: {}from User: {}", sequenz, file.getName(), Long.toUnsignedString(srcUID));
+        else{
+            log.debug("Failed to receive the file: {} from the user: {} ", file, srcUID);
+        }
 
     }
 }
