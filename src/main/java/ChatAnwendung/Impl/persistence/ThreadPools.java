@@ -60,6 +60,7 @@ public class ThreadPools {
         threadPool.shutdownNow();
         fileRequestTimer.shutdownNow();
         hearbteatAndRoutingTableTimer.shutdownNow();
+        timeoutTimer.shutdownNow();
         senderThreadPool.shutdownNow();
         inputHandlerThreadPool.shutdownNow();
         receiverThreadPool.shutdownNow();
