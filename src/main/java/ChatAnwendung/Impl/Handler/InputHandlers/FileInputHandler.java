@@ -54,7 +54,6 @@ public class FileInputHandler extends AbstractInputHandler {
                 InetAddress adress = RoutingTableImpl.getInstance().getNextHopAdressForUID(uID);
                 int port = RoutingTableImpl.getInstance().getNextHopPortForUID(uID);
                 Storage.getInstance().setSendOpenFile(fileId, path);
-                byte[] wholeFile = new byte[1300 * anzahlChunks];
 
                 sendFileInitPacket(anzahlChunks, length, path, uID, fileId, adress, port);
 
@@ -62,7 +61,6 @@ public class FileInputHandler extends AbstractInputHandler {
 
                 for(int sequenz = 0; sequenz < anzahlChunks; sequenz++){
                     byte[] payload = split(file, sequenz, anzahlChunks);
-                    System.arraycopy(payload, 0, wholeFile, sequenz * 1300, payload.length);
                     DatagramPacket packet = makeDatagramPackage(
                             PacketTypes.FILE_DATA,
                             uID,
@@ -71,7 +69,7 @@ public class FileInputHandler extends AbstractInputHandler {
                             payload,
                             adress,
                             port);
-                    Thread.sleep(100);
+                    Thread.sleep(10);
                     MessageQueue.getInstance().push(packet);
 
                     log.debug("File data packet number {} send", sequenz);

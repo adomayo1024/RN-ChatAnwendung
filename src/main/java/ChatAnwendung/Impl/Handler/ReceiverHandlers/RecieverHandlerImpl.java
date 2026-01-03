@@ -8,12 +8,16 @@ import ChatAnwendung.Impl.persistence.ThreadPools;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.DatagramPacket;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 public class RecieverHandlerImpl implements RecieverHanlder {
 
-    public RecieverHandlerImpl(){
+    private final BlockingQueue<DatagramPacket> queue;
+
+    public RecieverHandlerImpl(BlockingQueue<DatagramPacket> queue){
+        this.queue = queue;
 
     }
 
@@ -69,5 +73,21 @@ public class RecieverHandlerImpl implements RecieverHanlder {
                 ((long)(b5 & 0xFF) << 16) |
                 ((long)(b6 & 0xFF) <<  8) |
                 ((long)(b7 & 0xFF));
+    }
+
+    @Override
+    public void run() {
+
+        boolean interrupted = false;
+
+        while(!interrupted){
+            try {
+                handle(queue.take());
+            } catch (InterruptedException e) {
+                interrupted = true;
+            }
+        }
+
+        log.debug("ReceiveHandler shutdown");
     }
 }

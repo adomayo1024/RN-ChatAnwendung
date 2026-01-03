@@ -5,12 +5,17 @@ import ChatAnwendung.Api.Reciever;
 import ChatAnwendung.Impl.Handler.Common.ExceptionHandler;
 import ChatAnwendung.Impl.Handler.ReceiverHandlers.RecieverHandlerImpl;
 import ChatAnwendung.Impl.persistence.Storage;
+import ChatAnwendung.Impl.persistence.ThreadPools;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
+import java.util.Queue;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 public class RecieverImpl implements Runnable, Reciever {
@@ -21,15 +26,20 @@ public class RecieverImpl implements Runnable, Reciever {
 
     private final int PACKETSIZE = 1400;
 
-    public RecieverImpl(DatagramSocket socket, RecieverHandlerImpl handler) {
+    private final BlockingQueue<DatagramPacket> queue;
+
+    public RecieverImpl(DatagramSocket socket) {
         this.socket = socket;
-        this.handler = handler;
+        this.queue = new ArrayBlockingQueue<DatagramPacket>(2000);
+        this.handler = new RecieverHandlerImpl(queue);
     }
 
     @Override
     public void run() {
 
         boolean interrupted = false;
+
+        CompletableFuture.runAsync(handler, ThreadPools.getInstance().getReceiveHandlerThreadPool());
 
         while (!interrupted) {
 
@@ -43,7 +53,7 @@ public class RecieverImpl implements Runnable, Reciever {
 
                 log.debug("new package received");
 
-                handler.handle(request);
+                queue.add(request);
 
 
             }catch (SocketException e) {

@@ -29,6 +29,8 @@ public class ThreadPools {
 
     private final ExecutorService receiverThreadPool;
 
+    private final ExecutorService receiveHandlerThreadPool;
+
     @Setter
     private ScheduledFuture<?> heartBeatAndRoutingTableTimerFuture;
 
@@ -43,6 +45,7 @@ public class ThreadPools {
         senderThreadPool = Executors.newFixedThreadPool(1);
         inputHandlerThreadPool = Executors.newFixedThreadPool(1);
         receiverThreadPool = Executors.newFixedThreadPool(1);
+        receiveHandlerThreadPool = Executors.newFixedThreadPool(1);
     }
 
 
@@ -64,6 +67,7 @@ public class ThreadPools {
         senderThreadPool.shutdownNow();
         inputHandlerThreadPool.shutdownNow();
         receiverThreadPool.shutdownNow();
+        receiveHandlerThreadPool.shutdownNow();
         if(timeoutFuture != null){
             timeoutFuture.cancel(true);
         }
