@@ -71,6 +71,7 @@ public class FileInputHandler extends AbstractInputHandler {
                             payload,
                             adress,
                             port);
+                    Thread.sleep(100);
                     MessageQueue.getInstance().push(packet);
 
                     log.debug("File data packet number {} send", sequenz);
@@ -82,6 +83,8 @@ public class FileInputHandler extends AbstractInputHandler {
                 log.debug("End with file transfer");
             } catch (IOException e) {
                 ExceptionHandler.handle(e, this.getClass());
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
             }
         }
 

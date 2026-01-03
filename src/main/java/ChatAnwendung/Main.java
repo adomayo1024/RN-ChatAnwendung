@@ -26,12 +26,10 @@ public class Main {
             CompletableFuture<Void> inputHandler = CompletableFuture.runAsync(new InputReaderImpl(new InputHandlerImpl()), ThreadPools.getInstance().getInputHandlerThreadPool());
             CompletableFuture<Void> receiver = CompletableFuture.runAsync(new RecieverImpl(socket, new RecieverHandlerImpl()), ThreadPools.getInstance().getReceiverThreadPool());
             CompletableFuture<Void> sender = CompletableFuture.runAsync(new SenderImpl(socket), ThreadPools.getInstance().getSenderThreadPool());
-            Thread.sleep(5_000);
+            inputHandler.join();
 
         } catch (SocketException e) {
             throw new RuntimeException();
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
         } finally{
             ThreadPools.getInstance().shutDown();
             log.debug( "Anwendung beendet");

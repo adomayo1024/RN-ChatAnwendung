@@ -29,7 +29,7 @@ public class FileInitReceiveHandler extends AbstractRecieveHanlder {
         short payloadLength = getPayloadLength(data);
         byte[] payload = new byte[payloadLength];
         System.arraycopy(data, Header.getPayloadPos(), payload, 0, payloadLength);
-        String fileName = getFileName(payload, payloadLength) + 1;
+        String fileName = getFileName(payload, payloadLength);
         int size = getSize(payload);
         ScheduledExecutorService timer = DownloadFiles.getInstance().getScheduledThreadPool();
 
