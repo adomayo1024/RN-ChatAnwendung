@@ -24,7 +24,7 @@ public class Main {
             log.info("You got the ID: {}", Storage.getInstance().getUnsignedID());
 
             CompletableFuture<Void> inputHandler = CompletableFuture.runAsync(new InputReaderImpl(new InputHandlerImpl()), ThreadPools.getInstance().getInputHandlerThreadPool());
-            CompletableFuture<Void> receiver = CompletableFuture.runAsync(new RecieverImpl(socket, new RecieverHandlerImpl()), ThreadPools.getInstance().getReceiverThreadPool());
+            CompletableFuture<Void> receiver = CompletableFuture.runAsync(new RecieverImpl(socket), ThreadPools.getInstance().getReceiverThreadPool());
             CompletableFuture<Void> sender = CompletableFuture.runAsync(new SenderImpl(socket), ThreadPools.getInstance().getSenderThreadPool());
             inputHandler.join();
 

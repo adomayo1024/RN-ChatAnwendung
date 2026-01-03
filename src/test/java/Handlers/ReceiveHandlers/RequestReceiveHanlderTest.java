@@ -221,7 +221,6 @@ public class RequestReceiveHanlderTest {
             zeile++ + zeile++ + zeile++ + zeile++ + zeile++ + zeile++ + zeile++ + zeile++ +zeile++ + zeile++ +
             zeile++ + zeile++ + zeile++ + zeile++ + zeile++ + zeile++ + zeile++ + zeile++ +zeile++ + zeile++;
 
-
     @BeforeEach
     public void createFileAndPacket(){
 
