@@ -70,27 +70,31 @@
         <appender-ref ref="CONSOLE"/>
     </logger>
 
-    <logger name="ChatAnwendung.Impl.Handler.ReceiverHandlers.FileInitRecieveHandler" level="DEBUG">
-        <appender-ref ref="CONSOLE"/>
-    </logger>
+<!--    <logger name="ChatAnwendung.Impl.Handler.ReceiverHandlers.FileInitReceiveHandler" level="DEBUG">-->
+<!--        <appender-ref ref="CONSOLE"/>-->
+<!--    </logger>-->
 
-    <logger name="ChatAnwendung.Impl.Handler.ReceiverHandlers.FileEndRecieveHandler" level="DEBUG">
-        <appender-ref ref="CONSOLE"/>
-    </logger>
+<!--    <logger name="ChatAnwendung.Impl.Handler.ReceiverHandlers.FileEndRecieveHandler" level="DEBUG">-->
+<!--        <appender-ref ref="CONSOLE"/>-->
+<!--    </logger>-->
 
-    <logger name="ChatAnwendung.Impl.Handler.ReceiverHandlers.FileDataRecieveHandler" level="DEBUG">
-        <appender-ref ref="CONSOLE"/>
-    </logger>
+<!--    <logger name="ChatAnwendung.Impl.Handler.ReceiverHandlers.FileDataRecieveHandler" level="DEBUG">-->
+<!--        <appender-ref ref="CONSOLE"/>-->
+<!--    </logger>-->
 
-    <logger name="ChatAnwendung.Impl.Handler.ReceiverHandlers.RequestRecieveHandler" level="DEBUG">
-        <appender-ref ref="CONSOLE"/>
-    </logger>
+<!--    <logger name="ChatAnwendung.Impl.Handler.ReceiverHandlers.RequestRecieveHandler" level="DEBUG">-->
+<!--        <appender-ref ref="CONSOLE"/>-->
+<!--    </logger>-->
+
+<!--    <logger name="ChatAnwendung.Impl.Handler.ReceiverHandlers.RecieverHandlerImpl" level="DEBUG">-->
+<!--        <appender-ref ref="CONSOLE"/>-->
+<!--    </logger>-->
 
     <!-- Persistence -->
 
-    <logger name="ChatAnwendung.Impl.persistence" level="DEBUG" additivity="true">
-        <appender-ref ref="CONSOLE"/>
-    </logger>
+<!--    <logger name="ChatAnwendung.Impl.persistence" level="DEBUG" additivity="true">-->
+<!--        <appender-ref ref="CONSOLE"/>-->
+<!--    </logger>-->
 
     <logger name="ChatAnwendung.Impl.persistence.File" level="DEBUG">
         <appender-ref ref="CONSOLE"/>
@@ -103,9 +107,9 @@
 
     <!-- Frequently Sender -->
 
-    <logger name="ChatAnwendung.Impl.FrequentlySender" level="DEBUG" additivity="true">
-        <appender-ref ref="CONSOLE"/>
-    </logger>
+<!--    <logger name="ChatAnwendung.Impl.FrequentlySender" level="DEBUG" additivity="true">-->
+<!--        <appender-ref ref="CONSOLE"/>-->
+<!--    </logger>-->
 
     <logger name="ChatAnwendung.Impl.FrequentlySender.RequestSender" level="DEBUG">
         <appender-ref reg ="CONSOLE"/>
@@ -135,3 +139,5 @@
     <logger name="org.apache" level="WARN"/>
 
 </configuration>
+
+

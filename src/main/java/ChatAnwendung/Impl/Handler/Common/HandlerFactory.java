@@ -77,7 +77,7 @@ public class HandlerFactory {
         else{
             switch (type){
                 case FILE_INIT -> {
-                    handler = new FileInitRecieveHandler(packet);
+                    handler = new FileInitReceiveHandler(packet);
                 }
                 case File_End -> {
                     handler = new FileEndRecieveHandler(packet);

@@ -20,13 +20,11 @@ public class GoodbyeInputHandler extends AbstractInputHandler {
 
         log.debug("Start logout");
 
-        ThreadPools.getInstance().getHeartBeatTimerFuture().cancel(false);
+        ThreadPools.getInstance().getHeartBeatAndRoutingTableTimerFuture().cancel(true);
         ThreadPools.getInstance().getTimeoutFuture().cancel(true);
-        ThreadPools.getInstance().getRoutingTabelTimerFuture().cancel(true);
         Storage.getInstance().logout();
-        ThreadPools.getInstance().setHeartBeatTimerFuture(null);
+        ThreadPools.getInstance().setHeartBeatAndRoutingTableTimerFuture(null);
         ThreadPools.getInstance().setTimeoutFuture(null);
-        ThreadPools.getInstance().setRoutingTabelTimerFuture(null);
 
         log.debug("Finished with canceling heartbeats and timeout");
 

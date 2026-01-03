@@ -1,10 +1,13 @@
 package ChatAnwendung.Impl.persistence;
 
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.*;
 import java.util.concurrent.locks.ReentrantLock;
 
+@Getter
 @Slf4j
 public class ThreadPools {
 
@@ -16,21 +19,30 @@ public class ThreadPools {
 
     private final ScheduledExecutorService fileRequestTimer;
 
-    private final ScheduledExecutorService heartBeatTimer;
+    private final ScheduledExecutorService hearbteatAndRoutingTableTimer;
 
-    private final ScheduledExecutorService routingTabelTimer;
+    private final ScheduledExecutorService timeoutTimer;
 
-    private ScheduledFuture<?> heartBeatTimerFuture;
+    private final ExecutorService senderThreadPool;
 
-    private ScheduledFuture<?> routingTabelTimerFuture;
+    private final ExecutorService inputHandlerThreadPool;
 
-    private CompletableFuture<Void> timeoutFuture;
+    private final ExecutorService receiverThreadPool;
+
+    @Setter
+    private ScheduledFuture<?> heartBeatAndRoutingTableTimerFuture;
+
+    @Setter
+    private ScheduledFuture<?> timeoutFuture;
 
     private ThreadPools(){
-        threadPool = Executors.newFixedThreadPool(10);
+        threadPool = Executors.newFixedThreadPool(3);
         fileRequestTimer = Executors.newScheduledThreadPool(3);
-        heartBeatTimer = Executors.newScheduledThreadPool(1);
-        routingTabelTimer = Executors.newScheduledThreadPool(1);
+        hearbteatAndRoutingTableTimer = Executors.newScheduledThreadPool(1);
+        timeoutTimer = Executors.newScheduledThreadPool(1);
+        senderThreadPool = Executors.newFixedThreadPool(1);
+        inputHandlerThreadPool = Executors.newFixedThreadPool(1);
+        receiverThreadPool = Executors.newFixedThreadPool(1);
     }
 
 
@@ -44,62 +56,20 @@ public class ThreadPools {
     }
 
 
-    public ExecutorService getThreadPool() {
-        return threadPool;
-    }
-
-
     public void shutDown(){
         threadPool.shutdownNow();
         fileRequestTimer.shutdownNow();
-        heartBeatTimer.shutdownNow();
-        routingTabelTimer.shutdownNow();
+        hearbteatAndRoutingTableTimer.shutdownNow();
+        senderThreadPool.shutdownNow();
+        inputHandlerThreadPool.shutdownNow();
+        receiverThreadPool.shutdownNow();
         if(timeoutFuture != null){
             timeoutFuture.cancel(true);
         }
-        if(routingTabelTimerFuture != null){
-            routingTabelTimerFuture.cancel(true);
+
+        if(timeoutFuture != null){
+            timeoutFuture.cancel(true);
         }
 
-    }
-
-    public  ScheduledExecutorService getFileRequestTimer() {
-        return fileRequestTimer;
-    }
-
-    public ScheduledExecutorService getHeartBeatTimer() {
-        return heartBeatTimer;
-    }
-
-    public ScheduledFuture<?> getHeartBeatTimerFuture() {
-        return heartBeatTimerFuture;
-    }
-
-    public void setHeartBeatTimerFuture(ScheduledFuture<?> heartBeatTimerFuture) {
-        this.heartBeatTimerFuture = heartBeatTimerFuture;
-    }
-
-    public ScheduledExecutorService getRoutingTabelTimer() {
-        return routingTabelTimer;
-    }
-
-    public ScheduledFuture<?> getRoutingTabelTimerFuture() {
-        return routingTabelTimerFuture;
-    }
-
-    public void setRoutingTableTimerFuture(ScheduledFuture<?> routingTabelTimerFuture) {
-        this.routingTabelTimerFuture = routingTabelTimerFuture;
-    }
-
-    public void setRoutingTabelTimerFuture(ScheduledFuture<?> routingTabelTimerFuture) {
-        this.routingTabelTimerFuture = routingTabelTimerFuture;
-    }
-
-    public CompletableFuture<Void> getTimeoutFuture(){
-        return timeoutFuture;
-    }
-
-    public void setTimeoutFuture(CompletableFuture<Void> timeoutFuture){
-        this.timeoutFuture = timeoutFuture;
     }
 }

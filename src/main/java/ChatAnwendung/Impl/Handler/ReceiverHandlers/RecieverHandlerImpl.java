@@ -13,6 +13,10 @@ import java.util.concurrent.CompletableFuture;
 @Slf4j
 public class RecieverHandlerImpl implements RecieverHanlder {
 
+    public RecieverHandlerImpl(){
+
+    }
+
     @Override
     public void handle(DatagramPacket packet) {
 

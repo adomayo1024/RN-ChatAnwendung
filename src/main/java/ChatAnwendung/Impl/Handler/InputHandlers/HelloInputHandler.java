@@ -2,18 +2,16 @@ package ChatAnwendung.Impl.Handler.InputHandlers;
 
 import ChatAnwendung.Impl.*;
 import ChatAnwendung.Impl.Exceptions.LoginException;
-import ChatAnwendung.Impl.FrequentlySender.RoutingTableSender;
+import ChatAnwendung.Impl.FrequentlySender.HeartbeatAndRoutingTableSchedule;
 import ChatAnwendung.Impl.Handler.Common.ExceptionHandler;
 import ChatAnwendung.Impl.persistence.Connection;
 import ChatAnwendung.Impl.persistence.ConnectionsList;
 import ChatAnwendung.Impl.persistence.Storage;
 import ChatAnwendung.Impl.persistence.ThreadPools;
-import ChatAnwendung.Impl.FrequentlySender.HearbeatSender;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.DatagramPacket;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 @Slf4j
 public class HelloInputHandler extends AbstractInputHandler {
@@ -43,9 +41,8 @@ public class HelloInputHandler extends AbstractInputHandler {
                 log.debug("Hello packet send to {}", connection.address());
             }
 
-            ThreadPools.getInstance().setHeartBeatTimerFuture(ThreadPools.getInstance().getHeartBeatTimer().scheduleWithFixedDelay(new HearbeatSender(), 1, 5, TimeUnit.SECONDS));
-            ThreadPools.getInstance().setTimeoutFuture(CompletableFuture.runAsync(new TimeoutHandler(), ThreadPools.getInstance().getThreadPool()));
-            ThreadPools.getInstance().setRoutingTabelTimerFuture(ThreadPools.getInstance().getRoutingTabelTimer().scheduleWithFixedDelay(new RoutingTableSender(), 1, 10, TimeUnit.SECONDS));
+            ThreadPools.getInstance().setHeartBeatAndRoutingTableTimerFuture(ThreadPools.getInstance().getHearbteatAndRoutingTableTimer().scheduleWithFixedDelay(new HeartbeatAndRoutingTableSchedule(), 1, 5, TimeUnit.SECONDS));
+            ThreadPools.getInstance().setTimeoutFuture(ThreadPools.getInstance().getTimeoutTimer().scheduleWithFixedDelay(new TimeoutHandler(), 1, 5, TimeUnit.SECONDS));
             log.debug("Finished with login");
 
             System.out.println("Login successful");

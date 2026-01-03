@@ -51,7 +51,6 @@ public class RoutingTableSender extends AbstractHandler{
 
             byte[] payload = new byte[Math.min(countEntries, maxAmountOfRoutingTableEntries) * routingTableEntrySize];
             for(int i = 0; i < countEntries; i++){
-                //TODO if stimmt wahrscheinlich nicht
                 if(i != 0 && i % maxAmountOfRoutingTableEntries == 0){
 
                     DatagramPacket packet = makeDatagramPackage(PacketTypes.ROUTINGTABLE,

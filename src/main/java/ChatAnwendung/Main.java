@@ -23,13 +23,15 @@ public class Main {
             log.info("Socket opened on Address: {} and port {}", socket.getLocalAddress(), socket.getLocalPort());
             log.info("You got the ID: {}", Storage.getInstance().getUnsignedID());
 
-            CompletableFuture<Void> inputHandler = CompletableFuture.runAsync(new InputReaderImpl(new InputHandlerImpl()), ThreadPools.getInstance().getThreadPool());
-            CompletableFuture<Void> reciever = CompletableFuture.runAsync(new RecieverImpl(socket, new RecieverHandlerImpl()), ThreadPools.getInstance().getThreadPool());
-            CompletableFuture<Void> sender = CompletableFuture.runAsync(new SenderImpl(socket), ThreadPools.getInstance().getThreadPool());
-            inputHandler.join();
+            CompletableFuture<Void> inputHandler = CompletableFuture.runAsync(new InputReaderImpl(new InputHandlerImpl()), ThreadPools.getInstance().getInputHandlerThreadPool());
+            CompletableFuture<Void> receiver = CompletableFuture.runAsync(new RecieverImpl(socket, new RecieverHandlerImpl()), ThreadPools.getInstance().getReceiverThreadPool());
+            CompletableFuture<Void> sender = CompletableFuture.runAsync(new SenderImpl(socket), ThreadPools.getInstance().getSenderThreadPool());
+            Thread.sleep(5_000);
 
         } catch (SocketException e) {
             throw new RuntimeException();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         } finally{
             ThreadPools.getInstance().shutDown();
             log.debug( "Anwendung beendet");

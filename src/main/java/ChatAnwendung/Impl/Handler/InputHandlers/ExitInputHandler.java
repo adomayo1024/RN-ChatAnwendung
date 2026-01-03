@@ -22,7 +22,7 @@ public class ExitInputHandler extends AbstractInputHandler {
                 GoodbyeInputHandler bye = new GoodbyeInputHandler(new String[]{"bye"});
                 bye.run();
             }
-            Storage.getInstance().getReader().close();
+            System.in.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

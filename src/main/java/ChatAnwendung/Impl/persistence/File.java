@@ -79,7 +79,7 @@ public class File {
         boolean added = false;
         if(!writedChunks[sequenz]){
             fileMutex.lock();
-            try(RandomAccessFile file = new RandomAccessFile(name, "w")){
+            try(RandomAccessFile file = new RandomAccessFile(name, "rw")){
                 int pos = sequenz * 1300;
                 file.seek(pos);
                 file.write(chunk);
@@ -91,6 +91,7 @@ public class File {
                 recievedLastChunk.set(System.currentTimeMillis());
                 log.debug("Added Chunk {} to File: {}", sequenz, name);
             } catch (IOException e) {
+                log.debug("Error ecours: {}", e.getMessage());
                 writedChunks[sequenz] = false;
                 ExceptionHandler.handle(e, this.getClass());
             }

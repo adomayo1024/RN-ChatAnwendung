@@ -1,5 +1,7 @@
 package ChatAnwendung.Impl.persistence;
 
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.BufferedReader;
@@ -19,14 +21,20 @@ public class Storage {
 
     private final Long broadcastId;
 
+    @Getter
     private long ID;
 
     private final Logger logger = Logger.getLogger(Storage.class.getName());
 
+    @Setter
+    @Getter
     private int port;
 
+    @Getter
     private boolean login;
 
+    @Setter
+    @Getter
     private BufferedReader reader;
 
     private Map<Integer, String> openSendFiles;
@@ -64,18 +72,6 @@ public class Storage {
         return fileCount++;
     }
 
-    public long getID() {
-        return ID;
-    }
-
-    public void setPort(int port) {
-        this.port = port;
-    }
-
-    public int getPort(){
-        return port;
-    }
-
     public long getBroadCastId(){
         return broadcastId;
     }
@@ -86,18 +82,6 @@ public class Storage {
 
     public void logout() {
         login = false;
-    }
-
-    public boolean isLogin() {
-        return login;
-    }
-
-    public void setReader(BufferedReader reader){
-        this.reader = reader;
-    }
-
-    public BufferedReader getReader(){
-        return reader;
     }
 
     public boolean isDebugMode() {
