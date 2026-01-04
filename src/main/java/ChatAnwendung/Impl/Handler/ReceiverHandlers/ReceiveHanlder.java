@@ -5,9 +5,7 @@ import ChatAnwendung.Api.RoutingTable;
 import ChatAnwendung.Impl.Handler.Common.AbstractHandler;
 import ChatAnwendung.Impl.BCPPacket;
 import ChatAnwendung.Impl.PacketTypes;
-import ChatAnwendung.Impl.persistence.RoutingEntryImpl;
-import ChatAnwendung.Impl.persistence.RoutingTableImpl;
-import ChatAnwendung.Impl.persistence.Storage;
+import ChatAnwendung.Impl.persistence.*;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
@@ -27,13 +25,16 @@ public class ReceiveHanlder extends AbstractHandler implements Runnable {
 
     private final Storage storage;
 
+    private final DownloadFiles downloadFiles;
+
     private boolean interrupted;
 
-    public ReceiveHanlder(BlockingQueue<DatagramPacket> receiverQueue, BlockingQueue<DatagramPacket> senderQueue, RoutingTable routingTable, Storage storage){
+    public ReceiveHanlder(BlockingQueue<DatagramPacket> receiverQueue, BlockingQueue<DatagramPacket> senderQueue, RoutingTable routingTable, Storage storage, DownloadFiles downloadFiles){
         this.receiverQueue = receiverQueue;
         this.senderQueue = senderQueue;
         this.routingTable = routingTable;
         this.storage = storage;
+        this.downloadFiles = downloadFiles;
         interrupted = false;
     }
 
@@ -98,7 +99,29 @@ public class ReceiveHanlder extends AbstractHandler implements Runnable {
     }
 
     private void handleFileData(BCPPacket packet) {
+        log.debug("Received File Data");
 
+        long srcUID = packet.getSrcNodeId();
+        int fileId = packet.getFileId();
+        int sequenz = packet.getSequenz();
+        byte[] payload = packet.getPayload();
+
+
+        File file = downloadFiles.getFile(srcUID, fileId);
+
+        if(file != null){
+            if (file.addChunk(payload, sequenz)) {
+                log.debug("Added Chunk: {} to File: {}from User: {}", sequenz, file.getName(), Long.toUnsignedString(srcUID));
+            }
+            if(file.finished()){
+               downloadFiles.removeFile(srcUID, fileId);
+                log.info("Finished downloading File: {} from User: {}", file.getName(), Long.toUnsignedString(srcUID));
+                System.out.println("Finished downloading File: " + file.getName() + " from User: " + Long.toUnsignedString(srcUID));
+            }
+        }
+        else{
+            log.debug("Failed to receive the file: {} from the user: {} ", fileId, srcUID);
+        }
     }
 
     private void handleGoodbye(BCPPacket packet) {
