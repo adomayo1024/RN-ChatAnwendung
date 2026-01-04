@@ -94,6 +94,16 @@ public class ReceiveHanlder extends AbstractHandler implements Runnable {
     }
 
     private void handleMessage(BCPPacket packet) {
+        log.debug("Received Message");
+
+        String terminalOutput = "You received a message from: " +
+                Long.toUnsignedString(packet.getSrcNodeId()) +
+                ": " +
+                new String(packet.getPayload(), StandardCharsets.UTF_8);
+
+        System.out.println(terminalOutput);
+
+        log.debug("Message received end");
     }
 
     private void handleResendRequest(BCPPacket packet) {
