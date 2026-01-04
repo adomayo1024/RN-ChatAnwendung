@@ -40,6 +40,8 @@ public class WelcomeRecieveHandler extends AbstractRecieveHanlder {
         RoutingTableImpl.getInstance().add(entry);
 
         log.debug("Routing Entry added for {}", Long.toUnsignedString(srcUID));
+        log.info("User: {} is available for Chatting", Long.toUnsignedString(srcUID));
+        System.out.println("User: " + Long.toUnsignedString(srcUID) + " is available for Chatting");
     }
 
 }

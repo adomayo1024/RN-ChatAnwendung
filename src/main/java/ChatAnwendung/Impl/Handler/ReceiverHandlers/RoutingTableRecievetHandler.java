@@ -41,6 +41,8 @@ public class RoutingTableRecievetHandler extends AbstractRecieveHanlder {
             RoutingTableImpl.getInstance().add(entry);
 
             log.debug("Routing Entry added for {}", Long.toUnsignedString(uID));
+            log.info("User: {} is available for Chatting", Long.toUnsignedString(uID));
+            System.out.println("User: " + Long.toUnsignedString(uID) + " is available for Chatting");
         }
     }
 

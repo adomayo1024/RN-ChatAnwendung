@@ -139,6 +139,9 @@ public class RoutingTableImpl implements RoutingTable {
             mutex.unlock();
             removeUID(uID);
 
+            log.info("User {} logged out", Long.toUnsignedString(uID));
+            System.out.println("User " + Long.toUnsignedString(uID) + " logged out");
+
             log.debug("Removed UID: {} from RoutingTable: {}", Long.toUnsignedString(uID), this);
         }
 
@@ -182,12 +185,9 @@ public class RoutingTableImpl implements RoutingTable {
         log.debug("Set LastSeen for UID: {} in RoutingTable: {}", Long.toUnsignedString(uID), this);
     }
 
-    //TODO change name and to entries.clear()
     @Override
     public void removeAll() {
-        for(Long key : entries.keySet()){
-            removeUID(key);
-        }
+        entries.clear();
         log.debug("Removed all Entries from RoutingTable: {}", this);
     }
 }
