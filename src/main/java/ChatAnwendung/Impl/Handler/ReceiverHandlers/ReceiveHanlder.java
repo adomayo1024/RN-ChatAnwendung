@@ -102,6 +102,16 @@ public class ReceiveHanlder extends AbstractHandler implements Runnable {
     }
 
     private void handleGoodbye(BCPPacket packet) {
+        log.debug("Received Goodbye");
+
+        long srcNodeId = packet.getSrcNodeId();
+        routingTable.removeUIDThroughGoodbye(srcNodeId);
+
+
+        log.debug("UID: {} removed", Long.toUnsignedString(srcNodeId));
+        log.info("User: {} left the Chat", Long.toUnsignedString(srcNodeId));
+
+        System.out.println("User: " + Long.toUnsignedString(srcNodeId) + " left the Chat");
     }
 
     private void handleWelcome(BCPPacket packet) {
