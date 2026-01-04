@@ -13,12 +13,17 @@ import java.io.RandomAccessFile;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
-import java.nio.file.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class RequestReceiveHandlerTest {
-    private static String filePath = "C:\\Users\\leons\\IdeaProjects\\RN-ChatAnwendung\\src\\test\\resources\\TestFiles\\TestFile.jpeg";
+    private static String filePathWin = "C:\\Users\\leons\\IdeaProjects\\RN-ChatAnwendung\\src\\test\\resources\\TestFiles\\" + "TestFile.jpeg";
+
+    private static String filePathLin = "/home/adomayo1024/IdeaProjects/ChatAnwendung-RN/src/test/resources/TestFiles/" + "TestFile.jpeg";
+
+    private static final String filePath = System.getProperty("os.name").toLowerCase().contains("win") ? filePathWin : filePathLin;
+
+    private static final String fileName = "TestFile.jpeg";
 
     private static int zeile = 0;
 
@@ -26,7 +31,7 @@ public class RequestReceiveHandlerTest {
 
     private static Integer fileId = 12;
 
-    private long fileSize = new File(filePath).length();
+    private long fileSize;
 
     private static int sequenz = 1;
 
@@ -41,6 +46,8 @@ public class RequestReceiveHandlerTest {
     public void createFileAndPacket(){
 
         Storage.getInstance().setSendOpenFile(fileId, filePath);
+
+        fileSize = new File(filePath).length();
 
         byte[] header = Header.makeHeader(
                 (byte) PacketTypes.RESENDREQUEST.ordinal(),
@@ -85,13 +92,14 @@ public class RequestReceiveHandlerTest {
         int payloadLength = ByteBuffer.wrap(data, Header.getPayloadLengthPos(), Header.getPayloadLengthSize()).getShort();
         byte[] payload = new byte[payloadLength];
         System.arraycopy(data, Header.getPayloadPos(), payload, 0, payloadLength);
-
         assertEquals(Storage.getInstance().getID(), actualDestId);
         assertEquals(fileId, actualFileId);
         assertEquals(sequenz, actualSequenz);
 
         byte[] expectedPayload = new byte[1300];
-        try(RandomAccessFile file = new RandomAccessFile(filePath, "r")){
+
+
+        try(RandomAccessFile file =  new RandomAccessFile(filePath, "r")){
             file.seek(sequenz * 1300L);
             file.read(expectedPayload);
         } catch (IOException e) {

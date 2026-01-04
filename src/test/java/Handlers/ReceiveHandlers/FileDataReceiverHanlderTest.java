@@ -12,10 +12,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.net.DatagramPacket;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
-import java.nio.file.attribute.FileAttribute;
-import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -35,7 +32,9 @@ public class FileDataReceiverHanlderTest {
 
     private  short payloadlenght = (short)payload.length;
 
-    private static final String filePath = "C:\\Users\\leons\\IdeaProjects\\RN-ChatAnwendung\\src\\test\\resources\\TestFiles\\TestFile.jpeg";
+    private static final String filePathLin = "/home/adomayo1024/IdeaProjects/ChatAnwendung-RN/src/test/resources/TestFiles/TestFile.jpeg";
+
+    private static final String filePathWin = "C:\\Users\\leons\\IdeaProjects\\RN-ChatAnwendung\\src\\test\\resources\\TestFiles\\TestFile.jpeg";
 
     private static   String newFilePath;
 
@@ -43,18 +42,21 @@ public class FileDataReceiverHanlderTest {
 
     @BeforeAll
     public static void createNewFilePath(){
-        String[] filePathSplit= filePath.split("\\.");
-        newFilePath = filePathSplit[0];
-        newFilePath += "test";
-        newFilePath += ".";
-        newFilePath += filePathSplit[1];
+
+        String filePath = System.getProperty("os.name").toLowerCase().contains("win") ? filePathWin : filePathLin;
+            String[] filePathSplit= filePath.split("\\.");
+            newFilePath = filePathSplit[0];
+            newFilePath += "test";
+            newFilePath += ".";
+            newFilePath += filePathSplit[1];
     }
 
     @BeforeEach
     public void createFileAndPacket()  {
 
 
-        Path source = Path.of(filePath);
+
+        Path source = System.getProperty("os.name").toLowerCase().contains("win") ? Paths.get(filePathWin) : Paths.get(filePathLin);
         Path target = Path.of(newFilePath);
 
         try {

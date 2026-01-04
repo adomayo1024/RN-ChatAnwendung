@@ -3,14 +3,10 @@ package Handlers.ReceiveHandlers;
 import ChatAnwendung.Impl.Handler.ReceiverHandlers.FileDataRecieveHandler;
 import ChatAnwendung.Impl.Handler.ReceiverHandlers.FileInitReceiveHandler;
 import ChatAnwendung.Impl.Header;
-import ChatAnwendung.Impl.MessageQueue;
 import ChatAnwendung.Impl.PacketTypes;
 import ChatAnwendung.Impl.persistence.DownloadFiles;
-import ChatAnwendung.Impl.persistence.Storage;
-import ChatAnwendung.Impl.persistence.ThreadPools;
 import org.junit.jupiter.api.*;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.nio.file.Files;
@@ -28,8 +24,9 @@ public class FileInitReceiveHandlerTest {
     private int sequenz = 0;
     private int fileSize = 30;
 
-    private static String filePath = "C:\\Users\\leons\\IdeaProjects\\RN-ChatAnwendung\\src\\test\\resources\\TestFiles\\FileInitTestFile.txt";
-    private byte[] payload  = new byte[filePath.getBytes().length + 4];
+    private static final String  fileName = "FileInitTestFile.txt";
+
+    private final byte[] payload  = new byte[fileName.getBytes().length + 4];
 
     private DatagramPacket packet;
 
@@ -37,7 +34,7 @@ public class FileInitReceiveHandlerTest {
     public void createPacket(){
 
         Header.addInt(0, fileSize, payload);
-        System.arraycopy(filePath.getBytes(), 0, payload, 4, filePath.getBytes().length);
+        System.arraycopy(fileName.getBytes(), 0, payload, 4, fileName.getBytes().length);
 
         byte[] header = Header.makeHeader(
                 (byte) PacketTypes.FILE_INIT.ordinal(),
@@ -63,7 +60,7 @@ public class FileInitReceiveHandlerTest {
     public void clean(){
         DownloadFiles.getInstance().removeAll();
         try {
-            Files.delete(Paths.get(filePath));
+            Files.delete(Paths.get(fileName));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -72,7 +69,7 @@ public class FileInitReceiveHandlerTest {
     @AfterAll
     public static void shutdown(){
         try {
-            Files.delete(Paths.get(filePath));
+            Files.delete(Paths.get(fileName));
         }catch (NoSuchFileException e){
 
         }
@@ -87,7 +84,7 @@ public class FileInitReceiveHandlerTest {
         handler.run();
 
         assertNotNull(DownloadFiles.getInstance().getFile(srcId, fileId));
-        assertEquals(filePath, DownloadFiles.getInstance().getFile(srcId, fileId).getName());
+        assertEquals(fileName, DownloadFiles.getInstance().getFile(srcId, fileId).getName());
         assertEquals(fileId, DownloadFiles.getInstance().getFile(srcId, fileId).getFileId());
         assertEquals(srcId, DownloadFiles.getInstance().getFile(srcId, fileId).getSrcUID());
         assertEquals(0, DownloadFiles.getInstance().getFile(srcId, fileId).getNextNeededChunk());
@@ -119,7 +116,7 @@ public class FileInitReceiveHandlerTest {
         handler.run();
 
         assertNotNull(DownloadFiles.getInstance().getFile(srcId, fileId));
-        assertEquals(filePath, DownloadFiles.getInstance().getFile(srcId, fileId).getName());
+        assertEquals(fileName, DownloadFiles.getInstance().getFile(srcId, fileId).getName());
         assertEquals(fileId, DownloadFiles.getInstance().getFile(srcId, fileId).getFileId());
         assertEquals(srcId, DownloadFiles.getInstance().getFile(srcId, fileId).getSrcUID());
         fileData.join();
