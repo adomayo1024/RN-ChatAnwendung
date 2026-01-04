@@ -54,6 +54,8 @@ public class MessageInputHandler extends AbstractInputHandler {
         MessageQueue.getInstance().push(packet);
 
         log.debug("Message send to {}", Long.toUnsignedString(uID));
+        log.info("Message send to {}", Long.toUnsignedString(uID));
+        System.out.println("Message send to " + Long.toUnsignedString(uID));
     }
 
 

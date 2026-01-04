@@ -36,6 +36,8 @@ public class ConnectHandler extends AbstractInputHandler {
         log.info("Connect with: {}:{}", command[1], command[2]);
 
         log.debug("end with connect: {} : {}", command[1], command[2]);
+        log.info("Connect with: {}:{}", command[1], command[2]);
+        System.out.println("Connect with: " + command[1] + ":" + command[2]);
     }
 
     public static String help() {

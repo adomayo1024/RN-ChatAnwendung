@@ -33,6 +33,8 @@ public class FileDataRecieveHandler extends AbstractRecieveHanlder {
             }
             if(file.finished()){
                 DownloadFiles.getInstance().removeFile(srcUID, fileId);
+                log.info("Finished downloading File: {} from User: {}", file.getName(), Long.toUnsignedString(srcUID));
+                System.out.println("Finished downloading File: " + file.getName() + " from User: " + Long.toUnsignedString(srcUID));
             }
         }
         else{

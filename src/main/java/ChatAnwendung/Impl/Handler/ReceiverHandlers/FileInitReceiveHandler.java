@@ -47,6 +47,9 @@ public class FileInitReceiveHandler extends AbstractRecieveHanlder {
 
         log.debug("Created new File{} for: {} from User: {}", fileName, fileID, Long.toUnsignedString(srcUID));
 
+        log.info("Starting with downloading of File: {} from User: {}", fileName, Long.toUnsignedString(srcUID));
+        System.out.println("Starting with downloading of File: " + fileName + " from User: " + Long.toUnsignedString(srcUID));
+
     }
 
 

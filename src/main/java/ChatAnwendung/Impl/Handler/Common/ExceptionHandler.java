@@ -25,5 +25,6 @@ public class ExceptionHandler implements Handler {
 
     public static void handle(Throwable exception, Class<?> thrower){
         log.warn( thrower.getName() + " hat Fehler gemeldet: " +  exception.getMessage());
+        System.out.println(exception.getMessage());
     }
 }

@@ -40,7 +40,7 @@ public class DisconnectHandler extends AbstractInputHandler {
         }
 
         log.info("Disconnect with: {}:{}", command[1], command[2]);
-
+        System.out.println("Disconnect with: " + command[1] + ":" + command[2]);
         log.debug("end with disconnect: {} : {}", command[1], command[2]);
 
     }

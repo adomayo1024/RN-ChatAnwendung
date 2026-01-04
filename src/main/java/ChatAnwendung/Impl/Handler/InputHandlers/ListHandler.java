@@ -38,7 +38,7 @@ public class ListHandler extends AbstractInputHandler {
 
         for(RoutingEntry entry : RoutingTableImpl.getInstance().getAllEntries()){
             if(entry.isRoutable() || allFlagSet){
-                System.out.println(Long.toUnsignedString(entry.getUID()) + " Hops: " + entry.getHops() + " is routable: " + entry.isRoutable());
+                System.out.println(Long.toUnsignedString(entry.getUID()) + " Hops: " + entry.getHops() + " next Hop Address: " + entry.getNextHopAdress() +  " next Hop port: " + entry.getNextHopPort() + " is routable: " + entry.isRoutable());
             }
         }
 

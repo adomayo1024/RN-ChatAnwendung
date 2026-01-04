@@ -20,6 +20,9 @@ public class GoodbyeRecieveHandler extends AbstractRecieveHanlder {
         long srcUID = getSrcUID(packet.getData());
         RoutingTableImpl.getInstance().removeUIDThroughGoodbye(srcUID);
         log.debug("UID: {} removed", Long.toUnsignedString(srcUID));
+        log.info("User: {} left the Chat", Long.toUnsignedString(srcUID));
+
+        System.out.println("User: " + Long.toUnsignedString(srcUID) + " left the Chat");
 
     }
 }

@@ -48,5 +48,9 @@ public class HelloRecieveHandler extends AbstractRecieveHanlder {
         MessageQueue.getInstance().push(welcomePacket);
 
         log.debug("Send Welcome packet to: {}" , Long.toUnsignedString(srcUID));
+
+        log.info("User {} joined the Chat", Long.toUnsignedString(srcUID));
+
+        System.out.println("User: " + Long.toUnsignedString(srcUID) + " joined the Chat");
     }
 }

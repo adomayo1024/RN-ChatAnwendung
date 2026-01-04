@@ -79,6 +79,9 @@ public class FileInputHandler extends AbstractInputHandler {
                 System.out.println("File send");
 
                 log.debug("End with file transfer");
+
+                log.info("File send to User: {}", Long.toUnsignedString(uID));
+                System.out.println("File send to User: " + Long.toUnsignedString(uID));
             } catch (IOException e) {
                 ExceptionHandler.handle(e, this.getClass());
             } catch (InterruptedException e) {
