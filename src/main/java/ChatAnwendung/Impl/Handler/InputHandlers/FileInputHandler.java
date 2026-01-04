@@ -153,7 +153,7 @@ public class FileInputHandler extends AbstractInputHandler {
 
 
     private byte[] makeDataInitPayload(long length, String path) {
-        String[] splitPath = path.split("/");
+        String[] splitPath = path.split("\\\\");
         String fileName = splitPath[splitPath.length - 1];
         byte[] payload = new byte[fileName.getBytes().length + 4];
         Header.addInt(0, (int)length, payload);
