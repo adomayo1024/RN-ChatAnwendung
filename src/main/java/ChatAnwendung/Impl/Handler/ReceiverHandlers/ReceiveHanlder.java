@@ -91,6 +91,13 @@ public class ReceiveHanlder extends AbstractHandler implements Runnable {
     }
 
     private void handleHeartbeat(BCPPacket packet) {
+        log.debug("Received Heartbeat");
+
+
+        long srcNodeId = packet.getSrcNodeId();
+        routingTable.setLastSeen(srcNodeId);
+
+        log.debug("Last seen set for {}", Long.toUnsignedString(srcNodeId));
     }
 
     private void handleMessage(BCPPacket packet) {
