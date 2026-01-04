@@ -57,7 +57,10 @@ public class RoutingTableImpl implements RoutingTable {
         RoutingEntry oldEntry = entries.get(newEntry.getUID());
         boolean result;
 
-        if(!oldEntry.isRoutable()){
+        if(oldEntry == null){
+         return true;
+        }
+        else if(!oldEntry.isRoutable()){
             result = true;
         } else if(oldEntry.getHops() > newEntry.getHops()) {
             result = true;
@@ -96,7 +99,10 @@ public class RoutingTableImpl implements RoutingTable {
 
     @Override
     public InetAddress getNextHopAdressForUID(long uID) {
-        return entries.get(uID).getNextHopAdress();
+        if(entries.containsKey(uID)){
+            return entries.get(uID).getNextHopAdress();
+        }
+        return null;
     }
 
     @Override
@@ -140,7 +146,10 @@ public class RoutingTableImpl implements RoutingTable {
 
     @Override
     public int getNextHopPortForUID(long uID) {
-        return entries.get(uID).getNextHopPort();
+        if(entries.containsKey(uID)){
+            return entries.get(uID).getNextHopPort();
+        }
+        return -1;
     }
 
     @Override
