@@ -11,7 +11,9 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.net.DatagramPacket;
 import java.net.InetAddress;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ScheduledExecutorService;
 
 @Slf4j
 public class ReceiveHanlder extends AbstractHandler implements Runnable {
@@ -93,9 +95,38 @@ public class ReceiveHanlder extends AbstractHandler implements Runnable {
     }
 
     private void handleFileEnd(BCPPacket packet) {
+
     }
 
     private void handleFileInit(BCPPacket packet) {
+        log.debug("Received File Init");
+
+        int anzahlChunks = packet.getSequenz();
+        int fileID = packet.getFileId();
+        long srcUID = packet.getSrcNodeId();
+        byte[] payload = packet.getPayload();
+        short payloadLength = packet.getPayloadLength();
+        String fileName = packet.getFileName();
+        int size = packet.getFileSize();
+        ScheduledExecutorService timer = downloadFiles.getScheduledThreadPool();
+
+        File file = new File(
+                anzahlChunks,
+                size,
+                fileName,
+                fileID,
+                srcUID,
+                timer);
+
+        downloadFiles.setNewFile(srcUID, fileID, file);
+
+        file.startRequesting();
+
+        log.debug("Created new File{} for: {} from User: {}", fileName, fileID, Long.toUnsignedString(srcUID));
+
+        log.info("Starting with downloading of File: {} from User: {}", fileName, Long.toUnsignedString(srcUID));
+        System.out.println("Starting with downloading of File: " + fileName + " from User: " + Long.toUnsignedString(srcUID));
+
     }
 
     private void handleFileData(BCPPacket packet) {
@@ -192,6 +223,16 @@ public class ReceiveHanlder extends AbstractHandler implements Runnable {
         log.info("User {} joined the Chat", Long.toUnsignedString(srcNodeId));
 
         System.out.println("User: " + Long.toUnsignedString(srcNodeId) + " joined the Chat");
+    }
+
+    private String getFileName(byte[] payload, short payloadLength){
+        byte[] name = new byte[payloadLength - 4];
+
+        for(int i = 0; i < name.length; i++){
+            name[i] = payload[i + 4];
+        }
+
+        return new String(name, StandardCharsets.UTF_8);
     }
 
 }
