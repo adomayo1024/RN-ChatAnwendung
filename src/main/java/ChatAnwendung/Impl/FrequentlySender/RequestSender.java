@@ -1,5 +1,6 @@
 package ChatAnwendung.Impl.FrequentlySender;
 
+import ChatAnwendung.Impl.persistence.DownloadFiles;
 import ChatAnwendung.Impl.persistence.File;
 import ChatAnwendung.Impl.Handler.Common.AbstractHandler;
 import ChatAnwendung.Impl.MessageQueue;
@@ -15,6 +16,10 @@ public class RequestSender extends AbstractHandler {
 
     private File file;
 
+    private int lastSequenz = 0;
+
+    private int timesOfRequestOfLastSequenz = 0;
+
     public RequestSender(File file) {
         this.file = file;
     }
@@ -25,8 +30,14 @@ public class RequestSender extends AbstractHandler {
         log.debug("Start with sending Request");
 
         int sequenz = file.getNextNeededChunk();
+        lastSequenz = sequenz;
         if(sequenz == -1 || !timeSinceLastFileDataPackageMoreThanASecond()){
             return;
+        }
+        if (lastSequenz == sequenz && timesOfRequestOfLastSequenz == 3) {
+
+            DownloadFiles.getInstance().removeFile(file.getSrcUID(), file.getFileId());
+            log.info("Removed File because of 3 Request of the same chunk in a row without an answer");
         }
         byte[] payload = new byte[0];
         long destUID = file.getSrcUID();
@@ -43,7 +54,7 @@ public class RequestSender extends AbstractHandler {
                 destPort);
         MessageQueue.getInstance().push(reqeuestPacket);
 
-        file.inkrementRequestCountWithoutResponse();
+        timesOfRequestOfLastSequenz = 1;
 
         log.debug("Sent Request for FileID {} and sequence: {}from the User: {}", fileID, sequenz, Long.toUnsignedString(destUID));
     }

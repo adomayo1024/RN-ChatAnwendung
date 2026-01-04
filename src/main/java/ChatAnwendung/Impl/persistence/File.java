@@ -87,7 +87,6 @@ public class File {
                 writedChunks[sequenz] = true;
                 file.close();
                 added = true;
-                dekrementRequestCountWithoutResponse();
                 recievedLastChunk.set(System.currentTimeMillis());
                 log.debug("Added Chunk {} to File: {}", sequenz, name);
             } catch (IOException e) {
@@ -143,18 +142,6 @@ public class File {
 
         return i;
 
-    }
-
-    public void inkrementRequestCountWithoutResponse(){
-        requestSendedWithoutAResponse.incrementAndGet();
-    }
-
-    public void dekrementRequestCountWithoutResponse(){
-        requestSendedWithoutAResponse.decrementAndGet();
-
-        if(requestSendedWithoutAResponse.intValue() < 0){
-            requestSendedWithoutAResponse.set(0);
-        }
     }
 
     public long getRecievedLastChunk(){
