@@ -2,13 +2,18 @@ package ChatAnwendung.Impl.Handler.ReceiverHandlers;
 
 import ChatAnwendung.Api.RoutingEntry;
 import ChatAnwendung.Api.RoutingTable;
+import ChatAnwendung.Impl.Exceptions.IllegalSequnzNumberException;
 import ChatAnwendung.Impl.Handler.Common.AbstractHandler;
 import ChatAnwendung.Impl.BCPPacket;
+import ChatAnwendung.Impl.Handler.Common.ExceptionHandler;
+import ChatAnwendung.Impl.MessageQueue;
 import ChatAnwendung.Impl.PacketTypes;
 import ChatAnwendung.Impl.persistence.*;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
@@ -92,6 +97,42 @@ public class ReceiveHanlder extends AbstractHandler implements Runnable {
     }
 
     private void handleResendRequest(BCPPacket packet) {
+        log.debug("Received Request");
+
+
+        int sequenz = packet.getSequenz();
+        int fileId = packet.getFileId();
+        String filePath = storage.getOpenFile(fileId);
+        long srcNodeId = packet.getSrcNodeId();
+        InetAddress srcAddress = packet.getAddress();
+        int srcPort = packet.getPort();
+
+
+
+        try (RandomAccessFile file = new RandomAccessFile(filePath, "r")) {
+            packet.setPayload(split(file, sequenz));
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        packet.setType(PacketTypes.RESENDREQUEST);
+        packet.setHops((byte)0);
+        packet.setTtl((byte) 32);
+        packet.setSrcNodeId(storage.getID());
+        packet.setDestNodeId(srcNodeId);
+        packet.setFileId(fileId);
+        packet.setSequenz(sequenz);
+        packet.setPayloadLength(packet.getPayloadLength());
+        packet.setAddress(srcAddress);
+        packet.setPort(srcPort);
+
+        DatagramPacket requestPacket = packet.makeDatagramPacket();
+
+        senderQueue.add(requestPacket);
+
+        log.debug("Send Request for FileID {} and sequence: {} from the User: {}", fileId, sequenz, Long.toUnsignedString(srcNodeId));
+
     }
 
     private void handleFileEnd(BCPPacket packet) {
@@ -227,14 +268,27 @@ public class ReceiveHanlder extends AbstractHandler implements Runnable {
         System.out.println("User: " + Long.toUnsignedString(srcNodeId) + " joined the Chat");
     }
 
-    private String getFileName(byte[] payload, short payloadLength){
-        byte[] name = new byte[payloadLength - 4];
+    private byte[] split(RandomAccessFile file, long sequenz){
+        byte[] chunk = null;
 
-        for(int i = 0; i < name.length; i++){
-            name[i] = payload[i + 4];
+        try {
+            long anzahlChunks = (long)Math.ceil(file.length() / 1300.0);
+            if(anzahlChunks <= sequenz || sequenz < 0){
+                throw new IllegalSequnzNumberException(sequenz);
+            }
+            else if(anzahlChunks - 1 == sequenz){
+                int size = (int)(file.length() % 1300);
+                chunk = new byte[size];
+            }
+            else{
+                chunk = new byte[1300];
+            }
+            file.seek(sequenz * 1300);
+            file.read(chunk);
+        } catch (IOException | IllegalSequnzNumberException e) {
+            ExceptionHandler.handle(e, this.getClass());
         }
-
-        return new String(name, StandardCharsets.UTF_8);
+        return chunk;
     }
 
 }
