@@ -96,6 +96,8 @@ public class ReceiveHanlder extends AbstractHandler implements Runnable {
 
     private void handleFileEnd(BCPPacket packet) {
 
+        log.debug("Received File End from User: {} and File: {}", packet.getSrcNodeId(), packet.getFileId());
+
     }
 
     private void handleFileInit(BCPPacket packet) {
