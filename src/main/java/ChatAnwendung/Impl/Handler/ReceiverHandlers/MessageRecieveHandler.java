@@ -1,6 +1,6 @@
 package ChatAnwendung.Impl.Handler.ReceiverHandlers;
 
-import ChatAnwendung.Impl.Header;
+import ChatAnwendung.Impl.BCPPacket;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.DatagramPacket;
@@ -27,7 +27,7 @@ public class MessageRecieveHandler extends AbstractRecieveHanlder {
 
         if(payloadLength >= 1){
             byte[] message = new byte[payloadLength];
-            System.arraycopy(data, Header.getPayloadPos(), message, 0, payloadLength);
+            System.arraycopy(data, BCPPacket.getPayloadPos(), message, 0, payloadLength);
             terminalOutput.append(new String(message, StandardCharsets.UTF_8));
         }
 

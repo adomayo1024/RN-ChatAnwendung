@@ -2,7 +2,7 @@ package Handlers.ReceiveHandlers;
 
 import ChatAnwendung.Impl.Handler.ReceiverHandlers.FileDataRecieveHandler;
 import ChatAnwendung.Impl.Handler.ReceiverHandlers.FileInitReceiveHandler;
-import ChatAnwendung.Impl.Header;
+import ChatAnwendung.Impl.BCPPacket;
 import ChatAnwendung.Impl.PacketTypes;
 import ChatAnwendung.Impl.persistence.DownloadFiles;
 import org.junit.jupiter.api.*;
@@ -33,10 +33,10 @@ public class FileInitReceiveHandlerTest {
     @BeforeEach
     public void createPacket(){
 
-        Header.addInt(0, fileSize, payload);
+        BCPPacket.addInt(0, fileSize, payload);
         System.arraycopy(fileName.getBytes(), 0, payload, 4, fileName.getBytes().length);
 
-        byte[] header = Header.makeHeader(
+        byte[] header = BCPPacket.makeHeader(
                 (byte) PacketTypes.FILE_INIT.ordinal(),
                 (byte) 32,
                 srcId,
@@ -46,7 +46,7 @@ public class FileInitReceiveHandlerTest {
                 payload
         );
 
-        Header.addLong(Header.getSrcNodePos(), srcId, header);
+        BCPPacket.addLong(BCPPacket.getSrcNodeIdPos(), srcId, header);
 
         byte[] packetBytes = new byte[header.length + payload.length];
 
@@ -97,14 +97,14 @@ public class FileInitReceiveHandlerTest {
         byte[] fileDataPayload = new byte[] {97,98,99,100,96,95,94,93,92,91,90,97,97,97,97,97,97,97,97,97,
                 97,97,97,97,97,97,102,97,97,97,};
         short fileDataPayloadLength = (short) fileDataPayload.length;
-        byte[] fileDataBytes = new byte[Header.getHeaderSize() + fileDataPayloadLength];
+        byte[] fileDataBytes = new byte[BCPPacket.getHeaderSize() + fileDataPayloadLength];
 
 
-        Header.addLong(Header.getSrcNodePos(), srcId, fileDataBytes);
-        Header.addInt(Header.getFileIdPos(), fileId, fileDataBytes);
-        Header.addInt(Header.getSequenzPos(), sequenz, fileDataBytes);
-        Header.addShort(Header.getPayloadLengthPos(), fileDataPayloadLength, fileDataBytes);
-        System.arraycopy(fileDataPayload, 0, fileDataBytes, Header.getPayloadPos(), fileDataPayloadLength);
+        BCPPacket.addLong(BCPPacket.getSrcNodeIdPos(), srcId, fileDataBytes);
+        BCPPacket.addInt(BCPPacket.getFileIdPos(), fileId, fileDataBytes);
+        BCPPacket.addInt(BCPPacket.getSequenzPos(), sequenz, fileDataBytes);
+        BCPPacket.addShort(BCPPacket.getPayloadLengthPos(), fileDataPayloadLength, fileDataBytes);
+        System.arraycopy(fileDataPayload, 0, fileDataBytes, BCPPacket.getPayloadPos(), fileDataPayloadLength);
 
         DatagramPacket fileDataPacket = new DatagramPacket(fileDataBytes, fileDataBytes.length);
 

@@ -3,7 +3,7 @@ package ChatAnwendung.Impl.Handler.Common;
 import ChatAnwendung.Api.Handler;
 import ChatAnwendung.Impl.Exceptions.LoginException;
 import ChatAnwendung.Impl.Handler.InputHandlers.*;
-import ChatAnwendung.Impl.Header;
+import ChatAnwendung.Impl.BCPPacket;
 import ChatAnwendung.Impl.PacketTypes;
 import ChatAnwendung.Impl.Handler.ReceiverHandlers.*;
 import lombok.extern.slf4j.Slf4j;
@@ -69,7 +69,7 @@ public class HandlerFactory {
 
 
     public static Runnable getRecieverHandler(DatagramPacket packet, boolean isItForMe) {
-        PacketTypes type = PacketTypes.values()[packet.getData()[Header.getTypePos()]];
+        PacketTypes type = PacketTypes.values()[packet.getData()[BCPPacket.getTypePos()]];
         Handler handler;
         if(!isItForMe){
          handler = new FeedForwadingHanlder(packet);

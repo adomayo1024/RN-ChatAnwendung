@@ -1,7 +1,7 @@
 package Handlers.ReceiveHandlers;
 
 import ChatAnwendung.Impl.Handler.ReceiverHandlers.RequestRecieveHandler;
-import ChatAnwendung.Impl.Header;
+import ChatAnwendung.Impl.BCPPacket;
 import ChatAnwendung.Impl.MessageQueue;
 import ChatAnwendung.Impl.PacketTypes;
 import ChatAnwendung.Impl.persistence.Storage;
@@ -49,7 +49,7 @@ public class RequestReceiveHandlerTest {
 
         fileSize = new File(filePath).length();
 
-        byte[] header = Header.makeHeader(
+        byte[] header = BCPPacket.makeHeader(
                 (byte) PacketTypes.RESENDREQUEST.ordinal(),
                 (byte)32,
                 srcId,
@@ -86,12 +86,12 @@ public class RequestReceiveHandlerTest {
         assertEquals(port, sendPacket.getPort());
 
         byte[] data = sendPacket.getData();
-        long actualDestId = ByteBuffer.wrap(data, Header.getDestNodePos(), Header.getDestNodeSize()).getLong();
-        int actualFileId = ByteBuffer.wrap(data, Header.getFileIdPos(), Header.getFileIdSize()).getInt();
-        int actualSequenz = ByteBuffer.wrap(data, Header.getSequenzPos(), Header.getSequenzSize()).getInt();
-        int payloadLength = ByteBuffer.wrap(data, Header.getPayloadLengthPos(), Header.getPayloadLengthSize()).getShort();
+        long actualDestId = ByteBuffer.wrap(data, BCPPacket.getDestNodeIdPos(), BCPPacket.getDestNodeSize()).getLong();
+        int actualFileId = ByteBuffer.wrap(data, BCPPacket.getFileIdPos(), BCPPacket.getFileIdSize()).getInt();
+        int actualSequenz = ByteBuffer.wrap(data, BCPPacket.getSequenzPos(), BCPPacket.getSequenzSize()).getInt();
+        int payloadLength = ByteBuffer.wrap(data, BCPPacket.getPayloadLengthPos(), BCPPacket.getPayloadLengthSize()).getShort();
         byte[] payload = new byte[payloadLength];
-        System.arraycopy(data, Header.getPayloadPos(), payload, 0, payloadLength);
+        System.arraycopy(data, BCPPacket.getPayloadPos(), payload, 0, payloadLength);
         assertEquals(Storage.getInstance().getID(), actualDestId);
         assertEquals(fileId, actualFileId);
         assertEquals(sequenz, actualSequenz);
@@ -118,7 +118,7 @@ public class RequestReceiveHandlerTest {
 
         int sequenz = (int)Math.ceil(fileSize / 1300.0) - 1;
 
-        Header.addInt(Header.getSequenzPos(), sequenz, packet.getData());
+        BCPPacket.addInt(BCPPacket.getSequenzPos(), sequenz, packet.getData());
 
 
         RequestRecieveHandler handler = new RequestRecieveHandler(packet);
@@ -137,12 +137,12 @@ public class RequestReceiveHandlerTest {
         assertEquals(port, sendPacket.getPort());
 
         byte[] data = sendPacket.getData();
-        long actualDestId = ByteBuffer.wrap(data, Header.getDestNodePos(), Header.getDestNodeSize()).getLong();
-        int actualFileId = ByteBuffer.wrap(data, Header.getFileIdPos(), Header.getFileIdSize()).getInt();
-        int actualSequenz = ByteBuffer.wrap(data, Header.getSequenzPos(), Header.getSequenzSize()).getInt();
-        int payloadLength = ByteBuffer.wrap(data, Header.getPayloadLengthPos(), Header.getPayloadLengthSize()).getShort();
+        long actualDestId = ByteBuffer.wrap(data, BCPPacket.getDestNodeIdPos(), BCPPacket.getDestNodeSize()).getLong();
+        int actualFileId = ByteBuffer.wrap(data, BCPPacket.getFileIdPos(), BCPPacket.getFileIdSize()).getInt();
+        int actualSequenz = ByteBuffer.wrap(data, BCPPacket.getSequenzPos(), BCPPacket.getSequenzSize()).getInt();
+        int payloadLength = ByteBuffer.wrap(data, BCPPacket.getPayloadLengthPos(), BCPPacket.getPayloadLengthSize()).getShort();
         byte[] payload = new byte[payloadLength];
-        System.arraycopy(data, Header.getPayloadPos(), payload, 0, payloadLength);
+        System.arraycopy(data, BCPPacket.getPayloadPos(), payload, 0, payloadLength);
 
         assertEquals(Storage.getInstance().getID(), actualDestId);
         assertEquals(fileId, actualFileId);

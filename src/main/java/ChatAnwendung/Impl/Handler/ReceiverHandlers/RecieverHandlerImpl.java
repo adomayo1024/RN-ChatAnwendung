@@ -24,7 +24,7 @@ public class RecieverHandlerImpl implements RecieverHanlder {
     @Override
     public void handle(DatagramPacket packet) {
 
-        log.debug("Start with handle the packet from the Type {}", PacketTypes.values()[packet.getData()[Header.getTypePos()]]);
+        log.debug("Start with handle the packet from the Type {}", PacketTypes.values()[packet.getData()[BCPPacket.getTypePos()]]);
 
         if(checksumRight(packet)){
             boolean isItForMe = isItForMe(packet);
@@ -42,15 +42,15 @@ public class RecieverHandlerImpl implements RecieverHanlder {
 
     private boolean checksumRight(DatagramPacket packet) {
         byte[] data = packet.getData();
-        long expectCrc = makeBytesToLong(data, Header.getCrcPos());
-        long realCrc = Header.makeChecksum(Header.extractChecksum(data));
+        long expectCrc = makeBytesToLong(data, BCPPacket.getCrcPos());
+        long realCrc = BCPPacket.makeChecksum(BCPPacket.extractChecksum(data));
 
         return expectCrc == realCrc;
     }
 
     private boolean isItForMe(DatagramPacket packet){
 
-        long destUID = makeBytesToLong(packet.getData(), Header.getDestNodePos());
+        long destUID = makeBytesToLong(packet.getData(), BCPPacket.getDestNodeIdPos());
 
         return destUID == Storage.getInstance().getID() || destUID == -1;
     }

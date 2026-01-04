@@ -1,7 +1,7 @@
 package ChatAnwendung.Impl.Handler.ReceiverHandlers;
 
 import ChatAnwendung.Impl.Handler.Common.AbstractHandler;
-import ChatAnwendung.Impl.Header;
+import ChatAnwendung.Impl.BCPPacket;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.DatagramPacket;
@@ -17,31 +17,35 @@ public class AbstractRecieveHanlder extends AbstractHandler {
 
 
     protected short getPayloadLength(byte[] data){
-        return makeBytesToShort(data, Header.getPayloadLengthPos());
+        return makeBytesToShort(data, BCPPacket.getPayloadLengthPos());
     }
 
     protected long getSrcUID(byte[] data){
-        return makeBytesToLong(data, Header.getSrcNodePos());
+        return makeBytesToLong(data, BCPPacket.getSrcNodeIdPos());
     }
 
     protected long getDestId(byte[] data){
-        return makeBytesToLong(data, Header.getDestNodePos());
+        return makeBytesToLong(data, BCPPacket.getDestNodeIdPos());
+    }
+
+    protected byte getType(byte[] data){
+        return data[BCPPacket.getTypePos()];
     }
 
     protected byte getTtl(byte[] data){
-        return data[Header.getTtlPos()];
+        return data[BCPPacket.getTtlPos()];
     }
 
     protected byte getHops(byte[] data){
-        return data[Header.getHopsPos()];
+        return data[BCPPacket.getHopsPos()];
     }
 
     protected int getSequenz(byte[] data){
-        return makeBytesToInt(data, Header.getSequenzPos());
+        return makeBytesToInt(data, BCPPacket.getSequenzPos());
     }
 
     protected int getFileId(byte[] data){
-        return makeBytesToInt(data, Header.getFileIdPos());
+        return makeBytesToInt(data, BCPPacket.getFileIdPos());
     }
 
     protected long makeBytesToLong(byte[] data, int pos){

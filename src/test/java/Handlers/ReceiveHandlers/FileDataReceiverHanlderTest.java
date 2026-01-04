@@ -1,7 +1,7 @@
 package Handlers.ReceiveHandlers;
 
 import ChatAnwendung.Impl.Handler.ReceiverHandlers.FileDataRecieveHandler;
-import ChatAnwendung.Impl.Header;
+import ChatAnwendung.Impl.BCPPacket;
 import ChatAnwendung.Impl.PacketTypes;
 import ChatAnwendung.Impl.persistence.DownloadFiles;
 import ChatAnwendung.Impl.persistence.File;
@@ -93,7 +93,7 @@ public class FileDataReceiverHanlderTest {
         }
 
 
-        byte[] header = Header.makeHeader(
+        byte[] header = BCPPacket.makeHeader(
                 (byte) PacketTypes.FILE_DATA.ordinal(),
                 (byte)32,
                 srcID,
@@ -104,7 +104,7 @@ public class FileDataReceiverHanlderTest {
 
         );
 
-        Header.addLong(Header.getSrcNodePos(), srcID, header);
+        BCPPacket.addLong(BCPPacket.getSrcNodeIdPos(), srcID, header);
 
         byte[] packetBytes = new byte[header.length + payloadlenght];
 
@@ -165,7 +165,7 @@ public class FileDataReceiverHanlderTest {
 
     @Test
     public void runMiddleSequenzTest(){
-        Header.addInt(Header.getSequenzPos(), middleSequenz, packet.getData());
+        BCPPacket.addInt(BCPPacket.getSequenzPos(), middleSequenz, packet.getData());
 
         FileDataRecieveHandler handler = new FileDataRecieveHandler(packet);
         handler.run();

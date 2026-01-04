@@ -6,7 +6,7 @@ import ChatAnwendung.Impl.Exceptions.IllegalSequnzNumberException;
 import ChatAnwendung.Impl.Exceptions.NotAUIDException;
 import ChatAnwendung.Impl.Exceptions.UnknowUIDException;
 import ChatAnwendung.Impl.Handler.Common.ExceptionHandler;
-import ChatAnwendung.Impl.Header;
+import ChatAnwendung.Impl.BCPPacket;
 import ChatAnwendung.Impl.MessageQueue;
 import ChatAnwendung.Impl.PacketTypes;
 import ChatAnwendung.Impl.persistence.RoutingTableImpl;
@@ -166,7 +166,7 @@ public class FileInputHandler extends AbstractInputHandler {
         }
         String fileName = splitPath[splitPath.length - 1];
         byte[] payload = new byte[fileName.getBytes().length + 4];
-        Header.addInt(0, (int)length, payload);
+        BCPPacket.addInt(0, (int)length, payload);
         System.arraycopy(fileName.getBytes(), 0, payload, 4, fileName.getBytes().length);
         return payload;
     }

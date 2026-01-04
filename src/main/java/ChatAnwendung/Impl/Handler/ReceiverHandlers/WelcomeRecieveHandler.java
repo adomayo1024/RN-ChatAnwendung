@@ -1,7 +1,7 @@
 package ChatAnwendung.Impl.Handler.ReceiverHandlers;
 
 import ChatAnwendung.Api.RoutingEntry;
-import ChatAnwendung.Impl.Header;
+import ChatAnwendung.Impl.BCPPacket;
 import ChatAnwendung.Impl.persistence.RoutingEntryImpl;
 import ChatAnwendung.Impl.persistence.RoutingTableImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +26,7 @@ public class WelcomeRecieveHandler extends AbstractRecieveHanlder {
         long srcUID = getSrcUID(data);
         InetAddress srcAdress = packet.getAddress();
         int srcPort = packet.getPort();
-        byte hops = data[Header.getHopsPos()];
+        byte hops = data[BCPPacket.getHopsPos()];
         long lastSeen = System.currentTimeMillis();
 
         RoutingEntry entry = new RoutingEntryImpl(

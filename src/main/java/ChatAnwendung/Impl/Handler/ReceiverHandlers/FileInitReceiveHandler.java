@@ -2,7 +2,7 @@ package ChatAnwendung.Impl.Handler.ReceiverHandlers;
 
 import ChatAnwendung.Impl.persistence.DownloadFiles;
 import ChatAnwendung.Impl.persistence.File;
-import ChatAnwendung.Impl.Header;
+import ChatAnwendung.Impl.BCPPacket;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.DatagramPacket;
@@ -28,7 +28,7 @@ public class FileInitReceiveHandler extends AbstractRecieveHanlder {
         long srcUID = getSrcUID(data);
         short payloadLength = getPayloadLength(data);
         byte[] payload = new byte[payloadLength];
-        System.arraycopy(data, Header.getPayloadPos(), payload, 0, payloadLength);
+        System.arraycopy(data, BCPPacket.getPayloadPos(), payload, 0, payloadLength);
         String fileName = getFileName(payload, payloadLength);
         int size = getSize(payload);
         ScheduledExecutorService timer = DownloadFiles.getInstance().getScheduledThreadPool();

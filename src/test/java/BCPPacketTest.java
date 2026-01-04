@@ -1,4 +1,4 @@
-import ChatAnwendung.Impl.Header;
+import ChatAnwendung.Impl.BCPPacket;
 import ChatAnwendung.Impl.PacketTypes;
 import ChatAnwendung.Impl.persistence.Storage;
 import org.junit.jupiter.api.Test;
@@ -7,7 +7,7 @@ import java.nio.ByteBuffer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class HeaderTest {
+public class BCPPacketTest {
 
     private static final long POLY = 0x42F0E1EBA9EA3693L;
     private static final long[] TABLE = new long[256];
@@ -34,7 +34,7 @@ public class HeaderTest {
         long testLong = 12345678910111213L;
         byte[] array = new byte[Long.BYTES];
 
-        Header.addLong(0, testLong, array);
+        BCPPacket.addLong(0, testLong, array);
 
         assertEquals(testLong, ByteBuffer.wrap(array).getLong());
 
@@ -45,7 +45,7 @@ public class HeaderTest {
         long testLong = 12345678910111213L;
         byte[] array = new byte[Long.BYTES + 3];
 
-        Header.addLong(2, testLong, array);
+        BCPPacket.addLong(2, testLong, array);
 
         assertEquals(testLong, ByteBuffer.wrap(array, 2, 8).getLong());
 
@@ -58,7 +58,7 @@ public class HeaderTest {
 
         byte[] array = new byte[Integer.BYTES];
 
-        Header.addInt(0, testInt, array);
+        BCPPacket.addInt(0, testInt, array);
 
         assertEquals(testInt, ByteBuffer.wrap(array).getInt());
     }
@@ -69,7 +69,7 @@ public class HeaderTest {
 
         byte[] array = new byte[Integer.BYTES + 3];
 
-        Header.addInt(2, testInt, array);
+        BCPPacket.addInt(2, testInt, array);
 
         assertEquals(testInt, ByteBuffer.wrap(array, 2, 4).getInt());
     }
@@ -80,7 +80,7 @@ public class HeaderTest {
 
         byte[] array = new byte[Short.BYTES];
 
-        Header.addShort(0, testShort, array);
+        BCPPacket.addShort(0, testShort, array);
 
         assertEquals(testShort, ByteBuffer.wrap(array).getShort());
     }
@@ -91,7 +91,7 @@ public class HeaderTest {
 
         byte[] array = new byte[Short.BYTES + 3];
 
-        Header.addShort(2, testShort, array);
+        BCPPacket.addShort(2, testShort, array);
 
         assertEquals(testShort, ByteBuffer.wrap(array, 2, 2).getShort());
     }
@@ -109,7 +109,7 @@ public class HeaderTest {
         byte[] payload = new byte[] {41, 56, 43, 68};
         short payloadLength = (short) payload.length;
 
-        byte[] header = Header.makeHeader(
+        byte[] header = BCPPacket.makeHeader(
                 type,
                 ttl,
                 destId,
@@ -119,7 +119,7 @@ public class HeaderTest {
                 payload
         );
 
-        byte[] headerWithoutChecksumm = Header.extractChecksum(header);
+        byte[] headerWithoutChecksumm = BCPPacket.extractChecksum(header);
 
         assertEquals(30, headerWithoutChecksumm.length);
         assertEquals(version, ByteBuffer.wrap(headerWithoutChecksumm, 0, 1).get());
@@ -143,7 +143,7 @@ public class HeaderTest {
             crc = TABLE[index] ^ (crc << 8);
         }
 
-        long actualCrc = Header.makeChecksum(test);
+        long actualCrc = BCPPacket.makeChecksum(test);
 
         assertEquals(crc , actualCrc);
 
@@ -162,7 +162,7 @@ public class HeaderTest {
         byte[] payload = new byte[] {41, 56, 43, 68};
         short payloadLength = (short) payload.length;
 
-        byte[] header = Header.makeHeader(
+        byte[] header = BCPPacket.makeHeader(
                 type,
                 ttl,
                 destId,
@@ -182,7 +182,7 @@ public class HeaderTest {
         assertEquals(fileId, ByteBuffer.wrap(header, 24, 4).getInt());
         assertEquals(payloadLength, ByteBuffer.wrap(header, 36, 2).getShort());
 
-        byte[] headerWithoutChecksumm = Header.extractChecksum(header);
+        byte[] headerWithoutChecksumm = BCPPacket.extractChecksum(header);
 
         byte[] checksummArray = new byte[headerWithoutChecksumm.length + payloadLength];
         System.arraycopy(headerWithoutChecksumm, 0, checksummArray, 0, headerWithoutChecksumm.length);
@@ -194,7 +194,7 @@ public class HeaderTest {
             crc = TABLE[index] ^ (crc << 8);
         }
 
-        long actualCrc = Header.makeChecksum(checksummArray);
+        long actualCrc = BCPPacket.makeChecksum(checksummArray);
 
         assertEquals(crc, actualCrc);
     }

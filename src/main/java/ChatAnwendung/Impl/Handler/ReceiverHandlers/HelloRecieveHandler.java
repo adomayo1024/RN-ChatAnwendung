@@ -1,7 +1,7 @@
 package ChatAnwendung.Impl.Handler.ReceiverHandlers;
 
 import ChatAnwendung.Api.RoutingEntry;
-import ChatAnwendung.Impl.Header;
+import ChatAnwendung.Impl.BCPPacket;
 import ChatAnwendung.Impl.MessageQueue;
 import ChatAnwendung.Impl.PacketTypes;
 import ChatAnwendung.Impl.persistence.RoutingEntryImpl;
@@ -28,7 +28,7 @@ public class HelloRecieveHandler extends AbstractRecieveHanlder {
         long srcUID = getSrcUID(data);
         InetAddress srcAdress = packet.getAddress();
         int srcPort = packet.getPort();
-        byte hops = (byte) (data[Header.getHopsPos()] + 1);
+        byte hops = (byte) (data[BCPPacket.getHopsPos()] + 1);
         long last_seen = System.currentTimeMillis();
 
         RoutingEntry entry = new RoutingEntryImpl(srcUID, srcAdress, srcPort, hops, last_seen);

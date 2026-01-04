@@ -2,7 +2,7 @@ package ChatAnwendung.Impl.FrequentlySender;
 
 import ChatAnwendung.Api.RoutingEntry;
 import ChatAnwendung.Impl.Handler.Common.AbstractHandler;
-import ChatAnwendung.Impl.Header;
+import ChatAnwendung.Impl.BCPPacket;
 import ChatAnwendung.Impl.MessageQueue;
 import ChatAnwendung.Impl.PacketTypes;
 import ChatAnwendung.Impl.persistence.RoutingTableImpl;
@@ -32,9 +32,9 @@ public class RoutingTableSender extends AbstractHandler{
         for(RoutingEntry entry : allEntries){
             byte[] routingEntryPayload = new byte[routingTableEntrySize];
 
-            Header.addLong(0, entry.getUID(), routingEntryPayload);
+            BCPPacket.addLong(0, entry.getUID(), routingEntryPayload);
             routingEntryPayload[8] = entry.getHops();
-            Header.addLong(9, entry.getLastSeen(), routingEntryPayload);
+            BCPPacket.addLong(9, entry.getLastSeen(), routingEntryPayload);
 
             allRoutingTablePackets.put(entry, routingEntryPayload);
 

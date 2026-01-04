@@ -1,13 +1,12 @@
 package ChatAnwendung.Impl.Handler.Common;
 
 import ChatAnwendung.Api.Handler;
-import ChatAnwendung.Impl.Header;
+import ChatAnwendung.Impl.BCPPacket;
 import ChatAnwendung.Impl.PacketTypes;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.DatagramPacket;
 import java.net.InetAddress;
-import java.util.logging.Logger;
 
 @Slf4j
 public abstract class AbstractHandler implements Handler {
@@ -18,7 +17,7 @@ public abstract class AbstractHandler implements Handler {
 
     protected DatagramPacket makeDatagramPackage(PacketTypes type, byte ttl, long destId, int sequenz, int fileId, byte[] payload, InetAddress adress, int port) {
 
-        byte[] header = Header.makeHeader((byte) type.ordinal(), ttl, destId, sequenz, fileId, (short) payload.length, payload);
+        byte[] header = BCPPacket.makeHeader((byte) type.ordinal(), ttl, destId, sequenz, fileId, (short) payload.length, payload);
 
         byte[] packet = new byte[header.length + payload.length];
 
