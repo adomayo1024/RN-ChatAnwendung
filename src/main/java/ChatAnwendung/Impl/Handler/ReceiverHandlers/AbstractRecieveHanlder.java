@@ -24,6 +24,10 @@ public class AbstractRecieveHanlder extends AbstractHandler {
         return makeBytesToLong(data, Header.getSrcNodePos());
     }
 
+    protected long getDestId(byte[] data){
+        return makeBytesToLong(data, Header.getDestNodePos());
+    }
+
     protected byte getTtl(byte[] data){
         return data[Header.getTtlPos()];
     }

@@ -22,10 +22,10 @@ public class FeedForwadingHanlder extends AbstractRecieveHanlder{
 
         byte[] data = packet.getData();
         byte ttl = getTtl(data);
-        long srcId = getSrcUID(data);
+        long destId = getDestId(data);
         ttl -= 1;
-        InetAddress nextHopAddress = RoutingTableImpl.getInstance().getNextHopAdressForUID(srcId);
-        int nextHopPort = RoutingTableImpl.getInstance().getNextHopPortForUID(srcId);
+        InetAddress nextHopAddress = RoutingTableImpl.getInstance().getNextHopAdressForUID(destId);
+        int nextHopPort = RoutingTableImpl.getInstance().getNextHopPortForUID(destId);
 
         if(ttl > 0 || nextHopAddress == null || nextHopPort == -1){
             byte hops = getHops(data);
@@ -41,7 +41,7 @@ public class FeedForwadingHanlder extends AbstractRecieveHanlder{
             log.debug("Packet forwarded");
         }
         else {
-            log.debug("Packet throw away from: {}", srcId);
+            log.debug("Packet throw away from: {}", destId);
         }
     }
 }
