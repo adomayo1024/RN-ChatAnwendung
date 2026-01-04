@@ -28,7 +28,7 @@ public class GoodbyeInputHandler extends AbstractInputHandler {
 
         log.debug("Finished with canceling heartbeats and timeout");
 
-        for (RoutingEntry neighbour : RoutingTableImpl.getInstance().getAllEntries()) {
+        for (RoutingEntry neighbour : RoutingTableImpl.getInstance().getAllDirectNeighbours()) {
 
             if(RoutingTableImpl.getInstance().isUIDavailable(neighbour.getUID())){
                 byte[] payload = new byte[0];
