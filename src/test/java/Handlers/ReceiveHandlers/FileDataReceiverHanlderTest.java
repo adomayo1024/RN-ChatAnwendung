@@ -6,10 +6,7 @@ import ChatAnwendung.Impl.PacketTypes;
 import ChatAnwendung.Impl.persistence.DownloadFiles;
 import ChatAnwendung.Impl.persistence.File;
 import ChatAnwendung.Impl.persistence.ThreadPools;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -17,6 +14,7 @@ import java.io.RandomAccessFile;
 import java.net.DatagramPacket;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
+import java.nio.file.attribute.FileAttribute;
 import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -37,33 +35,39 @@ public class FileDataReceiverHanlderTest {
 
     private  short payloadlenght = (short)payload.length;
 
-    private final String filePath = "C:\\Users\\leons\\IdeaProjects\\RN-ChatAnwendung\\src\\test\\resources\\TestFiles\\FileDataTestFile.jpeg";
+    private static final String filePath = "C:\\Users\\leons\\IdeaProjects\\RN-ChatAnwendung\\src\\test\\resources\\TestFiles\\TestFile.jpeg";
 
-    private  String newFilePath;
+    private static   String newFilePath;
 
     private  DatagramPacket packet;
 
+    @BeforeAll
+    public static void createNewFilePath(){
+        String[] filePathSplit= filePath.split("\\.");
+        newFilePath = filePathSplit[0];
+        newFilePath += "test";
+        newFilePath += ".";
+        newFilePath += filePathSplit[1];
+    }
 
     @BeforeEach
-    public void createFileAndPacket(){
-        String[] filePathSplit= filePath.split("\\.");
-        filePathSplit[filePathSplit.length- 2] = filePathSplit[filePathSplit.length - 2] + "test";
-        newFilePath = filePathSplit[0];
-        newFilePath += filePathSplit[1];
+    public void createFileAndPacket()  {
+
 
         Path source = Path.of(filePath);
         Path target = Path.of(newFilePath);
 
         try {
-            Files.copy(source, target, StandardCopyOption.REPLACE_EXISTING);
+            Files.createFile(target);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
+
         long fileSIze;
 
         try {
-            fileSIze = Files.size(target);
+            fileSIze = Files.size(source);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -110,9 +114,10 @@ public class FileDataReceiverHanlderTest {
 
     @AfterEach
     public void deleteFile(){
+        DownloadFiles.getInstance().removeAll();
         try {
             Files.delete(Paths.get(newFilePath));
-        } catch(FileNotFoundException | DirectoryNotEmptyException e){
+        } catch(NoSuchFileException | DirectoryNotEmptyException e){
 
         }
         catch (IOException e) {
@@ -122,7 +127,15 @@ public class FileDataReceiverHanlderTest {
 
     @AfterAll
     public static void shutdown(){
-        ThreadPools.getInstance().shutDown();
+        DownloadFiles.getInstance().removeAll();
+        try {
+            Files.delete(Paths.get(newFilePath));
+        } catch(NoSuchFileException | DirectoryNotEmptyException e){
+
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 
@@ -131,7 +144,7 @@ public class FileDataReceiverHanlderTest {
         FileDataRecieveHandler handler = new FileDataRecieveHandler(packet);
         handler.run();
 
-        //assertNull(DownloadFiles.getInstance().getFile(srcID, fileId));
+        assertEquals(1, DownloadFiles.getInstance().getFile(srcID, fileId).getNextNeededChunk());
 
         byte[] expectedPayload = new byte[payloadlenght];
         try(RandomAccessFile file = new RandomAccessFile(newFilePath, "r")){
@@ -154,6 +167,8 @@ public class FileDataReceiverHanlderTest {
 
         FileDataRecieveHandler handler = new FileDataRecieveHandler(packet);
         handler.run();
+
+        assertEquals(0, DownloadFiles.getInstance().getFile(srcID, fileId).getNextNeededChunk());
 
 
         byte[] expectedPayload = new byte[payloadlenght];

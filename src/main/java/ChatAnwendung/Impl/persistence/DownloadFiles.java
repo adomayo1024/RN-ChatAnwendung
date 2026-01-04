@@ -73,12 +73,10 @@ public class DownloadFiles {
     }
 
     public void removeAll(){
-        for(Long srcId : downloadedFiles.keySet()){
-            for(Integer fileId : downloadedFiles.get(srcId).keySet()){
-                removeFile(srcId, fileId);
-            }
-            downloadedFiles.remove(srcId);
-        }
+        downloadedFiles.clear();
+        finishedFiles.clear();
+
+
     }
 
     public void removeFile(long srcUID, int fileId) {
