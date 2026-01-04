@@ -105,7 +105,27 @@ public class ReceiveHanlder extends AbstractHandler implements Runnable {
     }
 
     private void handleWelcome(BCPPacket packet) {
+        log.debug("Received Welcome");
 
+        long srcNodeId = packet.getSrcNodeId();
+        InetAddress srcAdress = packet.getAddress();
+        int srcPort = packet.getPort();
+        byte hops = packet.getHops();
+        long lastSeen = System.currentTimeMillis();
+
+        RoutingEntry entry = new RoutingEntryImpl(
+                packet.getSrcNodeId(),
+                packet.getAddress(),
+                packet.getPort(),
+                (byte)(packet.getHops() + 1),
+                System.currentTimeMillis()
+        );
+
+        routingTable.add(entry);
+
+        log.debug("Routing Entry added for {}", Long.toUnsignedString(srcNodeId));
+        log.info("User: {} is available for Chatting", Long.toUnsignedString(srcNodeId));
+        System.out.println("User: " + Long.toUnsignedString(srcNodeId) + " is available for Chatting");
     }
 
     private void handleHello(BCPPacket packet) {
