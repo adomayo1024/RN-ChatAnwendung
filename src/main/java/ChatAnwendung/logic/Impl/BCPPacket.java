@@ -367,7 +367,7 @@ public class BCPPacket {
 
     public long calculateCrc() {
 
-        return makeBytesToLong(makeBCPPacketIntoBytes(), crcPos);
+        return makeChecksum(extractChecksum(makeBCPPacketIntoBytes()));
     }
 
     private byte[] makeBCPPacketIntoBytes(){
