@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.net.DatagramPacket;
 import java.net.InetAddress;
+import java.nio.charset.StandardCharsets;
 
 @Setter
 @Slf4j
@@ -274,6 +275,29 @@ public class BCPPacket {
         byte[] payload = new byte[payloadLength];
         System.arraycopy(packet.getData(), payloadPos, payload, 0, payloadLength);
         return payload;
+    }
+
+    public String getFileName(){
+
+        if(type != PacketTypes.FILE_INIT){
+            return null;
+        }
+
+        byte[] name = new byte[payloadLength - 4];
+
+        for(int i = 0; i < name.length; i++){
+            name[i] = payload[i + 4];
+        }
+
+        return new String(name, StandardCharsets.UTF_8);
+    }
+
+    public int getFileSize(){
+        if(type != PacketTypes.FILE_INIT){
+            return -1;
+        }
+
+        return makeBytesToInt(payload, 0);
     }
 
 
