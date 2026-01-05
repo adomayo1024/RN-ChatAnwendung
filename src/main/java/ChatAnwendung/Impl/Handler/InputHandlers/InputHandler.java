@@ -4,7 +4,7 @@ import ChatAnwendung.Api.RoutingEntry;
 import ChatAnwendung.Api.RoutingTable;
 import ChatAnwendung.Impl.*;
 import ChatAnwendung.Impl.Exceptions.*;
-import ChatAnwendung.Impl.FrequentlySender.HeartbeatAndRoutingTableSchedule;
+import ChatAnwendung.Impl.FrequentlySender.loopServices;
 import ChatAnwendung.Impl.Handler.Common.ExceptionHandler;
 import ChatAnwendung.Impl.persistence.*;
 import lombok.extern.slf4j.Slf4j;
@@ -277,7 +277,7 @@ public class InputHandler implements Runnable {
                 long length = file.length();
                 int anzahlChunks = (int) Math.ceil(length / 1300.0);
                 int fileId = storage.getNextFileID();
-                InetAddress address = RoutingTableImpl.getInstance().getNextHopAdressForUID(uID);
+                InetAddress address = routingTable.getNextHopAdressForUID(uID);
                 int port = routingTable.getNextHopPortForUID(uID);
                 storage.setSendOpenFile(fileId, path);
 
@@ -535,8 +535,7 @@ public class InputHandler implements Runnable {
                 log.debug("Hello packet send to {}", connection.address());
             }
 
-            threadPools.setHeartBeatAndRoutingTableTimerFuture(ThreadPools.getInstance().getHearbteatAndRoutingTableTimer().scheduleWithFixedDelay(new HeartbeatAndRoutingTableSchedule(), 1, 5, TimeUnit.SECONDS));
-            threadPools.setTimeoutFuture(ThreadPools.getInstance().getTimeoutTimer().scheduleWithFixedDelay(new TimeoutHandler(), 1, 5, TimeUnit.SECONDS));
+            threadPools.setHeartBeatAndRoutingTableTimerFuture(threadPools.getScheduleServices().scheduleWithFixedDelay(new loopServices(routingTable), 1, 5, TimeUnit.SECONDS));
             log.debug("Finished with login");
 
             log.info("Login successful");
@@ -592,7 +591,7 @@ public class InputHandler implements Runnable {
 
 
     private boolean validUID(Long uID) {
-        return RoutingTableImpl.getInstance().isUIDavailable(uID);
+        return routingTable.isUIDavailable(uID);
     }
 
     private boolean validMessage(String msg){

@@ -5,7 +5,6 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.*;
-import java.util.concurrent.locks.ReentrantLock;
 
 @Getter
 @Slf4j
@@ -13,9 +12,7 @@ public class ThreadPools {
 
     private final ScheduledExecutorService fileRequestTimer;
 
-    private final ScheduledExecutorService hearbteatAndRoutingTableTimer;
-
-    private final ScheduledExecutorService timeoutTimer;
+    private final ScheduledExecutorService scheduleServices;
 
     private final ExecutorService senderThreadPool;
 
@@ -33,8 +30,7 @@ public class ThreadPools {
 
     public ThreadPools(){
         fileRequestTimer = Executors.newScheduledThreadPool(3);
-        hearbteatAndRoutingTableTimer = Executors.newScheduledThreadPool(1);
-        timeoutTimer = Executors.newScheduledThreadPool(1);
+        scheduleServices = Executors.newScheduledThreadPool(1);
         senderThreadPool = Executors.newFixedThreadPool(1);
         inputHandlerThreadPool = Executors.newFixedThreadPool(1);
         receiverThreadPool = Executors.newFixedThreadPool(1);
@@ -44,8 +40,7 @@ public class ThreadPools {
 
     public void shutDown(){
         fileRequestTimer.shutdownNow();
-        hearbteatAndRoutingTableTimer.shutdownNow();
-        timeoutTimer.shutdownNow();
+        scheduleServices.shutdownNow();
         senderThreadPool.shutdownNow();
         inputHandlerThreadPool.shutdownNow();
         receiverThreadPool.shutdownNow();
