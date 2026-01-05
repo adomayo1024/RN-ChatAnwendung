@@ -16,7 +16,7 @@ import java.util.concurrent.locks.ReentrantLock;
 public class RoutingTableImpl implements RoutingTable {
 
     // TODO ändern wenn andere 18 verwenden
-    @Getter
+
     private static final int routingEntrySize = 17;
 
     private  Map<Long, RoutingEntry> entries;
@@ -194,5 +194,10 @@ public class RoutingTableImpl implements RoutingTable {
     public void removeAll() {
         entries.clear();
         log.debug("Removed all Entries from RoutingTable: {}", this);
+    }
+
+    @Override
+    public int getRoutingEntrySize() {
+        return routingEntrySize;
     }
 }

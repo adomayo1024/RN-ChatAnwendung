@@ -5,5 +5,18 @@ public enum InputCommands {
     FILE,
     HELLO,
     GOODBYE,
-    EXIT
+    EXIT,
+    CONNECT,
+    DISCONNECT,
+    LIST,
+    HELP;
+
+
+    public boolean isLogOutCommand(){
+        return !this.equals(SEND) && !this.equals(FILE) && !this.equals(GOODBYE);
+
+    }
+
+
+
 }
