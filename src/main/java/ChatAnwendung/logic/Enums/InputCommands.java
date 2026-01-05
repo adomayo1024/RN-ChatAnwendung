@@ -9,7 +9,8 @@ public enum InputCommands {
     CONNECT,
     DISCONNECT,
     LIST,
-    HELP;
+    HELP,
+    INFO;
 
 
     public boolean isLogOutCommand(){

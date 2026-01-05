@@ -88,6 +88,8 @@ public class InputHandler implements Runnable {
                 case InputCommands.EXIT -> handleExit(command);
 
                 case InputCommands.HELP -> handleHelp(command);
+
+                case InputCommands.INFO -> handleInfo(command);
             }
 
         }
@@ -126,10 +128,19 @@ public class InputHandler implements Runnable {
                 case InputCommands.DISCONNECT -> builder.append(disconnectHelp());
 
                 case InputCommands.LIST -> builder.append(listHelp());
+
+                case InputCommands.INFO -> builder.append(infoHelp());
             }
         }
 
         System.out.println(builder);
+    }
+
+    private String infoHelp() {
+        return """
+                info: Gibt info über die eigene Id und auf welchen port man erreichbar ist.
+                \tAufbau: info
+                """;
     }
 
     private String listHelp() {
@@ -221,6 +232,12 @@ public class InputHandler implements Runnable {
 
         log.debug("Initialization finished");
 
+    }
+
+    private void handleInfo(String[] command) {
+
+        System.out.println("You have the ID: " + storage.getUnsignedID() + "\n" +
+                "Port: " + storage.getPort());
     }
 
     private void handleList(String[] command) {
