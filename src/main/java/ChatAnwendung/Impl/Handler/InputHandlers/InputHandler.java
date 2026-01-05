@@ -2,14 +2,10 @@ package ChatAnwendung.Impl.Handler.InputHandlers;
 
 import ChatAnwendung.Api.RoutingEntry;
 import ChatAnwendung.Api.RoutingTable;
-import ChatAnwendung.Impl.BCPPacket;
-import ChatAnwendung.Impl.Exceptions.ArgumentException;
-import ChatAnwendung.Impl.Exceptions.InvalidMessageException;
-import ChatAnwendung.Impl.Exceptions.NotAUIDException;
-import ChatAnwendung.Impl.Exceptions.UnknowUIDException;
+import ChatAnwendung.Impl.*;
+import ChatAnwendung.Impl.Exceptions.*;
+import ChatAnwendung.Impl.FrequentlySender.HeartbeatAndRoutingTableSchedule;
 import ChatAnwendung.Impl.Handler.Common.ExceptionHandler;
-import ChatAnwendung.Impl.InputCommands;
-import ChatAnwendung.Impl.PacketTypes;
 import ChatAnwendung.Impl.persistence.*;
 import lombok.extern.slf4j.Slf4j;
 
@@ -18,6 +14,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 public class InputHandler implements Runnable {
@@ -151,7 +148,11 @@ public class InputHandler implements Runnable {
     }
 
     private String helloHelp() {
-        return null;
+        return "hello: Der Hello command führt eine neu anmeldung durch. Dieser darf nur ausgeführt werden wenn man sich vorher abgemeldet hat mit den \"bye\" command.\n" +
+                "\tAufbau: hello\n" +
+                "\tFehler: Wenn man schon angemeldet ist, passiert nichts und dem User wird durch eine Nachricht in Kenntniss gesetzt\n";
+
+
     }
 
     private String exitHelp() {
@@ -310,6 +311,45 @@ public class InputHandler implements Runnable {
     }
 
     private void handleHello(String[] command) {
+
+        if(storage.isLogin()){
+            ExceptionHandler.handle(new LoginException("Your are already logged in"), this.getClass());
+        }
+        else {
+            storage.login();
+
+            for (Connection connection : connectionList.getAllConnections()) {
+                byte[] payload = new byte[0];
+                BCPPacket bcpPacket = new BCPPacket(
+                        (byte) 1, //version
+                        PacketTypes.HELLO, //type
+                        (byte) 1, // ttl
+                        (byte) 0, // hops
+                        storage.getID(), //srcNodId
+                        storage.getBroadCastId(), //destNodeId
+                        0, //sequenz
+                        0, //fileId
+                        0L, //crc
+                        (short)payload.length, //payloadLength
+                        payload, //payload
+                        connection.address(), //address
+                        connection.port()); //port
+
+                DatagramPacket packet = bcpPacket.makeDatagramPacket();
+
+                senderQueue.add(packet);
+
+                log.debug("Hello packet send to {}", connection.address());
+            }
+
+            threadPools.setHeartBeatAndRoutingTableTimerFuture(ThreadPools.getInstance().getHearbteatAndRoutingTableTimer().scheduleWithFixedDelay(new HeartbeatAndRoutingTableSchedule(), 1, 5, TimeUnit.SECONDS));
+            threadPools.setTimeoutFuture(ThreadPools.getInstance().getTimeoutTimer().scheduleWithFixedDelay(new TimeoutHandler(), 1, 5, TimeUnit.SECONDS));
+            log.debug("Finished with login");
+
+            log.info("Login successful");
+            System.out.println("Login successful");
+        }
+
     }
 
     private void handleDisconnect(String[] command) {
