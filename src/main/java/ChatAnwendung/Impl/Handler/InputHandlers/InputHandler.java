@@ -11,10 +11,7 @@ import ChatAnwendung.Impl.Handler.Common.ExceptionHandler;
 import ChatAnwendung.Impl.InputCommands;
 import ChatAnwendung.Impl.MessageQueue;
 import ChatAnwendung.Impl.PacketTypes;
-import ChatAnwendung.Impl.persistence.Connection;
-import ChatAnwendung.Impl.persistence.ConnectionsList;
-import ChatAnwendung.Impl.persistence.RoutingTableImpl;
-import ChatAnwendung.Impl.persistence.Storage;
+import ChatAnwendung.Impl.persistence.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.DatagramPacket;
@@ -31,14 +28,16 @@ public class InputHandler implements Runnable {
     private final ConnectionsList connectionList;
     private final Storage storage;
     private final BlockingQueue<DatagramPacket> senderQueue;
+    private final ThreadPools threadPools;
 
 
-    public InputHandler(BlockingQueue<String> inputQueue, RoutingTable routingTabl, ConnectionsList connectionList, Storage storage, BlockingQueue<DatagramPacket> senderQueue) {
+    public InputHandler(BlockingQueue<String> inputQueue, RoutingTable routingTabl, ConnectionsList connectionList, Storage storage, BlockingQueue<DatagramPacket> senderQueue, ThreadPools threadPools) {
         this.inputQueue = inputQueue;
         this.routingTable = routingTabl;
         this.connectionList = connectionList;
         this.storage = storage;
         this.senderQueue = senderQueue;
+        this.threadPools = threadPools;
     }
 
     @Override
@@ -165,7 +164,10 @@ public class InputHandler implements Runnable {
     }
 
     private String goodbyeHelp() {
-        return null;
+        return "bye: Meldet den User ab, er kann keine Nachrichten mehr schicken oder empfangen\n" +
+                "\tAufbau: bye\n" +
+                "\tFehler: Wenn man schon abgemeldet ist, kann man sich nicht nochmal abmelden\n";
+
     }
 
     private String fileHelp() {
@@ -265,6 +267,47 @@ public class InputHandler implements Runnable {
     }
 
     private void handleGoodbye(String[] command) {
+        log.debug("Start logout");
+
+        threadPools.getHeartBeatAndRoutingTableTimerFuture().cancel(true);
+        threadPools.getTimeoutFuture().cancel(true);
+        storage.logout();
+        threadPools.setHeartBeatAndRoutingTableTimerFuture(null);
+        threadPools.setTimeoutFuture(null);
+
+        log.debug("Finished with canceling heartbeats and timeout");
+
+        for (RoutingEntry neighbour : routingTable.getAllDirectNeighbours()) {
+
+            if(routingTable.isUIDavailable(neighbour.getUID())){
+                byte[] payload = new byte[0];
+                BCPPacket bcpPacket = new BCPPacket(
+                        (byte) 1,
+                        PacketTypes.GOODBYE,
+                        (byte) 32,
+                        (byte) 0,
+                        storage.getID(),
+                        neighbour.getUID(),
+                        0,
+                        0,
+                        0L,
+                        (short)payload.length,
+                        payload,
+                        neighbour.getNextHopAdress(),
+                        neighbour.getNextHopPort());
+
+                DatagramPacket packet = bcpPacket.makeDatagramPacket();
+
+               senderQueue.add(packet);
+
+                log.debug("Goodbye packet send to {}", Long.toUnsignedString(neighbour.getUID()));
+            }
+        }
+
+        log.info("Logout successful");
+        System.out.println("Logout successful");
+
+        routingTable.removeAll();
     }
 
     private void handleHello(String[] command) {
