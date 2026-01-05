@@ -49,7 +49,7 @@ public class FileInputHandler extends AbstractInputHandler {
             try (RandomAccessFile file = new RandomAccessFile(path, "r")){
 
                 long length = file.length();
-                int anzahlChunks = (int) Math.ceil(length / 1300.0);
+                int anzahlChunks = (int) Math.ceil((double) length / BCPPacket.getMaximumFileSendingChunkSize());
                 int fileId = Storage.getInstance().getNextFileID();
                 InetAddress adress = RoutingTableImpl.getInstance().getNextHopAdressForUID(uID);
                 int port = RoutingTableImpl.getInstance().getNextHopPortForUID(uID);
@@ -140,13 +140,13 @@ public class FileInputHandler extends AbstractInputHandler {
                 throw new IllegalSequnzNumberException(sequenz);
             }
             else if(anzahlChunks - 1 == sequenz){
-                int size = (int)(file.length() % 1300);
+                int size = (int)(file.length() % BCPPacket.getMaximumFileSendingChunkSize());
                 chunk = new byte[size];
             }
             else{
-                chunk = new byte[1300];
+                chunk = new byte[BCPPacket.getMaximumFileSendingChunkSize()];
             }
-            file.seek(sequenz * 1300);
+            file.seek(sequenz * BCPPacket.getMaximumFileSendingChunkSize());
             file.read(chunk);
         } catch (IOException | IllegalSequnzNumberException e) {
             ExceptionHandler.handle(e, this.getClass());

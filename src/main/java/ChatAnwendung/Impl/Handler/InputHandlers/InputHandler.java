@@ -305,6 +305,28 @@ public class InputHandler implements Runnable {
         }
     }
 
+    private byte[] split(RandomAccessFile file, int sequenz, int anzahlChunks) {
+        byte[] chunk = null;
+
+        try {
+            if(anzahlChunks <= sequenz || sequenz < 0){
+                throw new IllegalSequnzNumberException(sequenz);
+            }
+            else if(anzahlChunks - 1 == sequenz){
+                int size = (int)(file.length() % 1300);
+                chunk = new byte[size];
+            }
+            else{
+                chunk = new byte[1300];
+            }
+            file.seek(sequenz * 1300L);
+            file.read(chunk);
+        } catch (IOException | IllegalSequnzNumberException e) {
+            ExceptionHandler.handle(e, this.getClass());
+        }
+        return chunk;
+    }
+
     private void sendFileEnd(long uID, int fileId, InetAddress address, int port) {
         byte[] payload = new byte[0];
 

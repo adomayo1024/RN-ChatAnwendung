@@ -62,6 +62,8 @@ public class BCPPacket {
     private static final int payloadLengthPos = crcPos + crcSize;
     @Getter
     private static final int payloadPos = payloadLengthPos + payloadLengthSize;
+    @Getter
+    private static final int maximumFileSendingChunkSize = 1300;
 
 
 
