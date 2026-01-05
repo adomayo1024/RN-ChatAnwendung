@@ -20,9 +20,7 @@ import java.util.concurrent.CompletableFuture;
 @Slf4j
 public class RecieverImpl implements Runnable, Reciever {
 
-    DatagramSocket socket;
-
-    private RecieverHandlerImpl handler;
+    private final DatagramSocket socket;
 
     private final int PACKETSIZE = 1400;
 
@@ -31,7 +29,6 @@ public class RecieverImpl implements Runnable, Reciever {
     public RecieverImpl(DatagramSocket socket, BlockingQueue<DatagramPacket> queue) {
         this.socket = socket;
         this.queue = queue;
-        this.handler = new RecieverHandlerImpl(queue);
 
     }
 
@@ -39,8 +36,6 @@ public class RecieverImpl implements Runnable, Reciever {
     public void run() {
 
         boolean interrupted = false;
-
-        CompletableFuture.runAsync(handler, ThreadPools.getInstance().getReceiveHandlerThreadPool());
 
         while (!interrupted) {
 

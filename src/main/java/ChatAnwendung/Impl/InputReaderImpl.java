@@ -14,17 +14,20 @@ public class InputReaderImpl implements InputReader, Runnable {
 
     private final BlockingQueue<String> inputQueue;
 
-    public InputReaderImpl(BlockingQueue<String> inputQueue) {
+    private final Storage storage;
+
+    public InputReaderImpl(BlockingQueue<String> inputQueue, Storage storage) {
         this.inputQueue = inputQueue;
+        this.storage = storage;
     }
 
     @Override
     public void run() {
         try(BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
-            Storage.getInstance().setReader(reader);
+            storage.setReader(reader);
             String stdIn;
             while ((stdIn = reader.readLine()) != null && !Thread.currentThread().isInterrupted()) {
-                inputHandler.handle(stdIn);
+                inputQueue.add(stdIn);
             }
         } catch (IOException e) {
             log.debug( "Input Reader is terminated");

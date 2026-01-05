@@ -45,11 +45,11 @@ public class Main {
 
         try(DatagramSocket socket = new DatagramSocket(0)){
 
-            Storage.getInstance().setPort(socket.getLocalPort());
+            storage.setPort(socket.getLocalPort());
             log.info("Socket opened on Address: {} and port {}", socket.getLocalAddress(), socket.getLocalPort());
-            log.info("You got the ID: {}", Storage.getInstance().getUnsignedID());
+            log.info("You got the ID: {}", storage.getUnsignedID());
 
-            CompletableFuture<Void> inputReader = CompletableFuture.runAsync(new InputReaderImpl(inputQueue), threadPools.getInputHandlerThreadPool());
+            CompletableFuture<Void> inputReader = CompletableFuture.runAsync(new InputReaderImpl(inputQueue, storage), threadPools.getInputHandlerThreadPool());
             CompletableFuture<Void> receiver = CompletableFuture.runAsync(new RecieverImpl(socket, receiveQueue), threadPools.getReceiverThreadPool());
             CompletableFuture<Void> sender = CompletableFuture.runAsync(new SenderImpl(socket, sendeQueue), threadPools.getSenderThreadPool());
 

@@ -86,10 +86,10 @@ public class BCPPacket {
 
 
 
-    public static byte[] makeHeader(byte type, byte ttl, long destId, int sequenz, int fileId, short payloadLength, byte[] payload) {
+    public  byte[] makeHeader(byte type, byte ttl, long destId, int sequenz, int fileId, short payloadLength, byte[] payload) {
         byte version = 1;
         byte hops = 0;
-        long srcID = Storage.getInstance().getID();
+        long srcID = this.srcNodeId;
 
 
         byte[] header = new byte[headerSize];
