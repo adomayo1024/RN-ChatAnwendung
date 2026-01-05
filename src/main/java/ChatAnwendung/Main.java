@@ -1,12 +1,12 @@
 package ChatAnwendung;
 
-import ChatAnwendung.Api.RoutingTable;
-import ChatAnwendung.Impl.*;
-import ChatAnwendung.Impl.Handler.InputHandlers.InputHandler;
-import ChatAnwendung.Impl.Handler.InputHandlers.InputHandlerImpl;
-import ChatAnwendung.Impl.Handler.ReceiverHandlers.ReceiveHanlder;
-import ChatAnwendung.Impl.Handler.ReceiverHandlers.RecieverHandlerImpl;
-import ChatAnwendung.Impl.persistence.*;
+import ChatAnwendung.persistence.Api.RoutingTable;
+import ChatAnwendung.logic.Impl.InputHandler;
+import ChatAnwendung.logic.Impl.ReceiveHanlder;
+import ChatAnwendung.facade.impl.InputReaderImpl;
+import ChatAnwendung.facade.impl.RecieverImpl;
+import ChatAnwendung.facade.impl.SenderImpl;
+import ChatAnwendung.persistence.Impl.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.*;
@@ -24,7 +24,7 @@ public class Main {
 
         ThreadPools threadPools = new ThreadPools();
         ConnectionsList connectionsList = new ConnectionsList();
-        DownloadFiles downloadFiles = new DownloadFiles(threadPools.getTimeoutTimer());
+        DownloadFiles downloadFiles = new DownloadFiles(threadPools.getFileRequestTimer());
         RoutingTable routingTable = new RoutingTableImpl();
         Storage storage;
         try {

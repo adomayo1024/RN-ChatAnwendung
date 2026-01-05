@@ -115,25 +115,86 @@
 <!--        <appender-ref ref="CONSOLE"/>-->
 <!--    </logger>-->
 
-<!--    <logger name="ChatAnwendung.Impl.FrequentlySender.RequestSender" level="DEBUG">-->
-<!--        <appender-ref reg ="CONSOLE"/>-->
-<!--    </logger>-->
+<!--&lt;!&ndash;    <logger name="ChatAnwendung" level="DEBUG">&ndash;&gt;-->
+<!--&lt;!&ndash;        <appender-ref ref="FILE"/>&ndash;&gt;-->
+<!--&lt;!&ndash;    </logger>&ndash;&gt;-->
+
+<!--    &lt;!&ndash; InputHandler &ndash;&gt;-->
+
+<!--&lt;!&ndash;    <logger name="ChatAnwendung.Impl.Handler.InputHandlers" level="DEBUG" additivity="true">&ndash;&gt;-->
+<!--&lt;!&ndash;            <appender-ref ref="CONSOLE"/>&ndash;&gt;-->
+<!--&lt;!&ndash;    </logger>&ndash;&gt;-->
+
+<!--&lt;!&ndash;    <logger name="ChatAnwendung.Impl.Handler.Common.ExceptionHandler" level="WARN">&ndash;&gt;-->
+<!--&lt;!&ndash;        <appender-ref ref="CONSOLE"/>&ndash;&gt;-->
+<!--&lt;!&ndash;    </logger>&ndash;&gt;-->
+
+<!--&lt;!&ndash;    &lt;!&ndash; Receive Handler &ndash;&gt;&ndash;&gt;-->
+
+<!--&lt;!&ndash;    <logger name="ChatAnwendung.Impl.Handler.ReceiverHandlers" level="DEBUG" additivity="true">&ndash;&gt;-->
+<!--&lt;!&ndash;        <appender-ref ref="CONSOLE"/>&ndash;&gt;-->
+<!--&lt;!&ndash;    </logger>&ndash;&gt;-->
+
+<!--&lt;!&ndash;    <logger name="ChatAnwendung.Impl.Handler.ReceiverHandlers.FileInitReceiveHandler" level="DEBUG">&ndash;&gt;-->
+<!--&lt;!&ndash;        <appender-ref ref="CONSOLE"/>&ndash;&gt;-->
+<!--&lt;!&ndash;    </logger>&ndash;&gt;-->
+
+<!--&lt;!&ndash;    <logger name="ChatAnwendung.Impl.Handler.ReceiverHandlers.FileEndRecieveHandler" level="DEBUG">&ndash;&gt;-->
+<!--&lt;!&ndash;        <appender-ref ref="CONSOLE"/>&ndash;&gt;-->
+<!--&lt;!&ndash;    </logger>&ndash;&gt;-->
+
+<!--&lt;!&ndash;    <logger name="ChatAnwendung.Impl.Handler.ReceiverHandlers.FileDataRecieveHandler" level="DEBUG">&ndash;&gt;-->
+<!--&lt;!&ndash;        <appender-ref ref="CONSOLE"/>&ndash;&gt;-->
+<!--&lt;!&ndash;    </logger>&ndash;&gt;-->
+
+<!--&lt;!&ndash;    <logger name="ChatAnwendung.Impl.Handler.ReceiverHandlers.RequestRecieveHandler" level="DEBUG">&ndash;&gt;-->
+<!--&lt;!&ndash;        <appender-ref ref="CONSOLE"/>&ndash;&gt;-->
+<!--&lt;!&ndash;    </logger>&ndash;&gt;-->
+
+<!--&lt;!&ndash;    <logger name="ChatAnwendung.Impl.Handler.ReceiverHandlers.RecieverHandlerImpl" level="DEBUG">&ndash;&gt;-->
+<!--&lt;!&ndash;        <appender-ref ref="CONSOLE"/>&ndash;&gt;-->
+<!--&lt;!&ndash;    </logger>&ndash;&gt;-->
+
+<!--    &lt;!&ndash; Persistence &ndash;&gt;-->
+
+<!--&lt;!&ndash;    <logger name="ChatAnwendung.Impl.persistence" level="DEBUG" additivity="true">&ndash;&gt;-->
+<!--&lt;!&ndash;        <appender-ref ref="CONSOLE"/>&ndash;&gt;-->
+<!--&lt;!&ndash;    </logger>&ndash;&gt;-->
+
+<!--&lt;!&ndash;    <logger name="ChatAnwendung.Impl.persistence.File" level="DEBUG">&ndash;&gt;-->
+<!--&lt;!&ndash;        <appender-ref ref="CONSOLE"/>&ndash;&gt;-->
+<!--&lt;!&ndash;    </logger>&ndash;&gt;-->
+
+<!--&lt;!&ndash;    <logger name="ChatAnwendung.Impl.persistence.DownloadFiles" level="DEBUG">&ndash;&gt;-->
+<!--&lt;!&ndash;        <appender-ref ref="CONSOLE"/>&ndash;&gt;-->
+<!--&lt;!&ndash;    </logger>&ndash;&gt;-->
+
+
+<!--    &lt;!&ndash; Frequently Sender &ndash;&gt;-->
+
+<!--&lt;!&ndash;    <logger name="ChatAnwendung.Impl.FrequentlySender" level="DEBUG" additivity="true">&ndash;&gt;-->
+<!--&lt;!&ndash;        <appender-ref ref="CONSOLE"/>&ndash;&gt;-->
+<!--&lt;!&ndash;    </logger>&ndash;&gt;-->
+
+<!--&lt;!&ndash;    <logger name="ChatAnwendung.Impl.FrequentlySender.RequestSender" level="DEBUG">&ndash;&gt;-->
+<!--&lt;!&ndash;        <appender-ref reg ="CONSOLE"/>&ndash;&gt;-->
+<!--&lt;!&ndash;    </logger>&ndash;&gt;-->
 
 
 
-    <!-- MISC -->
+<!--    &lt;!&ndash; MISC &ndash;&gt;-->
 
-<!--    <logger name="ChatAnwendung.Impl.RecieverImpl" level="DEBUG">-->
-<!--        <appender-ref ref="CONSOLE"/>-->
-<!--    </logger>-->
+<!--&lt;!&ndash;    <logger name="ChatAnwendung.Impl.RecieverImpl" level="DEBUG">&ndash;&gt;-->
+<!--&lt;!&ndash;        <appender-ref ref="CONSOLE"/>&ndash;&gt;-->
+<!--&lt;!&ndash;    </logger>&ndash;&gt;-->
 
-<!--    <logger name="ChatAnwendung.Impl.TimeoutHandler" level="DEBUG">-->
-<!--        <appender-ref ref="CONSOLE"/>-->
-<!--    </logger>-->
+<!--&lt;!&ndash;    <logger name="ChatAnwendung.Impl.TimeoutHandler" level="DEBUG">&ndash;&gt;-->
+<!--&lt;!&ndash;        <appender-ref ref="CONSOLE"/>&ndash;&gt;-->
+<!--&lt;!&ndash;    </logger>&ndash;&gt;-->
 
-<!--    <logger name="ChatAnwendung.Main" level="INFO">-->
-<!--        <appender-ref ref="CONSOLE"/>-->
-<!--    </logger>-->
+<!--&lt;!&ndash;    <logger name="ChatAnwendung.Main" level="INFO">&ndash;&gt;-->
+<!--&lt;!&ndash;        <appender-ref ref="CONSOLE"/>&ndash;&gt;-->
+<!--&lt;!&ndash;    </logger>&ndash;&gt;-->
 
 
 
