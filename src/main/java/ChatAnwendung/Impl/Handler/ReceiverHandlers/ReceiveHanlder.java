@@ -6,10 +6,8 @@ import ChatAnwendung.Impl.Exceptions.IllegalSequnzNumberException;
 import ChatAnwendung.Impl.Handler.Common.AbstractHandler;
 import ChatAnwendung.Impl.BCPPacket;
 import ChatAnwendung.Impl.Handler.Common.ExceptionHandler;
-import ChatAnwendung.Impl.MessageQueue;
 import ChatAnwendung.Impl.PacketTypes;
 import ChatAnwendung.Impl.persistence.*;
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -88,6 +86,25 @@ public class ReceiveHanlder extends AbstractHandler implements Runnable {
     }
 
     private void handleRoutingTable(BCPPacket packet) {
+        log.debug("Received Routing Table");
+
+        InetAddress srcAdress = packet.getAddress();
+        int srcPort = packet.getPort();
+        int payloadLength = packet.getPayloadLength();
+        int routingEntrySize = routingTable.getRoutingEntrySize();
+
+        for(int offset = 0; offset < payloadLength; offset += routingEntrySize){
+            long uID = packet.getNodeIdFromRoutingTableEntry(offset);
+            byte hops = packet.getHopsFromRoutingTableEntry(offset);
+            long lastSeen = packet.getLastSeenFromRoutinTableEntry(offset);
+
+            RoutingEntry entry = new RoutingEntryImpl(uID, srcAdress, srcPort, (byte) (hops + 1), lastSeen);
+            routingTable.add(entry);
+
+            log.debug("Routing Entry added for {}", Long.toUnsignedString(uID));
+            log.info("User: {} is available for Chatting", Long.toUnsignedString(uID));
+            System.out.println("User: " + Long.toUnsignedString(uID) + " is available for Chatting");
+        }
     }
 
     private void handleHeartbeat(BCPPacket packet) {

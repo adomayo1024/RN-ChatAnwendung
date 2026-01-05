@@ -24,4 +24,6 @@ public interface RoutingTable {
     void setLastSeen(long uID);
 
     void removeAll();
+
+    int getRoutingEntrySize();
 }

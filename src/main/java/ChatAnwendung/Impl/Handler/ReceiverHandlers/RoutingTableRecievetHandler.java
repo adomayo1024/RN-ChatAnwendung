@@ -12,7 +12,7 @@ import java.net.InetAddress;
 @Slf4j
 public class RoutingTableRecievetHandler extends AbstractRecieveHanlder {
 
-    // TODO ändern wenn andere 18 verwenden
+
     private final int routingEntrySize = 17;
 
     public RoutingTableRecievetHandler(DatagramPacket packet) {

@@ -317,4 +317,26 @@ public class BCPPacket {
                 ((b2 & 0xFF) << 8) |
                 (b3 & 0xFF);
     }
+
+    public long getNodeIdFromRoutingTableEntry(int offset) {
+        if(type != PacketTypes.ROUTINGTABLE){
+            return -1;
+        }
+        return makeBytesToLong(payload, offset);
+    }
+
+    public long getLastSeenFromRoutinTableEntry(int offset) {
+        if(type != PacketTypes.ROUTINGTABLE){
+            return -1;
+        }
+
+        return makeBytesToLong(payload, offset + destNodeSize + hopsSize);
+    }
+
+    public byte getHopsFromRoutingTableEntry(int offset) {
+        if(type != PacketTypes.ROUTINGTABLE){
+            return -1;
+        }
+        return payload[offset + destNodeSize];
+    }
 }

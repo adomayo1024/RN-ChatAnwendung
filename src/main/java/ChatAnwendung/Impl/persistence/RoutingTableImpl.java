@@ -2,6 +2,7 @@ package ChatAnwendung.Impl.persistence;
 
 import ChatAnwendung.Api.RoutingEntry;
 import ChatAnwendung.Api.RoutingTable;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetAddress;
@@ -13,6 +14,10 @@ import java.util.concurrent.locks.ReentrantLock;
 
 @Slf4j
 public class RoutingTableImpl implements RoutingTable {
+
+    // TODO ändern wenn andere 18 verwenden
+    @Getter
+    private static final int routingEntrySize = 17;
 
     private  Map<Long, RoutingEntry> entries;
 
