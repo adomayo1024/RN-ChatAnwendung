@@ -295,7 +295,17 @@ public class BCPPacket {
 
     public long calculateCrc() {
 
-        return makeChecksum(extractChecksum(makeBCPPacketIntoBytes()));
+        long tempCrc = crc;
+
+        crc = 0L;
+
+        byte[] data = makeBCPPacketIntoBytes();
+
+        long calculateCrc = makeBytesToLong(data, crcPos);
+
+        crc = tempCrc;
+
+        return calculateCrc;
     }
 
     private byte[] makeBCPPacketIntoBytes(){
@@ -310,11 +320,12 @@ public class BCPPacket {
         addLong(destNodeIdPos, destNodeId, header);
         addInt(sequenzPos, sequenz, header);
         addInt(fileIdPos, fileId, header);
+        addLong(crcPos, 0L, header);
         addShort(payloadLengthPos, payloadLength, header);
 
         System.arraycopy(header, 0, packet, 0, header.length);
         System.arraycopy(payload, 0, packet, headerSize, payloadLength);
-        addLong(crcPos, makeChecksum(extractChecksum(packet)), packet);
+        addLong(crcPos, makeChecksum(packet), packet);
         return packet;
     }
 
@@ -362,3 +373,5 @@ public class BCPPacket {
         array[pos + 1] = (byte) (value);
     }
 }
+
+
