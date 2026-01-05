@@ -150,6 +150,10 @@ public class InputHandler implements Runnable {
     }
 
     private void handleExit(String[] command) {
+
+    }
+
+    private void handleList(String[] command) {
         log.debug("Start with list");
 
         boolean allFlagSet = false;
@@ -180,9 +184,6 @@ public class InputHandler implements Runnable {
         }
 
         log.debug("End with list");
-    }
-
-    private void handleList(String[] command) {
     }
 
     private void handleFile(String[] command) {
