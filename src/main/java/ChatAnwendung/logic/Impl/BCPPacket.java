@@ -213,8 +213,10 @@ public class BCPPacket {
 
     public DatagramPacket makeDatagramPacket(){
         byte[] packet = makeBCPPacketIntoBytes();
-
-        return new DatagramPacket(packet, packet.length);
+        DatagramPacket dP = new DatagramPacket(packet, packet.length);
+        dP.setAddress(address);
+        dP.setPort(port);
+        return dP;
 
     }
 
@@ -360,7 +362,7 @@ public class BCPPacket {
     }
 
     public boolean isItForMe(long myId) {
-        return destNodeId == myId;
+        return destNodeId == myId || destNodeId == -1;
     }
 
     public long calculateCrc() {
