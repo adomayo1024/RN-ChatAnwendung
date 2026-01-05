@@ -285,7 +285,7 @@ public class ReceiveHanlder implements Runnable {
         byte hops = packet.getHops();
         long last_seen = System.currentTimeMillis();
 
-        RoutingEntry entry = new RoutingEntryImpl(srcNodeId, srcAddress, srcPort, hops, last_seen);
+        RoutingEntry entry = new RoutingEntryImpl(srcNodeId, srcAddress, srcPort, ++hops, last_seen);
         routingTable.add(entry);
 
         packet.setType(PacketTypes.WELCOME);
