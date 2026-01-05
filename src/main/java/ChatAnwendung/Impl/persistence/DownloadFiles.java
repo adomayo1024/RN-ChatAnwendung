@@ -11,11 +11,7 @@ import java.util.concurrent.locks.ReentrantLock;
 @Slf4j
 public class DownloadFiles {
 
-    private static  DownloadFiles INSTANCE;
-
-    private static ReentrantLock getMutex = new ReentrantLock(true);
-
-    private  ScheduledExecutorService timer;
+    private ScheduledExecutorService timer;
 
     private Map<Long, Map<Integer, File>> downloadedFiles;
 
@@ -25,22 +21,10 @@ public class DownloadFiles {
 
     private Map<Long, Map<Integer, Boolean>> finishedFiles;
 
-    private DownloadFiles() {
+    public DownloadFiles(ScheduledExecutorService timer) {
+        this.timer = timer;
         downloadedFiles = new ConcurrentHashMap<>();
         finishedFiles = new ConcurrentHashMap<>();
-        timer = ThreadPools.getInstance().getFileRequestTimer();
-    }
-
-
-    public static DownloadFiles getInstance(){
-
-        getMutex.lock();
-        if(INSTANCE == null) {
-            INSTANCE = new DownloadFiles();
-            log.debug("Created new DownloadFiles: {}", INSTANCE);
-        }
-        getMutex.unlock();
-        return INSTANCE;
     }
 
     public File getFile(long uID, int fileID) throws NullPointerException{

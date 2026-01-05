@@ -11,12 +11,6 @@ import java.util.concurrent.locks.ReentrantLock;
 @Slf4j
 public class ThreadPools {
 
-    private static ThreadPools INSTANCE;
-
-    private static final ReentrantLock getMutex = new ReentrantLock(true);
-
-    private final ExecutorService threadPool;
-
     private final ScheduledExecutorService fileRequestTimer;
 
     private final ScheduledExecutorService hearbteatAndRoutingTableTimer;
@@ -29,7 +23,7 @@ public class ThreadPools {
 
     private final ExecutorService receiverThreadPool;
 
-    private final ExecutorService receiveHandlerThreadPool;
+    private final ExecutorService workerThreadPool;
 
     @Setter
     private ScheduledFuture<?> heartBeatAndRoutingTableTimerFuture;
@@ -37,37 +31,25 @@ public class ThreadPools {
     @Setter
     private ScheduledFuture<?> timeoutFuture;
 
-    private ThreadPools(){
-        threadPool = Executors.newFixedThreadPool(3);
+    public ThreadPools(){
         fileRequestTimer = Executors.newScheduledThreadPool(3);
         hearbteatAndRoutingTableTimer = Executors.newScheduledThreadPool(1);
         timeoutTimer = Executors.newScheduledThreadPool(1);
         senderThreadPool = Executors.newFixedThreadPool(1);
         inputHandlerThreadPool = Executors.newFixedThreadPool(1);
         receiverThreadPool = Executors.newFixedThreadPool(1);
-        receiveHandlerThreadPool = Executors.newFixedThreadPool(1);
-    }
-
-
-    public static ThreadPools getInstance(){
-        getMutex.lock();
-        if(INSTANCE == null){
-            INSTANCE = new ThreadPools();
-        }
-        getMutex.unlock();
-        return INSTANCE;
+        workerThreadPool = Executors.newFixedThreadPool(3);
     }
 
 
     public void shutDown(){
-        threadPool.shutdownNow();
         fileRequestTimer.shutdownNow();
         hearbteatAndRoutingTableTimer.shutdownNow();
         timeoutTimer.shutdownNow();
         senderThreadPool.shutdownNow();
         inputHandlerThreadPool.shutdownNow();
         receiverThreadPool.shutdownNow();
-        receiveHandlerThreadPool.shutdownNow();
+        workerThreadPool.shutdownNow();
         if(timeoutFuture != null){
             timeoutFuture.cancel(true);
         }

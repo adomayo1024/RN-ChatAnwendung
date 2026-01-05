@@ -15,16 +15,10 @@ import java.util.Map;
 @Slf4j
 public class Storage {
 
-    private static Storage INSTANCE;
-
-    private static final ReentrantLock getMutex = new ReentrantLock(true);
-
-    private final Long broadcastId;
+    private final Long broadCastId;
 
     @Getter
     private long ID;
-
-    private final Logger logger = Logger.getLogger(Storage.class.getName());
 
     @Setter
     @Getter
@@ -37,31 +31,17 @@ public class Storage {
     @Getter
     private BufferedReader reader;
 
-    private Map<Integer, String> openSendFiles;
+    private final Map<Integer, String> openSendFiles;
 
     private int fileCount;
 
     private final boolean DEBUG_MODE = false;
 
-    private Storage() throws NoSuchAlgorithmException {
-        broadcastId = -1L;
+    public Storage() throws NoSuchAlgorithmException {
+        broadCastId = -1L;
         login = false;
         openSendFiles = new HashMap<>();
         ID = SecureRandom.getInstanceStrong().nextLong();
-    }
-
-    public static Storage getInstance() {
-        getMutex.lock();
-        if(INSTANCE == null) {
-            try {
-                INSTANCE = new Storage();
-                log.debug("Created new Storage: {}", INSTANCE);
-            } catch (NoSuchAlgorithmException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        getMutex.unlock();
-        return INSTANCE;
     }
 
     public void setSendOpenFile(int fileId, String path){
@@ -73,7 +53,7 @@ public class Storage {
     }
 
     public long getBroadCastId(){
-        return broadcastId;
+        return broadCastId;
     }
 
     public void login(){
