@@ -2,12 +2,23 @@ package ChatAnwendung.Impl.Handler.InputHandlers;
 
 import ChatAnwendung.Api.RoutingEntry;
 import ChatAnwendung.Api.RoutingTable;
+import ChatAnwendung.Impl.BCPPacket;
+import ChatAnwendung.Impl.Exceptions.InvalidMessageException;
+import ChatAnwendung.Impl.Exceptions.NotAUIDException;
+import ChatAnwendung.Impl.Exceptions.UnknowUIDException;
+import ChatAnwendung.Impl.Handler.Common.ExceptionHandler;
 import ChatAnwendung.Impl.InputCommands;
+import ChatAnwendung.Impl.MessageQueue;
+import ChatAnwendung.Impl.PacketTypes;
 import ChatAnwendung.Impl.persistence.Connection;
 import ChatAnwendung.Impl.persistence.ConnectionsList;
 import ChatAnwendung.Impl.persistence.RoutingTableImpl;
+import ChatAnwendung.Impl.persistence.Storage;
 import lombok.extern.slf4j.Slf4j;
 
+import java.net.DatagramPacket;
+import java.net.InetAddress;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.BlockingQueue;
 
 @Slf4j
@@ -16,12 +27,16 @@ public class InputHandler implements Runnable {
     private final BlockingQueue<String> inputQueue;
     private final RoutingTable routingTable;
     private final ConnectionsList connectionList;
+    private final Storage storage;
+    private final BlockingQueue<DatagramPacket> senderQueue;
 
 
-    public InputHandler(BlockingQueue<String> inputQueue, RoutingTable routingTabl, ConnectionsList connectionList) {
+    public InputHandler(BlockingQueue<String> inputQueue, RoutingTable routingTabl, ConnectionsList connectionList, Storage storage, BlockingQueue<DatagramPacket> senderQueue) {
         this.inputQueue = inputQueue;
         this.routingTable = routingTabl;
         this.connectionList = connectionList;
+        this.storage = storage;
+        this.senderQueue = senderQueue;
     }
 
     @Override
@@ -126,7 +141,10 @@ public class InputHandler implements Runnable {
     }
 
     private String messageHelp() {
-        return null;
+        return "send: Es wird eine Nachricht an einen bestimmten Teilnehmer geschickt. Die Nachricht darf maximal 1300 zeichen beinhalten (Weißzeichen mitgezählt)\n" +
+                "\tAufbau: send [EmpfängerID] \"[Nachricht]\"\n" +
+                "\tFehler: Wenn die UID falsch ist oder die Nachricht zu lange, wird keine Nachricht verschickt.\n";
+
     }
 
     private String helloHelp() {
@@ -190,6 +208,55 @@ public class InputHandler implements Runnable {
     }
 
     private void handleSend(String[] command) {
+        log.debug("Start with Message sending");
+
+        long destNodeId = 0;
+        try {
+            destNodeId = Long.parseUnsignedLong(command[1]);
+        } catch (NumberFormatException e) {
+            ExceptionHandler.handle(new NotAUIDException(e.getMessage()), this.getClass());
+            return;
+        }
+        String msg = command[2];
+
+
+        if(!validUID(destNodeId)) {
+            ExceptionHandler.handle(new UnknowUIDException(destNodeId), this.getClass());
+            return;
+        }
+        else if(!validMessage(msg)){
+            ExceptionHandler.handle(new InvalidMessageException(msg), this.getClass());
+            return;
+        }
+
+
+        byte[] payload = msg.getBytes(StandardCharsets.UTF_8);
+        InetAddress adress = routingTable.getNextHopAdressForUID(destNodeId);
+        int port = routingTable.getNextHopPortForUID(destNodeId);
+
+        BCPPacket bcpPacket = new BCPPacket(
+                (byte) 1,
+                PacketTypes.MESSAGE,
+                (byte) 32,
+                (byte) 0,
+                storage.getID(),
+                destNodeId,
+                0,
+                0,
+                0L,
+                (short)payload.length,
+                payload,
+                adress,
+                port);
+
+        DatagramPacket packet = bcpPacket.makeDatagramPacket();
+
+
+        senderQueue.add(packet);
+
+        log.debug("Message send to {}", Long.toUnsignedString(destNodeId));
+        log.info("Message send to {}", Long.toUnsignedString(destNodeId));
+        System.out.println("Message send to " + Long.toUnsignedString(destNodeId));
     }
 
     private void handleGoodbye(String[] command) {
@@ -202,5 +269,14 @@ public class InputHandler implements Runnable {
     }
 
     private void handleConnect(String[] command) {
+    }
+
+
+    private boolean validUID(Long uID) {
+        return RoutingTableImpl.getInstance().isUIDavailable(uID);
+    }
+
+    private boolean validMessage(String msg){
+        return msg.getBytes().length <= 1300;
     }
 }
