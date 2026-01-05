@@ -37,6 +37,7 @@ public class RoutingTableImpl implements RoutingTable {
         }
         else {
             entries.put(entry.getUID(),entry);
+            System.out.println("User: " + Long.toUnsignedString(entry.getUID()) + " is available for Chatting");
         }
         mutex.unlock();
 

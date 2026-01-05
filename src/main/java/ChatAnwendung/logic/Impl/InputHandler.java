@@ -606,7 +606,7 @@ public class InputHandler implements Runnable {
             Connection connection = new Connection(address, port);
 
             connectionList.add(connection);
-        } catch (UnknownHostException e) {
+        } catch (UnknownHostException | NumberFormatException e) {
             ExceptionHandler.handle(new ArgumentException(e.getMessage()), this.getClass());
         }
 
