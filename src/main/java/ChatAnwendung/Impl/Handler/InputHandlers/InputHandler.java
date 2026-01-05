@@ -3,6 +3,7 @@ package ChatAnwendung.Impl.Handler.InputHandlers;
 import ChatAnwendung.Api.RoutingEntry;
 import ChatAnwendung.Api.RoutingTable;
 import ChatAnwendung.Impl.BCPPacket;
+import ChatAnwendung.Impl.Exceptions.ArgumentException;
 import ChatAnwendung.Impl.Exceptions.InvalidMessageException;
 import ChatAnwendung.Impl.Exceptions.NotAUIDException;
 import ChatAnwendung.Impl.Exceptions.UnknowUIDException;
@@ -18,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.net.DatagramPacket;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.BlockingQueue;
 
@@ -137,7 +139,10 @@ public class InputHandler implements Runnable {
     }
 
     private String connectHelp() {
-        return null;
+        return "connect: Verbindet diesen User direkt mit einen anderen\n" +
+                "\tAufbau: [ip-Adresse im Format xxx.xxx.xxx.xxx] [port]\n" +
+                "\tFehler: ungültige Ip-Adresse oder port, ungültige Formatierung";
+
     }
 
     private String messageHelp() {
@@ -269,6 +274,26 @@ public class InputHandler implements Runnable {
     }
 
     private void handleConnect(String[] command) {
+        log.debug("start with connect: {} : {}", command[1], command[2]);
+
+        InetAddress address;
+        int port;
+
+        try {
+            address = InetAddress.getByName(command[1]);
+            port = Integer.parseInt(command[2]);
+            Connection connection = new Connection(address, port);
+
+            connectionList.add(connection);
+        } catch (UnknownHostException e) {
+            ExceptionHandler.handle(new ArgumentException(e.getMessage()), this.getClass());
+        }
+
+        log.info("Connect with: {}:{}", command[1], command[2]);
+
+        log.debug("end with connect: {} : {}", command[1], command[2]);
+        log.info("Connect with: {}:{}", command[1], command[2]);
+        System.out.println("Connect with: " + command[1] + ":" + command[2]);
     }
 
 
