@@ -83,78 +83,6 @@ public class BCPPacket {
         }
     }
 
-
-
-
-    public  byte[] makeHeader(byte type, byte ttl, long destId, int sequenz, int fileId, short payloadLength, byte[] payload) {
-        byte version = 1;
-        byte hops = 0;
-        long srcID = this.srcNodeId;
-
-
-        byte[] header = new byte[headerSize];
-        byte[] packet = new byte[payloadLength + headerSize];
-
-        header[versionPos] = version;
-        header[typePos] = type;
-        header[ttlPos] = ttl;
-        header[hopsPos] = hops;
-        addLong(srcNodeIdPos, srcID, header);
-        addLong(destNodeIdPos, destId, header);
-        addInt(sequenzPos, sequenz, header);
-        addInt(fileIdPos, fileId, header);
-        addShort(payloadLengthPos, payloadLength, header);
-        System.arraycopy(header, 0, packet, 0, header.length);
-        System.arraycopy(payload, 0, packet, headerSize, payloadLength);
-        addLong(crcPos, makeChecksum(extractChecksum(packet)), header);
-
-        return header;
-    }
-
-    public static long makeChecksum(byte[] data){
-
-        long crc = 0L;
-        for (byte b : data) {
-            int index = ((int) (crc >>> 56) ^ b) & 0xFF;
-            crc = TABLE[index] ^ (crc << 8);
-        }
-        return crc;
-    }
-
-    public static byte[] extractChecksum(byte[] header){
-        byte[] headerWithoutChecksum = new byte[headerSize - crcSize];
-        System.arraycopy(header, 0, headerWithoutChecksum, 0, headerSize - crcSize - payloadLengthSize);
-        headerWithoutChecksum[headerWithoutChecksum.length - payloadLengthSize] = header[payloadLengthPos];
-        headerWithoutChecksum[headerWithoutChecksum.length - 1] = header[payloadLengthPos + 1];
-
-        return headerWithoutChecksum;
-
-    }
-
-    public static void addLong(int pos, long value, byte[] array) {
-        array[pos] = (byte) (value >> 56);
-        array[pos + 1] = (byte) (value >> 48);
-        array[pos + 2] = (byte) (value >> 40);
-        array[pos + 3] = (byte) (value >> 32);
-        array[pos + 4] = (byte) (value >> 24);
-        array[pos + 5] = (byte) (value >> 16);
-        array[pos + 6] = (byte) (value >> 8);
-        array[pos + 7] = (byte) (value);
-
-    }
-
-    public static void addInt(int pos, int value, byte[] array) {
-        array[pos] = (byte) (value >> 24);
-        array[pos + 1] = (byte) (value >> 16);
-        array[pos + 2] = (byte) (value >> 8);
-        array[pos + 3] = (byte) (value);
-    }
-
-    public static void addShort(int pos, short value, byte[] array){
-        array[pos] = (byte) (value >> 8);
-        array[pos + 1] = (byte) (value);
-    }
-
     @Getter
     private byte version;
 
@@ -388,5 +316,49 @@ public class BCPPacket {
         System.arraycopy(payload, 0, packet, headerSize, payloadLength);
         addLong(crcPos, makeChecksum(extractChecksum(packet)), packet);
         return packet;
+    }
+
+    public static long makeChecksum(byte[] data){
+
+        long crc = 0L;
+        for (byte b : data) {
+            int index = ((int) (crc >>> 56) ^ b) & 0xFF;
+            crc = TABLE[index] ^ (crc << 8);
+        }
+        return crc;
+    }
+
+    public static byte[] extractChecksum(byte[] header){
+        byte[] headerWithoutChecksum = new byte[headerSize - crcSize];
+        System.arraycopy(header, 0, headerWithoutChecksum, 0, headerSize - crcSize - payloadLengthSize);
+        headerWithoutChecksum[headerWithoutChecksum.length - payloadLengthSize] = header[payloadLengthPos];
+        headerWithoutChecksum[headerWithoutChecksum.length - 1] = header[payloadLengthPos + 1];
+
+        return headerWithoutChecksum;
+
+    }
+
+    public static void addLong(int pos, long value, byte[] array) {
+        array[pos] = (byte) (value >> 56);
+        array[pos + 1] = (byte) (value >> 48);
+        array[pos + 2] = (byte) (value >> 40);
+        array[pos + 3] = (byte) (value >> 32);
+        array[pos + 4] = (byte) (value >> 24);
+        array[pos + 5] = (byte) (value >> 16);
+        array[pos + 6] = (byte) (value >> 8);
+        array[pos + 7] = (byte) (value);
+
+    }
+
+    public static void addInt(int pos, int value, byte[] array) {
+        array[pos] = (byte) (value >> 24);
+        array[pos + 1] = (byte) (value >> 16);
+        array[pos + 2] = (byte) (value >> 8);
+        array[pos + 3] = (byte) (value);
+    }
+
+    public static void addShort(int pos, short value, byte[] array){
+        array[pos] = (byte) (value >> 8);
+        array[pos + 1] = (byte) (value);
     }
 }
