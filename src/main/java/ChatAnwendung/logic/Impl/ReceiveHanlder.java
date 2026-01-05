@@ -183,8 +183,6 @@ public class ReceiveHanlder implements Runnable {
         int anzahlChunks = packet.getSequenz();
         int fileID = packet.getFileId();
         long srcUID = packet.getSrcNodeId();
-        byte[] payload = packet.getPayload();
-        short payloadLength = packet.getPayloadLength();
         String fileName = packet.getFileName();
         int size = packet.getFileSize();
         ScheduledExecutorService timer = downloadFiles.getScheduledThreadPool();

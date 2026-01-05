@@ -71,7 +71,7 @@ public class File {
 
     private void makeFile() {
         fileMutex.lock();
-        try(RandomAccessFile file = new RandomAccessFile(name, "rw")) {
+        try(RandomAccessFile file = new RandomAccessFile(filePath + name, "rw")) {
             file.setLength(length);
         } catch (IOException e) {
             throw new RuntimeException(e);
