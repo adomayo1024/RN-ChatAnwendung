@@ -128,50 +128,69 @@ public class InputHandler implements Runnable {
     }
 
     private String listHelp() {
-        return null;
+        return """
+                list: Listet alle momentan erreichabren Nutzer auf, oder alle derzeitigen Connections
+                \tAufbau: list <<--all>> <<--connect>>
+                """;
     }
 
     private String disconnectHelp() {
-        return null;
+        return """
+                disconnect: Disconnect diese Anwendung mit einer physischen Addresse und Port.
+                \tAufbau: disconnect [ip-Addresse im Format xxx.xxx.xxx.xxx] [port]
+                \tFehler: ungültige Ip-Adresse oder port, ungültige Formatierung
+                """;
     }
 
     private String connectHelp() {
-        return "connect: Verbindet diesen User direkt mit einen anderen\n" +
-                "\tAufbau: [ip-Adresse im Format xxx.xxx.xxx.xxx] [port]\n" +
-                "\tFehler: ungültige Ip-Adresse oder port, ungültige Formatierung";
+        return """
+                connect: Verbindet diesen User direkt mit einen anderen
+                \tAufbau: connect [ip-Adresse im Format xxx.xxx.xxx.xxx] [port]
+                \tFehler: ungültige Ip-Adresse oder port, ungültige Formatierung""";
 
     }
 
     private String messageHelp() {
-        return "send: Es wird eine Nachricht an einen bestimmten Teilnehmer geschickt. Die Nachricht darf maximal 1300 zeichen beinhalten (Weißzeichen mitgezählt)\n" +
-                "\tAufbau: send [EmpfängerID] \"[Nachricht]\"\n" +
-                "\tFehler: Wenn die UID falsch ist oder die Nachricht zu lange, wird keine Nachricht verschickt.\n";
+        return """
+                send: Es wird eine Nachricht an einen bestimmten Teilnehmer geschickt. Die Nachricht darf maximal 1300 zeichen beinhalten (Weißzeichen mitgezählt)
+                \tAufbau: send [EmpfängerID] "[Nachricht]"
+                \tFehler: Wenn die UID falsch ist oder die Nachricht zu lange, wird keine Nachricht verschickt.
+                """;
 
     }
 
     private String helloHelp() {
-        return "hello: Der Hello command führt eine neu anmeldung durch. Dieser darf nur ausgeführt werden wenn man sich vorher abgemeldet hat mit den \"bye\" command.\n" +
-                "\tAufbau: hello\n" +
-                "\tFehler: Wenn man schon angemeldet ist, passiert nichts und dem User wird durch eine Nachricht in Kenntniss gesetzt\n";
+        return """
+                hello: Der Hello command führt eine neu anmeldung durch. Dieser darf nur ausgeführt werden wenn man sich vorher abgemeldet hat mit den "bye" command.
+                \tAufbau: hello
+                \tFehler: Wenn man schon angemeldet ist, passiert nichts und dem User wird durch eine Nachricht in Kenntniss gesetzt
+                """;
 
 
     }
 
     private String exitHelp() {
-        return "exit: Meldet den User ab und beendet das Programm kommplett\n" +
-                "\tAufbau: exit\n" +
-                "\tFehler:\n";
+        return """
+                exit: Meldet den User ab und beendet das Programm kommplett
+                \tAufbau: exit
+                \tFehler:
+                """;
 
     }
 
     private String helpHelp() {
-        return null;
+        return """
+                help: Gibt infos über die vorhanden Commands oder ausgewählt eines einzlenen.
+                \tAufbau: help <<command>>
+                """;
     }
 
     private String goodbyeHelp() {
-        return "bye: Meldet den User ab, er kann keine Nachrichten mehr schicken oder empfangen\n" +
-                "\tAufbau: bye\n" +
-                "\tFehler: Wenn man schon abgemeldet ist, kann man sich nicht nochmal abmelden\n";
+        return """
+                bye: Meldet den User ab, er kann keine Nachrichten mehr schicken oder empfangen
+                \tAufbau: bye
+                \tFehler: Wenn man schon abgemeldet ist, kann man sich nicht nochmal abmelden
+                """;
 
     }
 
