@@ -80,7 +80,7 @@ public class FileDataReceiverHanlderTest {
 
         DownloadFiles.getInstance().setNewFile(srcID, fileId, file);
 
-        file.startRequesting();
+        file.startRequesting(downloadFiles);
 
         try(RandomAccessFile randFile = new RandomAccessFile(newFilePath, "r")){
             randFile.seek(sequenz * 1300);

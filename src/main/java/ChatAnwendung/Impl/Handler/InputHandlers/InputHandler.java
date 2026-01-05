@@ -93,7 +93,7 @@ public class InputHandler implements Runnable {
         StringBuilder builder = new StringBuilder();
 
         if(command.length < 2){
-            builder.append(HelpInputHandler.help());
+            builder.append(helpHelp());
             builder.append(exitHelp());
             builder.append(fileHelp());
             builder.append(goodbyeHelp());
@@ -112,11 +112,11 @@ public class InputHandler implements Runnable {
 
                 case InputCommands.BYE -> builder.append(goodbyeHelp());
 
-                case InputCommands.HELLO -> builder.append(HelloInputHandler.help());
+                case InputCommands.HELLO -> builder.append(helloHelp());
 
                 case InputCommands.SEND -> builder.append(messageHelp());
 
-                case InputCommands.CONNECT -> builder.append(ConnectHandler.help());
+                case InputCommands.CONNECT -> builder.append(connectHelp());
 
                 case InputCommands.DISCONNECT -> builder.append(disconnectHelp());
 
@@ -207,8 +207,7 @@ public class InputHandler implements Runnable {
 
         try {
             if(storage.isLogin()){
-                GoodbyeInputHandler bye = new GoodbyeInputHandler(new String[]{"bye"});
-                bye.run();
+                handleGoodbye(command);
             }
             System.in.close();
         } catch (IOException e) {
@@ -535,7 +534,7 @@ public class InputHandler implements Runnable {
                 log.debug("Hello packet send to {}", connection.address());
             }
 
-            threadPools.setHeartBeatAndRoutingTableTimerFuture(threadPools.getScheduleServices().scheduleWithFixedDelay(new loopServices(routingTable), 1, 5, TimeUnit.SECONDS));
+            threadPools.setHeartBeatAndRoutingTableTimerFuture(threadPools.getScheduleServices().scheduleWithFixedDelay(new loopServices(routingTable, storage, senderQueue), 1, 5, TimeUnit.SECONDS));
             log.debug("Finished with login");
 
             log.info("Login successful");

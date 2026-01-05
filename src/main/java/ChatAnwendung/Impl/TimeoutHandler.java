@@ -2,14 +2,11 @@ package ChatAnwendung.Impl;
 
 import ChatAnwendung.Api.RoutingEntry;
 import ChatAnwendung.Api.RoutingTable;
-import ChatAnwendung.Impl.Handler.Common.AbstractHandler;
-import ChatAnwendung.Impl.persistence.RoutingTableImpl;
 import lombok.extern.slf4j.Slf4j;
 
-import static java.lang.Thread.sleep;
 
 @Slf4j
-public class TimeoutHandler extends AbstractHandler {
+public class TimeoutHandler {
 
     private final int timeout = 45_000;
 
@@ -19,7 +16,6 @@ public class TimeoutHandler extends AbstractHandler {
         this.routingTable = routingTable;
     }
 
-    @Override
     public void run() {
         for(RoutingEntry entry : routingTable.getAllEntries()){
             int lastSeen = (int)(System.currentTimeMillis() - entry.getLastSeen());

@@ -1,5 +1,6 @@
 package ChatAnwendung.Impl.persistence;
 
+import ChatAnwendung.Api.RoutingTable;
 import ChatAnwendung.Impl.Handler.Common.ExceptionHandler;
 import ChatAnwendung.Impl.FrequentlySender.RequestSender;
 import lombok.extern.slf4j.Slf4j;
@@ -7,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.net.DatagramPacket;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -153,8 +156,8 @@ public class File {
         return name;
     }
 
-    public void startRequesting(){
-        requestFuture = executor.scheduleAtFixedRate(new RequestSender(this), 1, 1, TimeUnit.SECONDS);
+    public void startRequesting(DownloadFiles downloadFiles, RoutingTable routingTable, Storage storage, BlockingQueue<DatagramPacket> sendeQueue){
+        requestFuture = executor.scheduleAtFixedRate(new RequestSender(this, downloadFiles, routingTable, storage, sendeQueue), 1, 1, TimeUnit.SECONDS);
     }
 
     public void stopRequesting() {

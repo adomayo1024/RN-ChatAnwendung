@@ -212,22 +212,7 @@ public class BCPPacket {
     }
 
     public DatagramPacket makeDatagramPacket(){
-        byte[] header = new byte[headerSize];
-        byte[] packet = new byte[payloadLength + headerSize];
-
-        header[versionPos] = version;
-        header[typePos] = (byte)type.ordinal();
-        header[ttlPos] = ttl;
-        header[hopsPos] = hops;
-        addLong(srcNodeIdPos, srcNodeId, header);
-        addLong(destNodeIdPos, destNodeId, header);
-        addInt(sequenzPos, sequenz, header);
-        addInt(fileIdPos, fileId, header);
-        addShort(payloadLengthPos, payloadLength, header);
-
-        System.arraycopy(header, 0, packet, 0, header.length);
-        System.arraycopy(payload, 0, packet, headerSize, payloadLength);
-        addLong(crcPos, makeChecksum(extractChecksum(packet)), packet);
+        byte[] packet = makeBCPPacketIntoBytes();
 
         return new DatagramPacket(packet, packet.length);
 
@@ -364,5 +349,42 @@ public class BCPPacket {
             return -1;
         }
         return payload[offset + destNodeSize];
+    }
+
+    public void dekrementTtl() {
+        ttl--;
+    }
+
+    public void inkrementHops() {
+        hops++;
+    }
+
+    public boolean isItForMe(long myId) {
+        return destNodeId == myId;
+    }
+
+    public long calculateCrc() {
+
+        return makeBytesToLong(makeBCPPacketIntoBytes(), crcPos);
+    }
+
+    private byte[] makeBCPPacketIntoBytes(){
+        byte[] header = new byte[headerSize];
+        byte[] packet = new byte[payloadLength + headerSize];
+
+        header[versionPos] = version;
+        header[typePos] = (byte)type.ordinal();
+        header[ttlPos] = ttl;
+        header[hopsPos] = hops;
+        addLong(srcNodeIdPos, srcNodeId, header);
+        addLong(destNodeIdPos, destNodeId, header);
+        addInt(sequenzPos, sequenz, header);
+        addInt(fileIdPos, fileId, header);
+        addShort(payloadLengthPos, payloadLength, header);
+
+        System.arraycopy(header, 0, packet, 0, header.length);
+        System.arraycopy(payload, 0, packet, headerSize, payloadLength);
+        addLong(crcPos, makeChecksum(extractChecksum(packet)), packet);
+        return packet;
     }
 }

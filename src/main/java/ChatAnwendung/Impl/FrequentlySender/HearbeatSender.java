@@ -1,37 +1,55 @@
 package ChatAnwendung.Impl.FrequentlySender;
 
 import ChatAnwendung.Api.RoutingEntry;
-import ChatAnwendung.Impl.Handler.Common.AbstractHandler;
-import ChatAnwendung.Impl.MessageQueue;
+import ChatAnwendung.Api.RoutingTable;
+import ChatAnwendung.Impl.BCPPacket;
 import ChatAnwendung.Impl.PacketTypes;
-import ChatAnwendung.Impl.persistence.RoutingTableImpl;
 import ChatAnwendung.Impl.persistence.Storage;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.DatagramPacket;
+import java.util.concurrent.BlockingQueue;
 
 @Slf4j
-public class HearbeatSender extends AbstractHandler {
+public class HearbeatSender{
 
-    @Override
+
+    private final RoutingTable routingTable;
+
+    private final Storage storage;
+
+    private final BlockingQueue<DatagramPacket> sendeQueue;
+
+    public HearbeatSender(RoutingTable routingTable, Storage storage, BlockingQueue<DatagramPacket> sendeQueue) {
+        this.routingTable = routingTable;
+        this.storage = storage;
+        this.sendeQueue = sendeQueue;
+    }
+
     public void run() {
 
         log.debug("Start with heartbeat sending");
 
-        if(Storage.getInstance().isLogin()){
-            for(RoutingEntry entry : RoutingTableImpl.getInstance().getAllDirectNeighbours()){
+        if(storage.isLogin()){
+            for(RoutingEntry entry : routingTable.getAllDirectNeighbours()){
                 if(entry.isRoutable()){
                     byte[] payload = new byte[0];
-                    DatagramPacket packet = makeDatagramPackage(
-                            PacketTypes.HEARTBEAT,
-                            (byte)1,
-                            entry.getUID(),
-                            0,
-                            0,
-                            payload,
-                            entry.getNextHopAdress(),
-                            entry.getNextHopPort());
-                    MessageQueue.getInstance().push(packet);
+                    BCPPacket bcpPacket = new BCPPacket(
+                            (byte) 1, //version
+                            PacketTypes.HEARTBEAT, //type
+                            (byte) 1, // ttl
+                            (byte) 0, // hops
+                            storage.getID(), //srcNodId
+                            entry.getUID(), //destNodeId
+                            0, //sequenz
+                            0, //fileId
+                            0L, //crc
+                            (short)payload.length, //payloadLength
+                            payload, //payload
+                            entry.getNextHopAdress(), //address
+                            entry.getNextHopPort());//port
+                    DatagramPacket packet = bcpPacket.makeDatagramPacket();
+                    sendeQueue.add(packet);
 
                     log.debug("Heartbeat packet send to {}", Long.toUnsignedString(entry.getUID()));
                 }

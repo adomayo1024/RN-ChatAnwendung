@@ -19,7 +19,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
 
 @Slf4j
-public class ReceiveHanlder extends AbstractHandler implements Runnable {
+public class ReceiveHanlder implements Runnable {
 
 
     private final BlockingQueue<DatagramPacket> receiverQueue;
@@ -57,28 +57,34 @@ public class ReceiveHanlder extends AbstractHandler implements Runnable {
 
             BCPPacket bcpPacket = new BCPPacket(packet);
 
+            if(!storage.isLogin()){
+                log.debug("Packet throw away from: {} because not logged in", packet.getSocketAddress());
+            } else if(bcpPacket.getCrc() != bcpPacket.calculateCrc()){
+                log.debug("Packet CRC mismatch");
+            }else if (bcpPacket.isItForMe(storage.getID())){
+                switch (bcpPacket.getType()){
+                    case PacketTypes.HELLO -> handleHello(bcpPacket);
 
+                    case PacketTypes.WELCOME -> handleWelcome(bcpPacket);
 
-            switch (bcpPacket.getType()){
-                case PacketTypes.HELLO -> handleHello(bcpPacket);
+                    case PacketTypes.GOODBYE -> handleGoodbye(bcpPacket);
 
-                case PacketTypes.WELCOME -> handleWelcome(bcpPacket);
+                    case PacketTypes.FILE_INIT -> handleFileInit(bcpPacket);
 
-                case PacketTypes.GOODBYE -> handleGoodbye(bcpPacket);
+                    case PacketTypes.FILE_DATA -> handleFileData(bcpPacket);
 
-                case PacketTypes.FILE_INIT -> handleFileInit(bcpPacket);
+                    case PacketTypes.File_End -> handleFileEnd(bcpPacket);
 
-                case PacketTypes.FILE_DATA -> handleFileData(bcpPacket);
+                    case PacketTypes.RESENDREQUEST -> handleResendRequest(bcpPacket);
 
-                case PacketTypes.File_End -> handleFileEnd(bcpPacket);
+                    case PacketTypes.MESSAGE -> handleMessage(bcpPacket);
 
-                case PacketTypes.RESENDREQUEST -> handleResendRequest(bcpPacket);
+                    case PacketTypes.HEARTBEAT -> handleHeartbeat(bcpPacket);
 
-                case PacketTypes.MESSAGE -> handleMessage(bcpPacket);
-
-                case PacketTypes.HEARTBEAT -> handleHeartbeat(bcpPacket);
-
-                case PacketTypes.ROUTINGTABLE -> handleRoutingTable(bcpPacket);
+                    case PacketTypes.ROUTINGTABLE -> handleRoutingTable(bcpPacket);
+                }
+            }else {
+                handleFeedForwading(bcpPacket);
             }
         }
 
@@ -197,7 +203,7 @@ public class ReceiveHanlder extends AbstractHandler implements Runnable {
 
         downloadFiles.setNewFile(srcUID, fileID, file);
 
-        file.startRequesting();
+        file.startRequesting(downloadFiles, routingTable, storage, senderQueue);
 
         log.debug("Created new File{} for: {} from User: {}", fileName, fileID, Long.toUnsignedString(srcUID));
 
@@ -300,6 +306,28 @@ public class ReceiveHanlder extends AbstractHandler implements Runnable {
         log.info("User {} joined the Chat", Long.toUnsignedString(srcNodeId));
 
         System.out.println("User: " + Long.toUnsignedString(srcNodeId) + " joined the Chat");
+    }
+
+    private void handleFeedForwading(BCPPacket packet){
+        log.debug("Start with feed forwarding");
+
+        packet.dekrementTtl();
+        long destId = packet.getDestNodeId();
+        InetAddress nextHopAddress = routingTable.getNextHopAdressForUID(destId);
+        int nextHopPort = routingTable.getNextHopPortForUID(destId);
+
+        if(packet.getTtl() > 0 || nextHopAddress == null || nextHopPort == -1){
+            packet.inkrementHops();
+            packet.setAddress(nextHopAddress);
+            packet.setPort(nextHopPort);
+            DatagramPacket dP = packet.makeDatagramPacket();
+            senderQueue.add(dP);
+
+            log.debug("Packet forwarded");
+        }
+        else {
+            log.debug("Packet throw away from: {}", destId);
+        }
     }
 
     private byte[] split(RandomAccessFile file, long sequenz){

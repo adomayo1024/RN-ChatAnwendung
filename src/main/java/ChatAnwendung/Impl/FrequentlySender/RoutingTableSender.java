@@ -1,32 +1,43 @@
 package ChatAnwendung.Impl.FrequentlySender;
 
 import ChatAnwendung.Api.RoutingEntry;
-import ChatAnwendung.Impl.Handler.Common.AbstractHandler;
+import ChatAnwendung.Api.RoutingTable;
 import ChatAnwendung.Impl.BCPPacket;
-import ChatAnwendung.Impl.MessageQueue;
 import ChatAnwendung.Impl.PacketTypes;
-import ChatAnwendung.Impl.persistence.RoutingTableImpl;
+import ChatAnwendung.Impl.persistence.Storage;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.DatagramPacket;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.BlockingQueue;
 
 @Slf4j
-public class RoutingTableSender extends AbstractHandler{
+public class RoutingTableSender {
 
 
     private final int routingTableEntrySize = 17;
     private final int maxAmountOfRoutingTableEntries = 54;
 
-    @Override
+    private final RoutingTable routingTable;
+
+    private final BlockingQueue<DatagramPacket> sendeQueue;
+
+    private final Storage storage;
+
+    public RoutingTableSender(RoutingTable routingTable, BlockingQueue<DatagramPacket> sendeQueue, Storage storage) {
+        this.routingTable = routingTable;
+        this.sendeQueue = sendeQueue;
+        this.storage = storage;
+    }
+
     public void run(){
 
         log.debug("Start with RoutingTable sending");
 
-        List<RoutingEntry> allEntries = RoutingTableImpl.getInstance().getAllEntries();
-        List<RoutingEntry> directNeighboursEntries = RoutingTableImpl.getInstance().getAllDirectNeighbours();
+        List<RoutingEntry> allEntries = routingTable.getAllEntries();
+        List<RoutingEntry> directNeighboursEntries = routingTable.getAllDirectNeighbours();
         Map<RoutingEntry, byte[]> allRoutingTablePackets = new HashMap<>();
 
         for(RoutingEntry entry : allEntries){
@@ -53,15 +64,22 @@ public class RoutingTableSender extends AbstractHandler{
             for(int i = 0; i < countEntries; i++){
                 if(i != 0 && i % maxAmountOfRoutingTableEntries == 0){
 
-                    DatagramPacket packet = makeDatagramPackage(PacketTypes.ROUTINGTABLE,
-                            entry.getUID(),
-                            0,
-                            0,
-                            payload,
-                            entry.getNextHopAdress(),
-                            entry.getNextHopPort()
-                    );
-                    MessageQueue.getInstance().push(packet);
+                    BCPPacket bcpPacket = new BCPPacket(
+                            (byte) 1, //version
+                            PacketTypes.ROUTINGTABLE, //type
+                            (byte) 1, // ttl
+                            (byte) 0, // hops
+                            storage.getID(), //srcNodId
+                            entry.getUID(), //destNodeId
+                            0, //sequenz
+                            0, //fileId
+                            0L, //crc
+                            (short)payload.length, //payloadLength
+                            payload, //payload
+                            entry.getNextHopAdress(), //address
+                            entry.getNextHopPort()); //port
+                    DatagramPacket packet = bcpPacket.makeDatagramPacket();
+                    sendeQueue.add(packet);
 
                     log.debug("RoutingTable packet send to {}", Long.toUnsignedString(entry.getUID()));
 
@@ -76,15 +94,22 @@ public class RoutingTableSender extends AbstractHandler{
                 System.arraycopy(allRoutingTablePackets.get(relevantEntries.get(i)), 0, payload, (i % maxAmountOfRoutingTableEntries) * routingTableEntrySize, routingTableEntrySize);
             }
 
-            DatagramPacket packet = makeDatagramPackage(PacketTypes.ROUTINGTABLE,
-                    entry.getUID(),
-                    0,
-                    0,
-                    payload,
-                    entry.getNextHopAdress(),
-                    entry.getNextHopPort()
-            );
-            MessageQueue.getInstance().push(packet);
+            BCPPacket bcpPacket = new BCPPacket(
+                    (byte) 1, //version
+                    PacketTypes.ROUTINGTABLE, //type
+                    (byte) 1, // ttl
+                    (byte) 0, // hops
+                    storage.getID(), //srcNodId
+                    entry.getUID(), //destNodeId
+                    0, //sequenz
+                    0, //fileId
+                    0L, //crc
+                    (short)payload.length, //payloadLength
+                    payload, //payload
+                    entry.getNextHopAdress(), //address
+                    entry.getNextHopPort()); //port
+            DatagramPacket packet = bcpPacket.makeDatagramPacket();
+            sendeQueue.add(packet);
             log.debug("RoutingTable packet send to {}", Long.toUnsignedString(entry.getUID()));
 
             log.debug("Finished with sending RoutingTable to: {}", entry.getUID());
