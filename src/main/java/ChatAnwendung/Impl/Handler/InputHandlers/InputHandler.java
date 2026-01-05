@@ -9,6 +9,7 @@ import ChatAnwendung.Impl.Handler.Common.ExceptionHandler;
 import ChatAnwendung.Impl.persistence.*;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -156,7 +157,10 @@ public class InputHandler implements Runnable {
     }
 
     private String exitHelp() {
-        return null;
+        return "exit: Meldet den User ab und beendet das Programm kommplett\n" +
+                "\tAufbau: exit\n" +
+                "\tFehler:\n";
+
     }
 
     private String helpHelp() {
@@ -175,6 +179,19 @@ public class InputHandler implements Runnable {
     }
 
     private void handleExit(String[] command) {
+        log.debug("Start with shutdown");
+
+        try {
+            if(storage.isLogin()){
+                GoodbyeInputHandler bye = new GoodbyeInputHandler(new String[]{"bye"});
+                bye.run();
+            }
+            System.in.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        log.debug("Initialization finished");
 
     }
 
