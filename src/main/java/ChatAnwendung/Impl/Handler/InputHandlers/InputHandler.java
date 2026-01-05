@@ -9,7 +9,6 @@ import ChatAnwendung.Impl.Exceptions.NotAUIDException;
 import ChatAnwendung.Impl.Exceptions.UnknowUIDException;
 import ChatAnwendung.Impl.Handler.Common.ExceptionHandler;
 import ChatAnwendung.Impl.InputCommands;
-import ChatAnwendung.Impl.MessageQueue;
 import ChatAnwendung.Impl.PacketTypes;
 import ChatAnwendung.Impl.persistence.*;
 import lombok.extern.slf4j.Slf4j;
@@ -74,7 +73,7 @@ public class InputHandler implements Runnable {
 
                 case InputCommands.HELLO -> handleHello(command);
 
-                case InputCommands.GOODBYE -> handleGoodbye(command);
+                case InputCommands.BYE -> handleGoodbye(command);
 
                 case InputCommands.SEND -> handleSend(command);
 
@@ -112,7 +111,7 @@ public class InputHandler implements Runnable {
 
                 case InputCommands.FILE -> builder.append(fileHelp());
 
-                case InputCommands.GOODBYE -> builder.append(goodbyeHelp());
+                case InputCommands.BYE -> builder.append(goodbyeHelp());
 
                 case InputCommands.HELLO -> builder.append(HelloInputHandler.help());
 

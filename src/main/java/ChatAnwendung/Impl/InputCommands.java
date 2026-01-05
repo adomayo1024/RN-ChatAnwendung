@@ -4,7 +4,7 @@ public enum InputCommands {
     SEND,
     FILE,
     HELLO,
-    GOODBYE,
+    BYE,
     EXIT,
     CONNECT,
     DISCONNECT,
@@ -13,7 +13,7 @@ public enum InputCommands {
 
 
     public boolean isLogOutCommand(){
-        return !this.equals(SEND) && !this.equals(FILE) && !this.equals(GOODBYE);
+        return !this.equals(SEND) && !this.equals(FILE) && !this.equals(BYE);
 
     }
 
