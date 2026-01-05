@@ -146,22 +146,30 @@ public class ReceiveHanlder implements Runnable {
         long srcNodeId = packet.getSrcNodeId();
         InetAddress srcAddress = packet.getAddress();
         int srcPort = packet.getPort();
-        File file = downloadFiles.getFile(srcNodeId, fileId);
+        String filePath = storage.getOpenFile(fileId);
+        byte[] payload;
 
 
+        try(RandomAccessFile file = new RandomAccessFile(filePath, "r")){
+            int anzahlChunks = (int) Math.ceil(file.length() / 1300.0);
+            payload = split(file, sequenz, anzahlChunks);
+        } catch (IOException e){
+            return;
+        }
 
-        packet.setPayload(file.getChunk(sequenz));
 
-        packet.setType(PacketTypes.RESENDREQUEST);
+        packet.setType(PacketTypes.FILE_DATA);
         packet.setHops((byte)0);
         packet.setTtl((byte) 32);
         packet.setSrcNodeId(storage.getID());
         packet.setDestNodeId(srcNodeId);
         packet.setFileId(fileId);
         packet.setSequenz(sequenz);
-        packet.setPayloadLength(packet.getPayloadLength());
+        packet.setPayloadLength((short)payload.length);
+        packet.setPayload(payload);
         packet.setAddress(srcAddress);
         packet.setPort(srcPort);
+
 
         DatagramPacket requestPacket = packet.makeDatagramPacket();
 
@@ -171,9 +179,35 @@ public class ReceiveHanlder implements Runnable {
 
     }
 
+    private byte[] split(RandomAccessFile file, int sequenz, int anzahlChunks) {
+        byte[] chunk = null;
+
+        try {
+            if(anzahlChunks <= sequenz || sequenz < 0){
+                throw new IllegalSequnzNumberException(sequenz);
+            }
+            else if(anzahlChunks - 1 == sequenz){
+                int size = (int)(file.length() % 1300);
+                chunk = new byte[size];
+            }
+            else{
+                chunk = new byte[1300];
+            }
+            file.seek(sequenz * 1300L);
+            file.read(chunk);
+        } catch (IOException | IllegalSequnzNumberException e) {
+            ExceptionHandler.handle(e, this.getClass());
+        }
+        return chunk;
+    }
+
     private void handleFileEnd(BCPPacket packet) {
 
         log.debug("Received File End from User: {} and File: {}", packet.getSrcNodeId(), packet.getFileId());
+
+        File file = downloadFiles.getFile(packet.getSrcNodeId(), packet.getFileId());
+
+        file.startRequesting(downloadFiles, routingTable, storage, senderQueue);
 
     }
 
@@ -196,8 +230,6 @@ public class ReceiveHanlder implements Runnable {
                 timer);
 
         downloadFiles.setNewFile(srcUID, fileID, file);
-
-        file.startRequesting(downloadFiles, routingTable, storage, senderQueue);
 
         log.debug("Created new File{} for: {} from User: {}", fileName, fileID, Long.toUnsignedString(srcUID));
 
@@ -222,7 +254,9 @@ public class ReceiveHanlder implements Runnable {
                 log.debug("Added Chunk: {} to File: {}from User: {}", sequenz, file.getName(), Long.toUnsignedString(srcUID));
             }
             if(file.finished()){
-               downloadFiles.removeFile(srcUID, fileId);
+                file.safeFile();
+                file.stopRequesting();
+                downloadFiles.removeFile(srcUID, fileId);
                 log.info("Finished downloading File: {} from User: {}", file.getName(), Long.toUnsignedString(srcUID));
                 System.out.println("Finished downloading File: " + file.getName() + " from User: " + Long.toUnsignedString(srcUID));
             }

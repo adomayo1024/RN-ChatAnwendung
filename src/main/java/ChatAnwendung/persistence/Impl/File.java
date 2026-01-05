@@ -4,19 +4,21 @@ import ChatAnwendung.Exceptions.IllegalSequnzNumberException;
 import ChatAnwendung.persistence.Api.RoutingTable;
 import ChatAnwendung.Exceptions.ExceptionHandler;
 import ChatAnwendung.logic.Impl.RequestSender;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.net.DatagramPacket;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 @Slf4j
 public class File {
@@ -25,6 +27,7 @@ public class File {
 
     private int length;
 
+    @Getter
     private String name;
 
     private static String filePathLin = "Downloads/";
@@ -33,21 +36,19 @@ public class File {
 
     private static String filePath = System.getProperty("os.name").toLowerCase().contains("windows") ? filePathWin : filePathLin;
 
+    @Getter
     private int fileId;
 
+    @Getter
     private long srcUID;
 
     private boolean[] writedChunks;
 
-    private AtomicInteger requestSendedWithoutAResponse;
-
-    private ScheduledFuture<?> requestTimer;
+    private byte[] chunksSended;
 
     private final ScheduledExecutorService executor;
 
-    private ReentrantLock writedChunksMutex;
-
-    private ReentrantLock fileMutex;
+    private ReentrantReadWriteLock writedChunksMutex;
 
     private AtomicLong recievedLastChunk;
 
@@ -61,68 +62,81 @@ public class File {
         this.writedChunks = new boolean[anzahlChunks];
         this.srcUID = srcUID;
         this.executor = executor;
-        this.writedChunksMutex = new ReentrantLock(true);
-        this.fileMutex = new ReentrantLock(true);
-        makeFile();
+        this.writedChunksMutex = new ReentrantReadWriteLock(true);
+        this.chunksSended = new byte[length];
         recievedLastChunk = new AtomicLong(System.currentTimeMillis());
-        requestSendedWithoutAResponse = new AtomicInteger(0);
-
-    }
-
-    private void makeFile() {
-        fileMutex.lock();
-        try(RandomAccessFile file = new RandomAccessFile(filePath + name, "rw")) {
-            file.setLength(length);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        finally {
-            fileMutex.unlock();
-        }
-
-        log.debug("Created new File: {}", name);
+        log.debug("Created File: {}", this);
     }
 
     public boolean addChunk(byte[] chunk, int sequenz) {
 
+//        boolean added = false;
+//        if(!writedChunks[sequenz]){
+//            fileMutex.lock();
+//            try(RandomAccessFile file = new RandomAccessFile(filePath + name, "rw")){
+//                int pos = sequenz * 1300;
+//                file.seek(pos);
+//                file.write(chunk);
+//                writedChunksMutex.lock();
+//                writedChunks[sequenz] = true;
+//                file.close();
+//                added = true;
+//                recievedLastChunk.set(System.currentTimeMillis());
+//                log.debug("Added Chunk {} to File: {}", sequenz, name);
+//            } catch (IOException e) {
+//                log.debug("Error ecours: {}", e.getMessage());
+//                writedChunks[sequenz] = false;
+//                ExceptionHandler.handle(e, this.getClass());
+//            }
+//            finally {
+//                fileMutex.unlock();
+//                writedChunksMutex.unlock();
+//            }
+//
+//        }
+
         boolean added = false;
+
+        writedChunksMutex.readLock().lock();
         if(!writedChunks[sequenz]){
-            fileMutex.lock();
+            writedChunksMutex.readLock().unlock();
+            writedChunksMutex.writeLock().lock();
+            System.arraycopy(chunk, 0, chunksSended, sequenz * 1300, chunk.length);
+            writedChunks[sequenz] = true;
+            added = true;
+            writedChunksMutex.writeLock().unlock();
+            recievedLastChunk.set(System.currentTimeMillis());
+            log.debug("Added Chunk {} to File: {}", sequenz, name);
+        }else {
+            writedChunksMutex.readLock().unlock();
+        }
+        return added;
+    }
+    public void safeFile(){
+        if(finished()){
             try(RandomAccessFile file = new RandomAccessFile(filePath + name, "rw")){
-                int pos = sequenz * 1300;
-                file.seek(pos);
-                file.write(chunk);
-                writedChunksMutex.lock();
-                writedChunks[sequenz] = true;
-                file.close();
-                added = true;
-                recievedLastChunk.set(System.currentTimeMillis());
-                log.debug("Added Chunk {} to File: {}", sequenz, name);
+                file.write(chunksSended);
+            } catch (FileNotFoundException e) {
+                ExceptionHandler.handle(e, this.getClass());
             } catch (IOException e) {
-                log.debug("Error ecours: {}", e.getMessage());
-                writedChunks[sequenz] = false;
                 ExceptionHandler.handle(e, this.getClass());
             }
-            finally {
-                fileMutex.unlock();
-                writedChunksMutex.unlock();
-            }
-
         }
 
-        return added;
+        log.debug("File {} saved", name);
+        System.out.println("File " + name + " saved");
     }
 
     public boolean finished(){
         boolean result;
         int i = 0;
-        writedChunksMutex.lock();
+        writedChunksMutex.readLock().lock();
 
         do{
             result = writedChunks[i++];
         }while(i < writedChunks.length && result);
 
-        writedChunksMutex.unlock();
+        writedChunksMutex.readLock().unlock();
 
         return result;
     }
@@ -152,29 +166,19 @@ public class File {
 
         }
 
-    public long getSrcUID() {
-        return srcUID;
-    }
-
-    public int getFileId() {
-        return fileId;
-    }
-
-    public int getNextNeededChunk(){
-        int i = 0;
-        writedChunksMutex.lock();
-        boolean written = writedChunks[i];
-        while(written && i < writedChunks.length){
-            written = writedChunks[++i];
+    public List<Integer> getMissingChunks(){
+        writedChunksMutex.readLock().lock();
+        List<Integer> missingChunks = new ArrayList<>();
+        for(int i = 0; i < writedChunks.length; i++){
+            if(!writedChunks[i]){
+                missingChunks.add(i);
+            }
         }
-        writedChunksMutex.unlock();
-        if(written){
-            i = -1;
-        }
+        writedChunksMutex.readLock().unlock();
 
-        log.debug("Next needed Chunk: {}", i);
+        log.debug("Next needed Chunks: {}", missingChunks);
 
-        return i;
+        return missingChunks;
 
     }
 
@@ -182,10 +186,6 @@ public class File {
         return recievedLastChunk.get();
     }
 
-
-    public String getName() {
-        return name;
-    }
 
     public void startRequesting(DownloadFiles downloadFiles, RoutingTable routingTable, Storage storage, BlockingQueue<DatagramPacket> sendeQueue){
         requestFuture = executor.scheduleAtFixedRate(new RequestSender(this, downloadFiles, routingTable, storage, sendeQueue), 1, 1, TimeUnit.SECONDS);

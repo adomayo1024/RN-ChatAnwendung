@@ -330,7 +330,6 @@ public class InputHandler implements Runnable {
                             port); //port
 
                     DatagramPacket packet = bcpPacket.makeDatagramPacket();
-                    Thread.sleep(10);
                     senderQueue.add(packet);
 
                     log.debug("File data packet number {} send", sequenz);
@@ -345,8 +344,6 @@ public class InputHandler implements Runnable {
                 System.out.println("File send to User: " + Long.toUnsignedString(uID));
             } catch (IOException e) {
                 ExceptionHandler.handle(e, this.getClass());
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
             }
         }
     }
