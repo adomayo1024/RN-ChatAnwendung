@@ -1,5 +1,6 @@
 package ChatAnwendung.persistence.Impl;
 
+import ChatAnwendung.Exceptions.IllegalSequnzNumberException;
 import ChatAnwendung.persistence.Api.RoutingTable;
 import ChatAnwendung.Exceptions.ExceptionHandler;
 import ChatAnwendung.logic.Impl.RequestSender;
@@ -72,8 +73,6 @@ public class File {
         fileMutex.lock();
         try(RandomAccessFile file = new RandomAccessFile(name, "rw")) {
             file.setLength(length);
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -127,6 +126,31 @@ public class File {
 
         return result;
     }
+
+    public byte[] getChunk(int sequenz){
+        if(anzahlChunks <= sequenz || sequenz < 0){
+            ExceptionHandler.handle(new IllegalSequnzNumberException(sequenz), this.getClass());
+        }
+
+        byte[] chunk = null;
+
+        if(anzahlChunks - 1 == sequenz){
+            int size = (length % 1300);
+            chunk = new byte[size];
+        }
+        else{
+            chunk = new byte[1300];
+        }
+
+        try(RandomAccessFile file = new RandomAccessFile(filePath + name, "r")) {
+            file.seek(sequenz * 1300L);
+            file.read(chunk);
+        } catch (IOException e) {
+            ExceptionHandler.handle(e, this.getClass());
+        }
+        return chunk;
+
+        }
 
     public long getSrcUID() {
         return srcUID;

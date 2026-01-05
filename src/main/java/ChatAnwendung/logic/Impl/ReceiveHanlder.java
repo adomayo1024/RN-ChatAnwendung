@@ -143,19 +143,14 @@ public class ReceiveHanlder implements Runnable {
 
         int sequenz = packet.getSequenz();
         int fileId = packet.getFileId();
-        String filePath = storage.getOpenFile(fileId);
         long srcNodeId = packet.getSrcNodeId();
         InetAddress srcAddress = packet.getAddress();
         int srcPort = packet.getPort();
+        File file = downloadFiles.getFile(srcNodeId, fileId);
 
 
 
-        try (RandomAccessFile file = new RandomAccessFile(filePath, "r")) {
-            packet.setPayload(split(file, sequenz));
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        packet.setPayload(file.getChunk(sequenz));
 
         packet.setType(PacketTypes.RESENDREQUEST);
         packet.setHops((byte)0);
@@ -329,29 +324,6 @@ public class ReceiveHanlder implements Runnable {
         else {
             log.debug("Packet throw away from: {}", destId);
         }
-    }
-
-    private byte[] split(RandomAccessFile file, long sequenz){
-        byte[] chunk = null;
-
-        try {
-            long anzahlChunks = (long)Math.ceil(file.length() / 1300.0);
-            if(anzahlChunks <= sequenz || sequenz < 0){
-                throw new IllegalSequnzNumberException(sequenz);
-            }
-            else if(anzahlChunks - 1 == sequenz){
-                int size = (int)(file.length() % 1300);
-                chunk = new byte[size];
-            }
-            else{
-                chunk = new byte[1300];
-            }
-            file.seek(sequenz * 1300);
-            file.read(chunk);
-        } catch (IOException | IllegalSequnzNumberException e) {
-            ExceptionHandler.handle(e, this.getClass());
-        }
-        return chunk;
     }
 
 }
