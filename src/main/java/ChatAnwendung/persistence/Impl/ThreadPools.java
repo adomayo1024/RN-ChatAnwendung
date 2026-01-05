@@ -23,10 +23,7 @@ public class ThreadPools {
     private final ExecutorService workerThreadPool;
 
     @Setter
-    private ScheduledFuture<?> heartBeatAndRoutingTableTimerFuture;
-
-    @Setter
-    private ScheduledFuture<?> timeoutFuture;
+    private ScheduledFuture<?> scheduleServicesFuture;
 
     public ThreadPools(){
         fileRequestTimer = Executors.newScheduledThreadPool(3);
@@ -45,12 +42,8 @@ public class ThreadPools {
         inputHandlerThreadPool.shutdownNow();
         receiverThreadPool.shutdownNow();
         workerThreadPool.shutdownNow();
-        if(timeoutFuture != null){
-            timeoutFuture.cancel(true);
-        }
-
-        if(timeoutFuture != null){
-            timeoutFuture.cancel(true);
+        if(scheduleServicesFuture != null){
+            scheduleServicesFuture.cancel(true);
         }
 
     }

@@ -64,7 +64,7 @@ public class InputHandler implements Runnable {
                 continue;
             }
 
-            if(!commandType.isLogOutCommand()){
+            if(!storage.isLogin() && !commandType.isLogOutCommand()){
                 continue;
             }
 
@@ -464,11 +464,9 @@ public class InputHandler implements Runnable {
     private void handleGoodbye(String[] command) {
         log.debug("Start logout");
 
-        threadPools.getHeartBeatAndRoutingTableTimerFuture().cancel(true);
-        threadPools.getTimeoutFuture().cancel(true);
+        threadPools.getScheduleServicesFuture().cancel(true);
         storage.logout();
-        threadPools.setHeartBeatAndRoutingTableTimerFuture(null);
-        threadPools.setTimeoutFuture(null);
+        threadPools.setScheduleServicesFuture(null);
 
         log.debug("Finished with canceling heartbeats and timeout");
 
@@ -537,7 +535,7 @@ public class InputHandler implements Runnable {
                 log.debug("Hello packet send to {}", connection.address());
             }
 
-            threadPools.setHeartBeatAndRoutingTableTimerFuture(threadPools.getScheduleServices().scheduleWithFixedDelay(new loopServices(routingTable, storage, senderQueue), 1, 5, TimeUnit.SECONDS));
+            threadPools.setScheduleServicesFuture(threadPools.getScheduleServices().scheduleWithFixedDelay(new loopServices(routingTable, storage, senderQueue), 1, 5, TimeUnit.SECONDS));
             log.debug("Finished with login");
 
             log.info("Login successful");
