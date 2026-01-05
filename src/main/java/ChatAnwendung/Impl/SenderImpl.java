@@ -7,27 +7,33 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.util.concurrent.BlockingQueue;
 
 @Slf4j
 public class SenderImpl implements Sender, Runnable {
 
     private DatagramSocket socket;
 
-    public SenderImpl(DatagramSocket socket) {
+    private final BlockingQueue<DatagramPacket> sendeQueue;
+
+    public SenderImpl(DatagramSocket socket, BlockingQueue<DatagramPacket> sendeQueue) {
         this.socket = socket;
+        this.sendeQueue = sendeQueue;
     }
 
     @Override
     public void run() {
 
-        while (!Thread.currentThread().isInterrupted()) {
+        boolean interrupted = false;
+
+        while (!interrupted) {
 
             DatagramPacket p;
             try {
 
             log.debug("Start polling for new package");
 
-            p = MessageQueue.getInstance().poll();
+            p = sendeQueue.take();
 
             log.debug("New Package for sending found");
 
@@ -38,7 +44,7 @@ public class SenderImpl implements Sender, Runnable {
             } catch (IOException e) {
                 System.out.println(e.getMessage());
             } catch (InterruptedException e){
-                Thread.currentThread().interrupt();
+                interrupted = true;
             }
         }
 

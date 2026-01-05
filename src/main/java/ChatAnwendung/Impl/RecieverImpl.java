@@ -28,10 +28,11 @@ public class RecieverImpl implements Runnable, Reciever {
 
     private final BlockingQueue<DatagramPacket> queue;
 
-    public RecieverImpl(DatagramSocket socket) {
+    public RecieverImpl(DatagramSocket socket, BlockingQueue<DatagramPacket> queue) {
         this.socket = socket;
-        this.queue = new ArrayBlockingQueue<DatagramPacket>(2000);
+        this.queue = queue;
         this.handler = new RecieverHandlerImpl(queue);
+
     }
 
     @Override

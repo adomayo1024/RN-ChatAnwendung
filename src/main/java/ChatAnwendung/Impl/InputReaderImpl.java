@@ -2,19 +2,20 @@ package ChatAnwendung.Impl;
 
 import ChatAnwendung.Api.InputHandler;
 import ChatAnwendung.Api.InputReader;
+import ChatAnwendung.Impl.Handler.InputHandlers.InputHandlerImpl;
 import ChatAnwendung.Impl.persistence.Storage;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;
+import java.util.concurrent.BlockingQueue;
 
 @Slf4j
 public class InputReaderImpl implements InputReader, Runnable {
 
-    private final InputHandler inputHandler;
+    private final BlockingQueue<String> inputQueue;
 
-
-    public InputReaderImpl(InputHandler handler) {
-        inputHandler = handler;
+    public InputReaderImpl(BlockingQueue<String> inputQueue) {
+        this.inputQueue = inputQueue;
     }
 
     @Override
