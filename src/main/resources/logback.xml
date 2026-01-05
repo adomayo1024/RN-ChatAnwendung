@@ -49,10 +49,10 @@
     <!-- Klassen- / Paketsteuerung -->
     <!-- ============================= -->
 
-    <!-- gesamtes Projekt-->
-    <logger name="ChatAnwendung" level="INFO">
-        <appender-ref ref="CONSOLE"/>
-    </logger>
+<!--    &lt;!&ndash; gesamtes Projekt&ndash;&gt;-->
+<!--    <logger name="ChatAnwendung" level="INFO">-->
+<!--        <appender-ref ref="CONSOLE"/>-->
+<!--    </logger>-->
 
 <!--    <logger name="ChatAnwendung" level="DEBUG">-->
 <!--        <appender-ref ref="FILE"/>-->
