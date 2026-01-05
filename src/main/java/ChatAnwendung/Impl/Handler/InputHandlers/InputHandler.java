@@ -1,6 +1,11 @@
 package ChatAnwendung.Impl.Handler.InputHandlers;
 
+import ChatAnwendung.Api.RoutingEntry;
+import ChatAnwendung.Api.RoutingTable;
 import ChatAnwendung.Impl.InputCommands;
+import ChatAnwendung.Impl.persistence.Connection;
+import ChatAnwendung.Impl.persistence.ConnectionsList;
+import ChatAnwendung.Impl.persistence.RoutingTableImpl;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.BlockingQueue;
@@ -9,10 +14,14 @@ import java.util.concurrent.BlockingQueue;
 public class InputHandler implements Runnable {
 
     private final BlockingQueue<String> inputQueue;
+    private final RoutingTable routingTable;
+    private final ConnectionsList connectionList;
 
 
-    public InputHandler(BlockingQueue<String> inputQueue) {
+    public InputHandler(BlockingQueue<String> inputQueue, RoutingTable routingTabl, ConnectionsList connectionList) {
         this.inputQueue = inputQueue;
+        this.routingTable = routingTabl;
+        this.connectionList = connectionList;
     }
 
     @Override
@@ -141,6 +150,36 @@ public class InputHandler implements Runnable {
     }
 
     private void handleExit(String[] command) {
+        log.debug("Start with list");
+
+        boolean allFlagSet = false;
+        boolean connectionFlagSet = false;
+
+        for(String flag: command){
+            switch (flag){
+                case "--all":
+                    allFlagSet = true;
+                    break;
+                case "--connect":
+                    connectionFlagSet = true;
+                    break;
+                default:
+            }
+        }
+
+        for(RoutingEntry entry : routingTable.getAllEntries()){
+            if(entry.isRoutable() || allFlagSet){
+                System.out.println(Long.toUnsignedString(entry.getUID()) + " Hops: " + entry.getHops() + " next Hop Address: " + entry.getNextHopAdress() +  " next Hop port: " + entry.getNextHopPort() + " is routable: " + entry.isRoutable());
+            }
+        }
+
+        if(connectionFlagSet){
+            for(Connection connection : connectionList.getAllConnections()){
+                System.out.println(connection.address().toString() + ":" + connection.port());
+            }
+        }
+
+        log.debug("End with list");
     }
 
     private void handleList(String[] command) {
