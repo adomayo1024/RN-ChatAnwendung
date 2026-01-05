@@ -260,7 +260,13 @@ public class InputHandler implements Runnable {
 
         for(RoutingEntry entry : routingTable.getAllEntries()){
             if(entry.isRoutable() || allFlagSet){
-                System.out.println(Long.toUnsignedString(entry.getUID()) + " Hops: " + entry.getHops() + " next Hop Address: " + entry.getNextHopAdress() +  " next Hop port: " + entry.getNextHopPort() + " is routable: " + entry.isRoutable());
+                System.out.println(Long.toUnsignedString(entry.getUID()) +
+                        " | Hops: " + entry.getHops() +
+                        " | next Hop Address: " + entry.getNextHopAdress() +
+                        " | next Hop port: " +
+                        entry.getNextHopPort() +
+                        " | is routable: " + entry.isRoutable() +
+                        "| last seen:" + (int) entry.getLastSeenShort() + "ms");
             }
         }
 
