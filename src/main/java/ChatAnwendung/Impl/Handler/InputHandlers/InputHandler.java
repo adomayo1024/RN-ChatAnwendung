@@ -271,6 +271,25 @@ public class InputHandler implements Runnable {
     }
 
     private void handleDisconnect(String[] command) {
+        log.debug("start with disconnect: {} : {}", command[1], command[2]);
+
+        InetAddress address;
+        int port;
+
+        try {
+            address = InetAddress.getByName(command[1]);
+            port = Integer.parseInt(command[2]);
+            Connection connection = new Connection(address, port);
+
+            connectionList.remove(connection);
+        } catch (UnknownHostException e) {
+            ExceptionHandler.handle(new ArgumentException(e.getMessage()), this.getClass());
+        }
+
+        log.info("Disconnect with: {}:{}", command[1], command[2]);
+        System.out.println("Disconnect with: " + command[1] + ":" + command[2]);
+        log.debug("end with disconnect: {} : {}", command[1], command[2]);
+
     }
 
     private void handleConnect(String[] command) {
