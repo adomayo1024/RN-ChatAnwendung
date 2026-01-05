@@ -205,9 +205,9 @@ public class ReceiveHanlder implements Runnable {
 
         log.debug("Received File End from User: {} and File: {}", packet.getSrcNodeId(), packet.getFileId());
 
-        File file = downloadFiles.getFile(packet.getSrcNodeId(), packet.getFileId());
-
-        file.startRequesting(downloadFiles, routingTable, storage, senderQueue);
+//        File file = downloadFiles.getFile(packet.getSrcNodeId(), packet.getFileId());
+//
+//        file.startRequesting(downloadFiles, routingTable, storage, senderQueue);
 
     }
 
@@ -230,6 +230,8 @@ public class ReceiveHanlder implements Runnable {
                 timer);
 
         downloadFiles.setNewFile(srcUID, fileID, file);
+
+        file.startRequesting(downloadFiles, routingTable, storage, senderQueue);
 
         log.debug("Created new File{} for: {} from User: {}", fileName, fileID, Long.toUnsignedString(srcUID));
 

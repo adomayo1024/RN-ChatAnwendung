@@ -188,10 +188,11 @@ public class File {
 
 
     public void startRequesting(DownloadFiles downloadFiles, RoutingTable routingTable, Storage storage, BlockingQueue<DatagramPacket> sendeQueue){
-        requestFuture = executor.scheduleAtFixedRate(new RequestSender(this, downloadFiles, routingTable, storage, sendeQueue), 1, 1, TimeUnit.SECONDS);
+        requestFuture = executor.scheduleAtFixedRate(new RequestSender(this, downloadFiles, routingTable, storage, sendeQueue), 3, 1, TimeUnit.SECONDS);
     }
 
     public void stopRequesting() {
         requestFuture.cancel(true);
     }
 }
+

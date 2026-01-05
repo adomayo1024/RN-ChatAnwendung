@@ -31,12 +31,12 @@ public class RequestSender implements Runnable {
         this.routingTable = routingTable;
         this.storage = storage;
         this.sendeQueue = sendeQueue;
+
+        System.out.println("Start Requesting for File: " + file.getName() + "in 3 Seconds");
     }
 
     @Override
     public void run() {
-
-        log.debug("Start with sending Request");
 
         List<Integer> missingChunks = file.getMissingChunks();
 
