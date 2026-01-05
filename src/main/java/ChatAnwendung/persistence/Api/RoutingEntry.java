@@ -23,5 +23,7 @@ public interface RoutingEntry {
 
     long getLastSeen();
 
+    long getLastSeenShort();
+
     void setLastSeen();
 }

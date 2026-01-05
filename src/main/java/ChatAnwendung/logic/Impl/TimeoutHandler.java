@@ -8,7 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class TimeoutHandler {
 
-    private final int timeout = 45_000;
+    private final int timeout = 30_000;
 
     private final RoutingTable routingTable;
 

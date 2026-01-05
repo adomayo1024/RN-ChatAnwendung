@@ -96,6 +96,11 @@ public class RoutingEntryImpl implements RoutingEntry {
     }
 
     @Override
+    public long getLastSeenShort(){
+        return System.currentTimeMillis() - lastSeen;
+    }
+
+    @Override
     public void setLastSeen() {
         mutex.lock();
         lastSeen = System.currentTimeMillis();
