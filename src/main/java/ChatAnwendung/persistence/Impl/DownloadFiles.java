@@ -9,6 +9,12 @@ import java.util.concurrent.*;
 @Slf4j
 public class DownloadFiles {
 
+    private static String filePathLin = "Downloads/";
+
+    private static String filePathWin = "Downloads\\";
+
+    private static String filePath = System.getProperty("os.name").toLowerCase().contains("windows") ? filePathWin : filePathLin;
+
     private ScheduledExecutorService timer;
 
     private Map<Long, Map<Integer, File>> downloadedFiles;
@@ -19,6 +25,8 @@ public class DownloadFiles {
         this.timer = timer;
         downloadedFiles = new ConcurrentHashMap<>();
         finishedFiles = new ConcurrentHashMap<>();
+
+        new java.io.File(filePath).mkdirs();
     }
 
     public File getFile(long uID, int fileID) throws NullPointerException{

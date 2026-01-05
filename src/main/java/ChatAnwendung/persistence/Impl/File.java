@@ -26,6 +26,12 @@ public class File {
 
     private String name;
 
+    private static String filePathLin = "Downloads/";
+
+    private static String filePathWin = "Downloads\\";
+
+    private static String filePath = System.getProperty("os.name").toLowerCase().contains("windows") ? filePathWin : filePathLin;
+
     private int fileId;
 
     private long srcUID;
@@ -59,6 +65,7 @@ public class File {
         makeFile();
         recievedLastChunk = new AtomicLong(System.currentTimeMillis());
         requestSendedWithoutAResponse = new AtomicInteger(0);
+
     }
 
     private void makeFile() {
@@ -82,7 +89,7 @@ public class File {
         boolean added = false;
         if(!writedChunks[sequenz]){
             fileMutex.lock();
-            try(RandomAccessFile file = new RandomAccessFile(name, "rw")){
+            try(RandomAccessFile file = new RandomAccessFile(filePath + name, "rw")){
                 int pos = sequenz * 1300;
                 file.seek(pos);
                 file.write(chunk);
