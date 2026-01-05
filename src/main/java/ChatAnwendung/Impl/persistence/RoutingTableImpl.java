@@ -21,25 +21,11 @@ public class RoutingTableImpl implements RoutingTable {
 
     private  Map<Long, RoutingEntry> entries;
 
-    private static final ReentrantLock getMutex = new ReentrantLock(true);
-
     private ReentrantLock mutex;
 
-    private static RoutingTable INSTANCE;
-
-    private RoutingTableImpl() {
+    public RoutingTableImpl() {
         entries = new HashMap<>();
         mutex = new ReentrantLock(true);
-    }
-
-    public static RoutingTable getInstance(){
-        getMutex.lock();
-        if(INSTANCE == null) {
-            INSTANCE = new RoutingTableImpl();
-            log.debug("Created new RoutingTable: {}", INSTANCE);
-        }
-        getMutex.unlock();
-        return INSTANCE;
     }
 
     @Override
