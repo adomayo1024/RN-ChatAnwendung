@@ -18,8 +18,10 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
 public class InputHandler implements Runnable {
@@ -419,20 +421,23 @@ public class InputHandler implements Runnable {
             ExceptionHandler.handle(new NotAUIDException(e.getMessage()), this.getClass());
             return;
         }
-        String msg = command[2];
+        StringBuilder msg = new StringBuilder(command[2]);
+        for(int i = 3; i < command.length; i++){
+            msg.append(" ").append(command[i]);
+        }
 
 
         if(!validUID(destNodeId)) {
             ExceptionHandler.handle(new UnknowUIDException(destNodeId), this.getClass());
             return;
         }
-        else if(!validMessage(msg)){
-            ExceptionHandler.handle(new InvalidMessageException(msg), this.getClass());
+        else if(!validMessage(msg.toString())){
+            ExceptionHandler.handle(new InvalidMessageException(msg.toString()), this.getClass());
             return;
         }
 
 
-        byte[] payload = msg.getBytes(StandardCharsets.UTF_8);
+        byte[] payload = msg.toString().getBytes(StandardCharsets.UTF_8);
         InetAddress adress = routingTable.getNextHopAdressForUID(destNodeId);
         int port = routingTable.getNextHopPortForUID(destNodeId);
 
