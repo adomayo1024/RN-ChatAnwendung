@@ -10,6 +10,7 @@ import ChatAnwendung.Impl.persistence.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -175,7 +176,11 @@ public class InputHandler implements Runnable {
     }
 
     private String fileHelp() {
-        return null;
+        return """
+                file: Verschickt eine Datei die angegeben ist an einen bestimmten User
+                \tAufbau: file  "[absoluter Datei Pfad]" [User Id]
+                \tFehler: Die angegeben Datei gibt es nicht, der angegeben User ist nicht bekannt.\s
+                """;
     }
 
     private void handleExit(String[] command) {
@@ -229,6 +234,136 @@ public class InputHandler implements Runnable {
     }
 
     private void handleFile(String[] command) {
+        log.debug("Start with file transfer");
+
+        String path = command[1];
+
+        long uID = 0;
+        try {
+            uID = Long.parseUnsignedLong(command[2]);
+        } catch (NumberFormatException e) {
+            ExceptionHandler.handle(new NotAUIDException(e.getMessage()), this.getClass());
+            return;
+        } catch (ArrayIndexOutOfBoundsException e) {
+            ExceptionHandler.handle(new ArgumentException("Sender UID is missing"), this.getClass());
+            return;
+        }
+
+        if(!validUID(uID))  {
+            ExceptionHandler.handle(new UnknowUIDException(uID), this.getClass());
+        }
+        else {
+            try (RandomAccessFile file = new RandomAccessFile(path, "r")){
+
+                long length = file.length();
+                int anzahlChunks = (int) Math.ceil(length / 1300.0);
+                int fileId = storage.getNextFileID();
+                InetAddress address = RoutingTableImpl.getInstance().getNextHopAdressForUID(uID);
+                int port = routingTable.getNextHopPortForUID(uID);
+                storage.setSendOpenFile(fileId, path);
+
+                sendFileInitPacket(anzahlChunks, length, path, uID, fileId, address, port);
+
+                log.debug("File init packet send");
+
+                for(int sequenz = 0; sequenz < anzahlChunks; sequenz++){
+                    byte[] payload = split(file, sequenz, anzahlChunks);
+                    BCPPacket bcpPacket = new BCPPacket(
+                            (byte) 1, //version
+                            PacketTypes.FILE_DATA, //type
+                            (byte) 32, // ttl
+                            (byte) 0, // hops
+                            storage.getID(), //srcNodId
+                            uID, //destNodeId
+                            sequenz, //sequenz
+                            fileId, //fileId
+                            0L, //crc
+                            (short)payload.length, //payloadLength
+                            payload, //payload
+                            address, //address
+                            port); //port
+
+                    DatagramPacket packet = bcpPacket.makeDatagramPacket();
+                    Thread.sleep(10);
+                    senderQueue.add(packet);
+
+                    log.debug("File data packet number {} send", sequenz);
+                }
+
+                sendFileEnd(uID, fileId, address, port);
+                System.out.println("File send");
+
+                log.debug("End with file transfer");
+
+                log.info("File send to User: {}", Long.toUnsignedString(uID));
+                System.out.println("File send to User: " + Long.toUnsignedString(uID));
+            } catch (IOException e) {
+                ExceptionHandler.handle(e, this.getClass());
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    private void sendFileEnd(long uID, int fileId, InetAddress address, int port) {
+        byte[] payload = new byte[0];
+
+        BCPPacket bcpPacket = new BCPPacket(
+                (byte) 1, //version
+                PacketTypes.File_End, //type
+                (byte) 32, // ttl
+                (byte) 0, // hops
+                storage.getID(), //srcNodId
+                uID, //destNodeId
+                0, //sequenz
+                fileId, //fileId
+                0L, //crc
+                (short)payload.length, //payloadLength
+                payload, //payload
+                address, //address
+                port); //port
+
+        DatagramPacket packet = bcpPacket.makeDatagramPacket();
+        senderQueue.add(packet);
+    }
+
+    private void sendFileInitPacket(int anzahlChunks, long length, String path, long uID, int fileId, InetAddress address, int port) {
+        byte[] payload = makeDataInitPayload(length, path);
+
+        BCPPacket bcpPacket = new BCPPacket(
+                (byte) 1, //version
+                PacketTypes.FILE_INIT, //type
+                (byte) 32, // ttl
+                (byte) 0, // hops
+                storage.getID(), //srcNodId
+                uID, //destNodeId
+                anzahlChunks, //sequenz
+                fileId, //fileId
+                0L, //crc
+                (short)payload.length, //payloadLength
+                payload, //payload
+                address, //address
+                port); //port
+
+        DatagramPacket packet = bcpPacket.makeDatagramPacket();
+        senderQueue.add(packet);
+    }
+
+    private byte[] makeDataInitPayload(long length, String path) {
+        String[] splitPath;
+
+        if(System.getProperty("os.name").toLowerCase().contains("win")){
+            splitPath = path.split("\\\\");
+        }
+        else {
+            splitPath = path.split("/");
+        }
+
+        String fileName = splitPath[splitPath.length - 1];
+        byte[] payload = new byte[fileName.getBytes().length + 4];
+        BCPPacket.addInt(0, (int)length, payload);
+        System.arraycopy(fileName.getBytes(), 0, payload, 4, fileName.getBytes().length);
+        return payload;
     }
 
     private void handleSend(String[] command) {
