@@ -38,7 +38,6 @@ public class RecieverImpl implements Runnable, Reciever {
                 DatagramPacket request = new DatagramPacket(new byte[PACKETSIZE], PACKETSIZE);
 
                 log.debug( "Waiting for new package");
-
                 socket.receive(request);
 
                 log.debug("new package received");

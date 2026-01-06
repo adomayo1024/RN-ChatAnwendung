@@ -37,6 +37,8 @@ public class SenderImpl implements Sender, Runnable {
 
             log.debug("New Package for sending found");
 
+
+
             socket.send(p);
 
                 log.debug("send a package to the address: {} and to port: {} of Type: {}", p.getAddress(), p.getPort(), PacketTypes.values()[p.getData()[1]]);

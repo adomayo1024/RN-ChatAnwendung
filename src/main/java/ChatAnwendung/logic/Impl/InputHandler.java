@@ -237,7 +237,8 @@ public class InputHandler implements Runnable {
     private void handleInfo(String[] command) {
 
         System.out.println("You have the ID: " + storage.getUnsignedID() + "\n" +
-                "Port: " + storage.getPort());
+                "Port: " + storage.getPort() +
+                "\nAddress: " + storage.getAddress().toString());
     }
 
     private void handleList(String[] command) {

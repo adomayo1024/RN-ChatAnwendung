@@ -5,6 +5,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.BufferedReader;
+import java.net.InetAddress;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.HashMap;
@@ -21,6 +22,10 @@ public class Storage {
     @Setter
     @Getter
     private int port;
+
+    @Setter
+    @Getter
+    private InetAddress address;
 
     @Getter
     private boolean login;
