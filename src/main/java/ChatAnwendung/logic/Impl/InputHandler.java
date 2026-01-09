@@ -180,13 +180,13 @@ public class InputHandler implements Runnable {
             }
 
             case InputCommands.SEND -> {
-                if(command.length != AMOUNT_OF_ARGUMENTS_FOR_SEND){
+                if(command.length < AMOUNT_OF_ARGUMENTS_FOR_SEND){
                     result = false;
                 }
             }
 
             case InputCommands.FILE -> {
-                if(command.length != AMOUNT_OF_ARGUMENTS_FOR_FILE){
+                if(command.length < AMOUNT_OF_ARGUMENTS_FOR_FILE){
                     result = false;
                 }
             }
