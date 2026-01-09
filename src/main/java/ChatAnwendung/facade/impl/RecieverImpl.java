@@ -12,7 +12,7 @@ import java.net.SocketException;
 import java.util.concurrent.BlockingQueue;
 
 @Slf4j
-public class RecieverImpl implements Runnable, Reciever {
+public class RecieverImpl implements Reciever {
 
     private final DatagramSocket socket;
 

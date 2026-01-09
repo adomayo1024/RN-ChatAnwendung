@@ -10,7 +10,7 @@ import java.net.DatagramSocket;
 import java.util.concurrent.BlockingQueue;
 
 @Slf4j
-public class SenderImpl implements Sender, Runnable {
+public class SenderImpl implements Sender {
 
     private DatagramSocket socket;
 

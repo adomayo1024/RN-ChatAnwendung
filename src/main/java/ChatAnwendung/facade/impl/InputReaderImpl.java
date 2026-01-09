@@ -8,7 +8,7 @@ import java.io.*;
 import java.util.concurrent.BlockingQueue;
 
 @Slf4j
-public class InputReaderImpl implements InputReader, Runnable {
+public class InputReaderImpl implements InputReader {
 
     private final BlockingQueue<String> inputQueue;
 

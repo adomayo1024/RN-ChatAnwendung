@@ -1,4 +1,7 @@
 package ChatAnwendung.facade.Api;
 
-public interface InputReader {
+/**
+ * Input Reader erhält alle vom User eingehenden Inputs und leitet diese weiter zur Verarbeitung.
+ */
+public interface InputReader extends Runnable {
 }
