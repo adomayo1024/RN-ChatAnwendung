@@ -1,6 +1,7 @@
 package ChatAnwendung.logic.Impl;
 
 import ChatAnwendung.logic.Api.HeartBeatSender;
+import ChatAnwendung.logic.Api.TimeOutHandler;
 import ChatAnwendung.persistence.Api.RoutingTable;
 import ChatAnwendung.persistence.Api.Storage;
 
@@ -13,14 +14,14 @@ public class loopServices implements Runnable{
 
     private RoutingTableSender routingTableSender;
 
-    private TimeoutHandler timeoutHandler;
+    private TimeOutHandler timeoutHandler;
 
     private boolean routingTableSending;
 
     public loopServices(RoutingTable routingTable, Storage storage, BlockingQueue<DatagramPacket> sendeQueue){
         heartbeatSender = new HeartbeatSenderImpl(routingTable, storage, sendeQueue);
         routingTableSender = new RoutingTableSender(routingTable, sendeQueue, storage);
-        timeoutHandler = new TimeoutHandler(routingTable);
+        timeoutHandler = new TimeoutHandlerImpl(routingTable);
         routingTableSending = false;
     }
 
@@ -28,7 +29,7 @@ public class loopServices implements Runnable{
     public void run(){
         if(routingTableSending){
             routingTableSender.run();
-            timeoutHandler.run();
+            timeoutHandler.checkTimeouts();
         }
 
         heartbeatSender.sendHeartbeat();
