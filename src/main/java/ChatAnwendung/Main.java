@@ -1,5 +1,6 @@
 package ChatAnwendung;
 
+import ChatAnwendung.persistence.Api.DownloadFiles;
 import ChatAnwendung.persistence.Api.RoutingTable;
 import ChatAnwendung.logic.Impl.InputHandler;
 import ChatAnwendung.logic.Impl.ReceiveHanlder;
@@ -24,7 +25,7 @@ public class Main {
 
         ThreadPools threadPools = new ThreadPools();
         ConnectionsList connectionsList = new ConnectionsList();
-        DownloadFiles downloadFiles = new DownloadFiles(threadPools.getFileRequestTimer());
+        DownloadFiles downloadFiles = new DownloadFilesImpl(threadPools.getFileRequestTimer());
         RoutingTable routingTable = new RoutingTableImpl();
         Storage storage;
         try {

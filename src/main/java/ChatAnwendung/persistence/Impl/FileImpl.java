@@ -1,5 +1,6 @@
 package ChatAnwendung.persistence.Impl;
 
+import ChatAnwendung.persistence.Api.DownloadFiles;
 import ChatAnwendung.persistence.Api.File;
 import ChatAnwendung.persistence.Api.RoutingTable;
 import ChatAnwendung.Exceptions.ExceptionHandler;
@@ -37,7 +38,7 @@ public class FileImpl implements File {
     //spezieller Pfad für Windows zu den Downloads Ordner
     private static String filePathWin = "Downloads\\";
 
-    //der Pfad der zur laufzeit benutzt werden soll, abhängig vom Betriebssystem
+    //Der Pfad, der zur Laufzeit benutzt werden soll, abhängig vom Betriebssystem
     private static String filePath = System.getProperty("os.name").toLowerCase().contains("windows") ? filePathWin : filePathLin;
 
     // die Id des files
