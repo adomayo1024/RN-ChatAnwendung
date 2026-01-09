@@ -136,7 +136,7 @@ public class InputHandler implements Runnable {
                 find =!find;
             } else {
                 if(find){
-                    s.set(pos, s.get(pos) + s.get(i));
+                    s.set(pos, s.get(pos) + " " + s.get(i));
                     removedPositions.add(i);
                 }
             }
