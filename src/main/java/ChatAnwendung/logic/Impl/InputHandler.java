@@ -9,7 +9,6 @@ import ChatAnwendung.logic.Enums.InputCommands;
 import ChatAnwendung.logic.Enums.PacketTypes;
 import ChatAnwendung.persistence.Api.Storage;
 import ChatAnwendung.persistence.Impl.Connection;
-import ChatAnwendung.persistence.Impl.StorageImpl;
 import ChatAnwendung.persistence.Impl.ThreadPools;
 import lombok.extern.slf4j.Slf4j;
 
@@ -28,6 +27,21 @@ import java.util.stream.Collectors;
 
 @Slf4j
 public class InputHandler implements Runnable {
+
+    private static final int AMOUNT_OF_ARGUMENTS_FOR_CONNECT = 3;
+    private static final int AMOUNT_OF_ARGUMENTS_FOR_DISCONNECT = 3;
+    private static final int AMOUNT_OF_ARGUMENTS_FOR_SEND = 3;
+    private static final int AMOUNT_OF_ARGUMENTS_FOR_FILE = 3;
+    private static final int AMOUNT_OF_ARGUMENTS_FOR_HELLO = 1;
+    private static final int AMOUNT_OF_ARGUMENTS_FOR_BYE = 1;
+    private static final int AMOUNT_OF_ARGUMENTS_FOR_LIST = 1;
+    private static final int AMOUNT_OF_ARGUMENTS_FOR_EXIT = 1;
+    private static final int AMOUNT_OF_ARGUMENTS_FOR_INFO = 1;
+    private static final int AMOUNT_OF_ARGUMENTS_FOR_HELP = 1;
+
+
+
+
 
     private final BlockingQueue<String> inputQueue;
     private final RoutingTable routingTable;
@@ -141,61 +155,61 @@ public class InputHandler implements Runnable {
 
         switch (commandType){
             case InputCommands.CONNECT -> {
-                if(command.length != 3){
+                if(command.length != AMOUNT_OF_ARGUMENTS_FOR_CONNECT){
                     result = false;
                 }
             }
 
             case InputCommands.DISCONNECT -> {
-                if(command.length != 3){
+                if(command.length != AMOUNT_OF_ARGUMENTS_FOR_DISCONNECT){
                     result = false;
                 }
             }
 
             case InputCommands.HELLO -> {
-                if(command.length != 1){
+                if(command.length != AMOUNT_OF_ARGUMENTS_FOR_HELLO){
                     result = false;
                 }
             }
 
             case InputCommands.BYE -> {
-                if(command.length != 1){
+                if(command.length != AMOUNT_OF_ARGUMENTS_FOR_BYE){
                     result = false;
                 }
             }
 
             case InputCommands.SEND -> {
-                if(command.length < 3){
+                if(command.length != AMOUNT_OF_ARGUMENTS_FOR_SEND){
                     result = false;
                 }
             }
 
             case InputCommands.FILE -> {
-                if(command.length < 3){
+                if(command.length != AMOUNT_OF_ARGUMENTS_FOR_FILE){
                     result = false;
                 }
             }
 
             case InputCommands.LIST -> {
-                if(command.length != 1){
+                if(command.length != AMOUNT_OF_ARGUMENTS_FOR_LIST){
                     result = false;
                 }
             }
 
             case InputCommands.EXIT -> {
-                if(command.length != 1){
+                if(command.length != AMOUNT_OF_ARGUMENTS_FOR_EXIT){
                     result = false;
                 }
             }
 
             case InputCommands.HELP -> {
-                if(command.length < 1 || command.length > 2){
+                if(command.length < AMOUNT_OF_ARGUMENTS_FOR_HELP || command.length > AMOUNT_OF_ARGUMENTS_FOR_HELP + 1){
                     result = false;
                 }
             }
 
             case InputCommands.INFO -> {
-                if(command.length != 1){
+                if(command.length != AMOUNT_OF_ARGUMENTS_FOR_INFO){
                     result = false;
                 }
             }
