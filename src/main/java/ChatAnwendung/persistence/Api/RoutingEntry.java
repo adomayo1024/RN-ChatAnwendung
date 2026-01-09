@@ -3,7 +3,8 @@ package ChatAnwendung.persistence.Api;
 import java.net.InetAddress;
 
 public interface RoutingEntry {
-    Long getNodeId();
+
+    long getNodeId();
 
     int getNextHopPort();
 
