@@ -109,7 +109,16 @@ public class InputHandler implements Runnable {
             builder.append(disconnectHelp());
             builder.append(listHelp());
         } else {
-            switch (InputCommands.valueOf(command[1].toUpperCase())){
+            InputCommands commandType;
+
+            try{
+                commandType = InputCommands.valueOf(command[1].toUpperCase());
+            } catch (IllegalArgumentException e){
+                ExceptionHandler.handle(new ArgumentException("Unknown command: " + command[1]), this.getClass());
+                return;
+            }
+
+            switch (commandType){
                 case InputCommands.HELP-> builder.append(helpHelp());
 
                 case InputCommands.EXIT -> builder.append(exitHelp());
@@ -580,13 +589,13 @@ public class InputHandler implements Runnable {
             Connection connection = new Connection(address, port);
 
             connectionList.remove(connection);
-        } catch (UnknownHostException e) {
+
+            log.info("Disconnect with: {}:{}", command[1], command[2]);
+            System.out.println("Disconnect with: " + command[1] + ":" + command[2]);
+            log.debug("end with disconnect: {} : {}", command[1], command[2]);
+        } catch (UnknownHostException | NumberFormatException e ) {
             ExceptionHandler.handle(new ArgumentException(e.getMessage()), this.getClass());
         }
-
-        log.info("Disconnect with: {}:{}", command[1], command[2]);
-        System.out.println("Disconnect with: " + command[1] + ":" + command[2]);
-        log.debug("end with disconnect: {} : {}", command[1], command[2]);
 
     }
 
@@ -602,15 +611,13 @@ public class InputHandler implements Runnable {
             Connection connection = new Connection(address, port);
 
             connectionList.add(connection);
+
+            log.info("Connect with: {}:{}", command[1], command[2]);
+            log.debug("end with connect: {} : {}", command[1], command[2]);
+            System.out.println("Connect with: " + command[1] + ":" + command[2]);
         } catch (UnknownHostException | NumberFormatException e) {
             ExceptionHandler.handle(new ArgumentException(e.getMessage()), this.getClass());
         }
-
-        log.info("Connect with: {}:{}", command[1], command[2]);
-
-        log.debug("end with connect: {} : {}", command[1], command[2]);
-        log.info("Connect with: {}:{}", command[1], command[2]);
-        System.out.println("Connect with: " + command[1] + ":" + command[2]);
     }
 
 
