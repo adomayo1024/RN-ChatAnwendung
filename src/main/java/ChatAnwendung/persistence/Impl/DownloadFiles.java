@@ -1,5 +1,6 @@
 package ChatAnwendung.persistence.Impl;
 
+import ChatAnwendung.persistence.Api.File;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
@@ -17,7 +18,7 @@ public class DownloadFiles {
 
     private ScheduledExecutorService timer;
 
-    private Map<Long, Map<Integer, File>> downloadedFiles;
+    private Map<Long, Map<Integer, FileImpl>> downloadedFiles;
 
     private Map<Long, Map<Integer, Boolean>> finishedFiles;
 
@@ -40,12 +41,12 @@ public class DownloadFiles {
             return null;
         }
 
-        File result = downloadedFiles.get(uID).get(fileID);
+        FileImpl result = downloadedFiles.get(uID).get(fileID);
         log.debug("Got File: {} from User: {} from DownloadFiles: {}", fileID, Long.toUnsignedString(uID), this);
         return result;
     }
 
-    public void setNewFile(long uID, int fileID, File file){
+    public void setNewFile(long uID, int fileID, FileImpl file){
         if(!downloadedFiles.containsKey(uID)){
             downloadedFiles.put(uID, new ConcurrentHashMap<>());
         }

@@ -1,12 +1,13 @@
 package ChatAnwendung.logic.Impl;
 
+import ChatAnwendung.persistence.Api.File;
 import ChatAnwendung.persistence.Api.RoutingEntry;
 import ChatAnwendung.persistence.Api.RoutingTable;
 import ChatAnwendung.Exceptions.IllegalSequnzNumberException;
 import ChatAnwendung.Exceptions.ExceptionHandler;
 import ChatAnwendung.logic.Enums.PacketTypes;
 import ChatAnwendung.persistence.Impl.DownloadFiles;
-import ChatAnwendung.persistence.Impl.File;
+import ChatAnwendung.persistence.Impl.FileImpl;
 import ChatAnwendung.persistence.Impl.RoutingEntryImpl;
 import ChatAnwendung.persistence.Impl.Storage;
 import lombok.extern.slf4j.Slf4j;
@@ -221,7 +222,7 @@ public class ReceiveHanlder implements Runnable {
         int size = packet.getFileSize();
         ScheduledExecutorService timer = downloadFiles.getScheduledThreadPool();
 
-        File file = new File(
+        FileImpl file = new FileImpl(
                 anzahlChunks,
                 size,
                 fileName,

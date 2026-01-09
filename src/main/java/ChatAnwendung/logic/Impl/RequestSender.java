@@ -1,8 +1,9 @@
 package ChatAnwendung.logic.Impl;
 
+import ChatAnwendung.persistence.Api.File;
 import ChatAnwendung.persistence.Api.RoutingTable;
 import ChatAnwendung.persistence.Impl.DownloadFiles;
-import ChatAnwendung.persistence.Impl.File;
+import ChatAnwendung.persistence.Impl.FileImpl;
 import ChatAnwendung.logic.Enums.PacketTypes;
 import ChatAnwendung.persistence.Impl.Storage;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +26,7 @@ public class RequestSender implements Runnable {
     private final Storage storage;
     private final BlockingQueue<DatagramPacket> sendeQueue;
 
-    public RequestSender(File file, DownloadFiles downloadFiles, RoutingTable routingTable, Storage storage, BlockingQueue<DatagramPacket> sendeQueue) {
+    public RequestSender(FileImpl file, DownloadFiles downloadFiles, RoutingTable routingTable, Storage storage, BlockingQueue<DatagramPacket> sendeQueue) {
         this.file = file;
         this.downloadFiles = downloadFiles;
         this.routingTable = routingTable;
@@ -46,7 +47,7 @@ public class RequestSender implements Runnable {
         }
         if (timesOfRequestOfLastSequenz == 3) {
 
-            downloadFiles.removeFile(file.getSrcUID(), file.getFileId());
+            downloadFiles.removeFile(file.getSrcNodeId(), file.getFileId());
             log.info("Removed File because of 3 Request of the same chunk in a row without an answer");
             System.out.println("Removed File because of 3 Request of the same chunk in a row without an answer");
         }
@@ -54,7 +55,7 @@ public class RequestSender implements Runnable {
 
         for(int sequenz : missingChunks){
             byte[] payload = new byte[0];
-            long destUID = file.getSrcUID();
+            long destUID = file.getSrcNodeId();
             InetAddress destAdress = routingTable.getNextHopAdressForUID(destUID);
             int destPort = routingTable.getNextHopPortForUID(destUID);
             int fileID = file.getFileId();
@@ -84,7 +85,7 @@ public class RequestSender implements Runnable {
     }
 
     private boolean timeSinceLastFileDataPackageMoreThanASecond(){
-        return System.currentTimeMillis() - file.getRecievedLastChunk() > 1_000;
+        return System.currentTimeMillis() - file.getReceivedLastChunk() > 1_000;
     }
 }
 
