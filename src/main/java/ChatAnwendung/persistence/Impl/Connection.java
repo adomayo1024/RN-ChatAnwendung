@@ -2,6 +2,11 @@ package ChatAnwendung.persistence.Impl;
 
 import java.net.InetAddress;
 
+/**
+ * Diese Klasse speichert eine Verbindung zu einem Host.
+ * @param address die Addresse des Hosts
+ * @param port der Port des Hosts
+ */
 public record Connection(InetAddress address, int port) {
 
     @Override

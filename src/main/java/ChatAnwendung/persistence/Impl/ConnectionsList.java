@@ -1,5 +1,6 @@
 package ChatAnwendung.persistence.Impl;
 
+import ChatAnwendung.persistence.Api.ConnectionList;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
@@ -7,10 +8,12 @@ import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
 
 @Slf4j
-public class ConnectionsList {
+public class ConnectionsList implements ConnectionList {
 
+    // Liste aller connections
     private List<Connection> connections;
 
+    // Mutex für den Zugriff
     private ReentrantLock mutex;
 
     public ConnectionsList(){
