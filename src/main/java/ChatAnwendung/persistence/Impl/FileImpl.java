@@ -1,5 +1,6 @@
 package ChatAnwendung.persistence.Impl;
 
+import ChatAnwendung.logic.Impl.BCPPacket;
 import ChatAnwendung.persistence.Api.DownloadFiles;
 import ChatAnwendung.persistence.Api.File;
 import ChatAnwendung.persistence.Api.RoutingTable;
@@ -105,7 +106,7 @@ public class FileImpl implements File {
             writedChunksMutex.writeLock().lock();
 
             // speichert den chunk
-            System.arraycopy(chunk, 0, chunksSended, sequenz * 1300, chunk.length);
+            System.arraycopy(chunk, 0, chunksSended, sequenz * BCPPacket.getMaximumFileSendingChunkSize(), chunk.length);
             writedChunks[sequenz] = true;
             added = true;
 
