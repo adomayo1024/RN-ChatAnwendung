@@ -1,7 +1,8 @@
 package ChatAnwendung.logic.Impl;
 
 import ChatAnwendung.persistence.Api.RoutingTable;
-import ChatAnwendung.persistence.Impl.Storage;
+import ChatAnwendung.persistence.Api.Storage;
+import ChatAnwendung.persistence.Impl.StorageImpl;
 
 import java.net.DatagramPacket;
 import java.util.concurrent.BlockingQueue;

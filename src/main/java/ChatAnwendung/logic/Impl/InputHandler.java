@@ -7,8 +7,9 @@ import ChatAnwendung.persistence.Api.RoutingTable;
 import ChatAnwendung.Exceptions.ExceptionHandler;
 import ChatAnwendung.logic.Enums.InputCommands;
 import ChatAnwendung.logic.Enums.PacketTypes;
+import ChatAnwendung.persistence.Api.Storage;
 import ChatAnwendung.persistence.Impl.Connection;
-import ChatAnwendung.persistence.Impl.Storage;
+import ChatAnwendung.persistence.Impl.StorageImpl;
 import ChatAnwendung.persistence.Impl.ThreadPools;
 import lombok.extern.slf4j.Slf4j;
 
@@ -304,7 +305,7 @@ public class InputHandler implements Runnable {
                 int fileId = storage.getNextFileID();
                 InetAddress address = routingTable.getNextHopAdressForUID(uID);
                 int port = routingTable.getNextHopPortForUID(uID);
-                storage.setSendOpenFile(fileId, path);
+                storage.addSendOpenFile(fileId, path);
 
                 sendFileInitPacket(anzahlChunks, length, path, uID, fileId, address, port);
 

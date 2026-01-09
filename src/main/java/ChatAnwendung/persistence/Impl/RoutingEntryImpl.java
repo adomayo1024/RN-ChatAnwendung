@@ -11,23 +11,30 @@ import java.util.concurrent.locks.ReentrantLock;
 @Slf4j
 public class RoutingEntryImpl implements RoutingEntry {
 
+    // Die NodeId des Host
     @Getter
     private long NodeId;
 
+    // Die Adresse, zu der ein Paket gesendet werden soll, wenn es an die NodeId gehen soll
     @Getter
     private InetAddress nextHopAddress;
 
+    // Der Port, an dem ein Paket gesendet werden soll, wenn es an die NodeId gehen soll
     @Getter
     private int nextHopPort;
 
+    // Wie viel Hops der Host entfernt ist
     @Getter
     private byte hops;
 
+    // Der Zeitpunkt, zu dem der Host zuletzt gesehen wurde
     @Getter
     private long lastSeen;
 
+    // Ob der Host zurzeit erreichbar ist
     private boolean routable;
 
+    // Mutex für das Setzten der Attribute
     private final ReentrantLock mutex;
 
     /**

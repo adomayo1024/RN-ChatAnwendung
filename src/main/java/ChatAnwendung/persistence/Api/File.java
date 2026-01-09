@@ -1,7 +1,6 @@
 package ChatAnwendung.persistence.Api;
 
-import ChatAnwendung.persistence.Impl.DownloadFilesImpl;
-import ChatAnwendung.persistence.Impl.Storage;
+import ChatAnwendung.persistence.Impl.StorageImpl;
 
 import java.net.DatagramPacket;
 import java.util.List;

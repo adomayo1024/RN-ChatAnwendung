@@ -8,6 +8,7 @@ import ChatAnwendung.logic.Impl.ReceiveHanlder;
 import ChatAnwendung.facade.impl.InputReaderImpl;
 import ChatAnwendung.facade.impl.RecieverImpl;
 import ChatAnwendung.facade.impl.SenderImpl;
+import ChatAnwendung.persistence.Api.Storage;
 import ChatAnwendung.persistence.Impl.*;
 import lombok.extern.slf4j.Slf4j;
 
@@ -30,7 +31,7 @@ public class Main {
         RoutingTable routingTable = new RoutingTableImpl();
         Storage storage;
         try {
-            storage = new Storage();
+            storage = new StorageImpl();
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }

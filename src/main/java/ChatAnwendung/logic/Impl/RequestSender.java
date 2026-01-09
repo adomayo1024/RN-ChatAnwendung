@@ -3,10 +3,10 @@ package ChatAnwendung.logic.Impl;
 import ChatAnwendung.persistence.Api.DownloadFiles;
 import ChatAnwendung.persistence.Api.File;
 import ChatAnwendung.persistence.Api.RoutingTable;
-import ChatAnwendung.persistence.Impl.DownloadFilesImpl;
+import ChatAnwendung.persistence.Api.Storage;
 import ChatAnwendung.persistence.Impl.FileImpl;
 import ChatAnwendung.logic.Enums.PacketTypes;
-import ChatAnwendung.persistence.Impl.Storage;
+import ChatAnwendung.persistence.Impl.StorageImpl;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.DatagramPacket;

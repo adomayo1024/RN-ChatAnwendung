@@ -1,7 +1,8 @@
 package ChatAnwendung.facade.impl;
 
 import ChatAnwendung.facade.Api.InputReader;
-import ChatAnwendung.persistence.Impl.Storage;
+import ChatAnwendung.persistence.Api.Storage;
+import ChatAnwendung.persistence.Impl.StorageImpl;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;
