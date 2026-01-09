@@ -17,6 +17,7 @@ import java.io.RandomAccessFile;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -73,7 +74,7 @@ public class InputHandler implements Runnable {
 
             try {
                 input = inputQueue.take();
-                command = wrap(Arrays.stream(input.split(" ")).collect(Collectors.toList()));
+                command = input.split(" ");
                 commandType = InputCommands.valueOf(command[0].toUpperCase());
             } catch (InterruptedException e) {
                 interrupted = true;
