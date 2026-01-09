@@ -42,19 +42,19 @@ public class RoutingTableSender {
         for(RoutingEntry entry : allEntries){
             byte[] routingEntryPayload = new byte[routingTableEntrySize];
 
-            BCPPacket.addLong(0, entry.getUID(), routingEntryPayload);
+            BCPPacket.addLong(0, entry.getNodeId(), routingEntryPayload);
             routingEntryPayload[8] = entry.getHops();
             BCPPacket.addLong(9, entry.getLastSeen(), routingEntryPayload);
 
             allRoutingTablePackets.put(entry, routingEntryPayload);
 
-            log.debug("RoutingEntry added to Map: {}", entry.getUID());
+            log.debug("RoutingEntry added to Map: {}", entry.getNodeId());
         }
 
 
         for(RoutingEntry entry : directNeighboursEntries){
             List<RoutingEntry> relevantEntries = allEntries.stream()
-                    .filter((r) -> !(r.getNextHopAdress().equals(entry.getNextHopAdress())) || r.getNextHopPort()!= entry.getNextHopPort())
+                    .filter((r) -> !(r.getNextHopAddress().equals(entry.getNextHopAddress())) || r.getNextHopPort()!= entry.getNextHopPort())
                     .toList();
             int countEntries = relevantEntries.size();
 
@@ -69,18 +69,18 @@ public class RoutingTableSender {
                             (byte) 1, // ttl
                             (byte) 0, // hops
                             storage.getID(), //srcNodId
-                            entry.getUID(), //destNodeId
+                            entry.getNodeId(), //destNodeId
                             0, //sequenz
                             0, //fileId
                             0L, //crc
                             (short)payload.length, //payloadLength
                             payload, //payload
-                            entry.getNextHopAdress(), //address
+                            entry.getNextHopAddress(), //address
                             entry.getNextHopPort()); //port
                     DatagramPacket packet = bcpPacket.makeDatagramPacket();
                     sendeQueue.add(packet);
 
-                    log.debug("RoutingTable packet send to {}", Long.toUnsignedString(entry.getUID()));
+                    log.debug("RoutingTable packet send to {}", Long.toUnsignedString(entry.getNodeId()));
 
                     if(countEntries - i > maxAmountOfRoutingTableEntries){
                         payload = new byte[maxAmountOfRoutingTableEntries];
@@ -99,19 +99,19 @@ public class RoutingTableSender {
                     (byte) 1, // ttl
                     (byte) 0, // hops
                     storage.getID(), //srcNodId
-                    entry.getUID(), //destNodeId
+                    entry.getNodeId(), //destNodeId
                     0, //sequenz
                     0, //fileId
                     0L, //crc
                     (short)payload.length, //payloadLength
                     payload, //payload
-                    entry.getNextHopAdress(), //address
+                    entry.getNextHopAddress(), //address
                     entry.getNextHopPort()); //port
             DatagramPacket packet = bcpPacket.makeDatagramPacket();
             sendeQueue.add(packet);
-            log.debug("RoutingTable packet send to {}", Long.toUnsignedString(entry.getUID()));
+            log.debug("RoutingTable packet send to {}", Long.toUnsignedString(entry.getNodeId()));
 
-            log.debug("Finished with sending RoutingTable to: {}", entry.getUID());
+            log.debug("Finished with sending RoutingTable to: {}", entry.getNodeId());
         }
 
         log.debug("Finished with RoutingTable sending");

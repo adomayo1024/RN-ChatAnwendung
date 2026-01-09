@@ -30,14 +30,14 @@ public class RoutingTableImpl implements RoutingTable {
     @Override
     public void add(RoutingEntry entry) {
         mutex.lock();
-        if(entries.containsKey(entry.getUID())) {
+        if(entries.containsKey(entry.getNodeId())) {
             if(newEntryIsBetter(entry)) {
-                entries.put(entry.getUID(), entry);
+                entries.put(entry.getNodeId(), entry);
             }
         }
         else {
-            entries.put(entry.getUID(),entry);
-            System.out.println("User: " + Long.toUnsignedString(entry.getUID()) + " is available for Chatting");
+            entries.put(entry.getNodeId(),entry);
+            System.out.println("User: " + Long.toUnsignedString(entry.getNodeId()) + " is available for Chatting");
         }
         mutex.unlock();
 
@@ -45,18 +45,18 @@ public class RoutingTableImpl implements RoutingTable {
     }
 
     private boolean newEntryIsBetter(RoutingEntry newEntry) {
-        RoutingEntry oldEntry = entries.get(newEntry.getUID());
+        RoutingEntry oldEntry = entries.get(newEntry.getNodeId());
         boolean result;
 
         if(oldEntry == null){
          return true;
         }
-        else if(!oldEntry.isRoutable()){
+        else if(!oldEntry.getRoutable()){
             result = true;
         } else if(oldEntry.getHops() > newEntry.getHops()) {
             result = true;
         } else {
-            result = oldEntry.getNextHopAdress().equals(newEntry.getNextHopAdress()) &&
+            result = oldEntry.getNextHopAddress().equals(newEntry.getNextHopAddress()) &&
                     oldEntry.getNextHopPort() == newEntry.getNextHopPort();
         }
         return result;
@@ -66,7 +66,7 @@ public class RoutingTableImpl implements RoutingTable {
     public boolean isUIDavailable(long uid) {
         boolean result = false;
 
-        if(entries.containsKey(uid) && entries.get(uid).isRoutable()){
+        if(entries.containsKey(uid) && entries.get(uid).getRoutable()){
             result = true;
         }
         return result;
@@ -91,7 +91,7 @@ public class RoutingTableImpl implements RoutingTable {
     @Override
     public InetAddress getNextHopAdressForUID(long uID) {
         if(entries.containsKey(uID)){
-            return entries.get(uID).getNextHopAdress();
+            return entries.get(uID).getNextHopAddress();
         }
         return null;
     }
@@ -113,18 +113,18 @@ public class RoutingTableImpl implements RoutingTable {
     public void removeUIDThroughGoodbye(long uID){
 
         if(entries.containsKey(uID)) {
-            InetAddress adressFromUID = entries.get(uID).getNextHopAdress();
+            InetAddress adressFromUID = entries.get(uID).getNextHopAddress();
             int portFromUID = entries.get(uID).getNextHopPort();
             mutex.lock();
             for(Long key: entries.keySet() ){
                 RoutingEntry entry = entries.get(key);
-                if(adressFromUID.equals(entry.getNextHopAdress()) && entry.getNextHopPort() == portFromUID){
+                if(adressFromUID.equals(entry.getNextHopAddress()) && entry.getNextHopPort() == portFromUID){
                     entry.setNextHopPort(-1);
-                    entry.setNextHopAdress(null);
+                    entry.setNextHopAddress(null);
                     entry.setHops((byte)-1);
                     entry.setRoutable(false);
 
-                    log.debug("Changed RoutingEntry to not routable: {}", Long.toUnsignedString(entry.getUID()));
+                    log.debug("Changed RoutingEntry to not routable: {}", Long.toUnsignedString(entry.getNodeId()));
                 }
             }
             mutex.unlock();

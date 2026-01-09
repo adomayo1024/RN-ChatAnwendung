@@ -20,9 +20,9 @@ public class TimeoutHandler {
         for(RoutingEntry entry : routingTable.getAllEntries()){
             int lastSeen = (int)(System.currentTimeMillis() - entry.getLastSeen());
             if(lastSeen >= timeout){
-                routingTable.removeUID(entry.getUID());
-                log.debug("RoutingEntry removed for {} because of Timeout", Long.toUnsignedString(entry.getUID()));
-                System.out.println("RoutingEntry removed for " + Long.toUnsignedString(entry.getUID()) + " because of Timeout");
+                routingTable.removeUID(entry.getNodeId());
+                log.debug("RoutingEntry removed for {} because of Timeout", Long.toUnsignedString(entry.getNodeId()));
+                System.out.println("RoutingEntry removed for " + Long.toUnsignedString(entry.getNodeId()) + " because of Timeout");
             }
         }
 

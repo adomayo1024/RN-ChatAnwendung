@@ -3,21 +3,21 @@ package ChatAnwendung.persistence.Api;
 import java.net.InetAddress;
 
 public interface RoutingEntry {
-    Long getUID();
+    Long getNodeId();
 
     int getNextHopPort();
 
     void setNextHopPort(int port);
 
-    InetAddress getNextHopAdress();
+    InetAddress getNextHopAddress();
 
-    void setNextHopAdress(InetAddress adress);
+    void setNextHopAddress(InetAddress adress);
 
     byte getHops();
 
     void setHops(byte hops);
 
-    boolean isRoutable();
+    boolean getRoutable();
 
     void setRoutable(boolean routable);
 

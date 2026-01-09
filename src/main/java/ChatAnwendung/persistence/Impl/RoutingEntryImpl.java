@@ -1,50 +1,64 @@
 package ChatAnwendung.persistence.Impl;
 
 import ChatAnwendung.persistence.Api.RoutingEntry;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetAddress;
 import java.util.concurrent.locks.ReentrantLock;
 
+
 @Slf4j
 public class RoutingEntryImpl implements RoutingEntry {
 
-    private long UID;
+    @Getter
+    private long NodeId;
 
-    private InetAddress nextHopAdress;
+    @Getter
+    private InetAddress nextHopAddress;
 
+    @Getter
     private int nextHopPort;
 
+    @Getter
     private byte hops;
 
+    @Getter
     private long lastSeen;
 
     private boolean routable;
+
     private final ReentrantLock mutex;
 
-    public RoutingEntryImpl(long UID, InetAddress address, int nextHopPort, byte hops, long lastSeen) {
-        this(UID, address, nextHopPort, hops, lastSeen, true);
+    /**
+     *
+     * @param NodeId
+     * @param address
+     * @param nextHopPort
+     * @param hops
+     * @param lastSeen
+     */
+    public RoutingEntryImpl(long NodeId, InetAddress address, int nextHopPort, byte hops, long lastSeen) {
+        this(NodeId, address, nextHopPort, hops, lastSeen, true);
     }
 
-    public RoutingEntryImpl(long UID, InetAddress adress, int nextHopPort, byte hops, long lastSeen, boolean routable){
-        this.UID = UID;
-        this.nextHopAdress = adress;
+    /**
+     *
+     * @param NodeId
+     * @param adress
+     * @param nextHopPort
+     * @param hops
+     * @param lastSeen
+     * @param routable
+     */
+    public RoutingEntryImpl(long NodeId, InetAddress adress, int nextHopPort, byte hops, long lastSeen, boolean routable){
+        this.NodeId = NodeId;
+        this.nextHopAddress = adress;
         this.nextHopPort = nextHopPort;
         this.hops = hops;
         this.lastSeen = lastSeen;
         this.routable = routable;
         this.mutex = new ReentrantLock();
-    }
-
-
-    @Override
-    public Long getUID() {
-        return UID;
-    }
-
-    @Override
-    public int getNextHopPort() {
-        return nextHopPort;
     }
 
     @Override
@@ -55,20 +69,10 @@ public class RoutingEntryImpl implements RoutingEntry {
     }
 
     @Override
-    public InetAddress getNextHopAdress() {
-        return nextHopAdress;
-    }
-
-    @Override
-    public void setNextHopAdress(InetAddress adress){
+    public void setNextHopAddress(InetAddress adress){
         mutex.lock();
-        nextHopAdress = adress;
+        nextHopAddress = adress;
         mutex.unlock();
-    }
-
-    @Override
-    public byte getHops() {
-        return hops;
     }
 
     @Override
@@ -79,7 +83,7 @@ public class RoutingEntryImpl implements RoutingEntry {
     }
 
     @Override
-    public boolean isRoutable(){
+    public boolean getRoutable(){
         return routable;
     }
 
@@ -88,11 +92,6 @@ public class RoutingEntryImpl implements RoutingEntry {
         mutex.lock();
         this.routable = routable;
         mutex.unlock();
-    }
-
-    @Override
-    public long getLastSeen(){
-        return lastSeen;
     }
 
     @Override

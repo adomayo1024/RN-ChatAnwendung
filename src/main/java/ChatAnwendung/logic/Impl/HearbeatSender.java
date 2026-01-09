@@ -31,7 +31,7 @@ public class HearbeatSender{
 
         if(storage.isLogin()){
             for(RoutingEntry entry : routingTable.getAllDirectNeighbours()){
-                if(entry.isRoutable()){
+                if(entry.getRoutable()){
                     byte[] payload = new byte[0];
                     BCPPacket bcpPacket = new BCPPacket(
                             (byte) 1, //version
@@ -39,18 +39,18 @@ public class HearbeatSender{
                             (byte) 1, // ttl
                             (byte) 0, // hops
                             storage.getID(), //srcNodId
-                            entry.getUID(), //destNodeId
+                            entry.getNodeId(), //destNodeId
                             0, //sequenz
                             0, //fileId
                             0L, //crc
                             (short)payload.length, //payloadLength
                             payload, //payload
-                            entry.getNextHopAdress(), //address
+                            entry.getNextHopAddress(), //address
                             entry.getNextHopPort());//port
                     DatagramPacket packet = bcpPacket.makeDatagramPacket();
                     sendeQueue.add(packet);
 
-                    log.debug("Heartbeat packet send to {}", Long.toUnsignedString(entry.getUID()));
+                    log.debug("Heartbeat packet send to {}", Long.toUnsignedString(entry.getNodeId()));
                 }
             }
         }
