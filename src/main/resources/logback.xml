@@ -54,9 +54,9 @@
 <!--        <appender-ref ref="CONSOLE"/>-->
 <!--    </logger>-->
 
-<!--    <logger name="ChatAnwendung" level="DEBUG">-->
-<!--        <appender-ref ref="FILE"/>-->
-<!--    </logger>-->
+    <logger name="ChatAnwendung" level="DEBUG">
+        <appender-ref ref="FILE"/>
+    </logger>
 
     <!-- InputHandler -->
 
@@ -192,9 +192,9 @@
 <!--&lt;!&ndash;        <appender-ref ref="CONSOLE"/>&ndash;&gt;-->
 <!--&lt;!&ndash;    </logger>&ndash;&gt;-->
 
-<!--&lt;!&ndash;    <logger name="ChatAnwendung.Main" level="INFO">&ndash;&gt;-->
-<!--&lt;!&ndash;        <appender-ref ref="CONSOLE"/>&ndash;&gt;-->
-<!--&lt;!&ndash;    </logger>&ndash;&gt;-->
+<!--    <logger name="ChatAnwendung.Main" level="INFO">-->
+<!--        <appender-ref ref="CONSOLE"/>-->
+<!--    </logger>-->
 
 
 

@@ -6,7 +6,6 @@ import ChatAnwendung.persistence.Api.RoutingTable;
 import ChatAnwendung.persistence.Api.Storage;
 import ChatAnwendung.persistence.Impl.FileImpl;
 import ChatAnwendung.logic.Enums.PacketTypes;
-import ChatAnwendung.persistence.Impl.StorageImpl;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.DatagramPacket;
@@ -60,7 +59,7 @@ public class RequestSender implements Runnable {
             InetAddress destAdress = routingTable.getNextHopAdressForUID(destUID);
             int destPort = routingTable.getNextHopPortForUID(destUID);
             int fileID = file.getFileId();
-            BCPPacket bcpPacket = new BCPPacket(
+            BCPPacketImpl bcpPacket = new BCPPacketImpl(
                     (byte) 1, //version
                     PacketTypes.RESENDREQUEST, //type
                     (byte) 32, // ttl

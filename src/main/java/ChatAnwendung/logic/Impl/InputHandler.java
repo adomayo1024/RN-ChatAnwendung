@@ -434,7 +434,7 @@ public class InputHandler implements Runnable {
             try (RandomAccessFile file = new RandomAccessFile(path, "r")){
 
                 long length = file.length();
-                int anzahlChunks = (int) Math.ceil(length / (float) BCPPacket.getMaximumFileSendingChunkSize());
+                int anzahlChunks = (int) Math.ceil(length / (float) BCPPacketImpl.getMaximumPayloadSize());
                 int fileId = storage.getNextFileID();
                 InetAddress address = routingTable.getNextHopAdressForUID(uID);
                 int port = routingTable.getNextHopPortForUID(uID);
@@ -446,7 +446,7 @@ public class InputHandler implements Runnable {
 
                 for(int sequenz = 0; sequenz < anzahlChunks; sequenz++){
                     byte[] payload = split(file, sequenz, anzahlChunks);
-                    BCPPacket bcpPacket = new BCPPacket(
+                    BCPPacketImpl bcpPacket = new BCPPacketImpl(
                             (byte) 1, //version
                             PacketTypes.FILE_DATA, //type
                             (byte) 32, // ttl
@@ -488,13 +488,13 @@ public class InputHandler implements Runnable {
                 throw new IllegalSequnzNumberException(sequenz);
             }
             else if(anzahlChunks - 1 == sequenz){
-                int size = (int)(file.length() % BCPPacket.getMaximumFileSendingChunkSize());
+                int size = (int)(file.length() % BCPPacketImpl.getMaximumPayloadSize());
                 chunk = new byte[size];
             }
             else{
-                chunk = new byte[BCPPacket.getMaximumFileSendingChunkSize()];
+                chunk = new byte[BCPPacketImpl.getMaximumPayloadSize()];
             }
-            file.seek((long) sequenz * BCPPacket.getMaximumFileSendingChunkSize());
+            file.seek((long) sequenz * BCPPacketImpl.getMaximumPayloadSize());
             file.read(chunk);
         } catch (IOException | IllegalSequnzNumberException e) {
             ExceptionHandler.handle(e, this.getClass());
@@ -505,7 +505,7 @@ public class InputHandler implements Runnable {
     private void sendFileEnd(long uID, int fileId, InetAddress address, int port) {
         byte[] payload = new byte[0];
 
-        BCPPacket bcpPacket = new BCPPacket(
+        BCPPacketImpl bcpPacket = new BCPPacketImpl(
                 (byte) 1, //version
                 PacketTypes.File_End, //type
                 (byte) 32, // ttl
@@ -527,7 +527,7 @@ public class InputHandler implements Runnable {
     private void sendFileInitPacket(int anzahlChunks, long length, String path, long uID, int fileId, InetAddress address, int port) {
         byte[] payload = makeDataInitPayload(length, path);
 
-        BCPPacket bcpPacket = new BCPPacket(
+        BCPPacketImpl bcpPacket = new BCPPacketImpl(
                 (byte) 1, //version
                 PacketTypes.FILE_INIT, //type
                 (byte) 32, // ttl
@@ -557,10 +557,10 @@ public class InputHandler implements Runnable {
         }
 
         String fileName = splitPath[splitPath.length - 1];
-        byte[] payload = new byte[fileName.getBytes().length + 4];
-        BCPPacket.addInt(0, (int)length, payload);
-        System.arraycopy(fileName.getBytes(), 0, payload, 4, fileName.getBytes().length);
-        return payload;
+        ByteBuffer payload = ByteBuffer.allocate(fileName.getBytes().length + 4);
+        payload.putInt((int)length);
+        payload.put(fileName.getBytes());
+        return payload.array();
     }
 
     private void handleSend(String[] command) {
@@ -593,7 +593,7 @@ public class InputHandler implements Runnable {
         InetAddress adress = routingTable.getNextHopAdressForUID(destNodeId);
         int port = routingTable.getNextHopPortForUID(destNodeId);
 
-        BCPPacket bcpPacket = new BCPPacket(
+        BCPPacketImpl bcpPacket = new BCPPacketImpl(
                 (byte) 1,
                 PacketTypes.MESSAGE,
                 (byte) 32,
@@ -631,7 +631,7 @@ public class InputHandler implements Runnable {
 
             if(routingTable.isUIDavailable(neighbour.getNodeId())){
                 byte[] payload = new byte[0];
-                BCPPacket bcpPacket = new BCPPacket(
+                BCPPacketImpl bcpPacket = new BCPPacketImpl(
                         (byte) 1,
                         PacketTypes.BYE,
                         (byte) 32,
@@ -670,7 +670,7 @@ public class InputHandler implements Runnable {
 
             for (Connection connection : connectionList.getAllConnections()) {
                 byte[] payload = new byte[0];
-                BCPPacket bcpPacket = new BCPPacket(
+                BCPPacketImpl bcpPacket = new BCPPacketImpl(
                         (byte) 1, //version
                         PacketTypes.HELLO, //type
                         (byte) 1, // ttl
@@ -750,6 +750,6 @@ public class InputHandler implements Runnable {
     }
 
     private boolean validMessage(String msg){
-        return msg.getBytes().length <= BCPPacket.getMaximumFileSendingChunkSize();
+        return msg.getBytes().length <= BCPPacketImpl.getMaximumPayloadSize();
     }
 }

@@ -4,10 +4,10 @@ import ChatAnwendung.persistence.Api.RoutingEntry;
 import ChatAnwendung.persistence.Api.RoutingTable;
 import ChatAnwendung.logic.Enums.PacketTypes;
 import ChatAnwendung.persistence.Api.Storage;
-import ChatAnwendung.persistence.Impl.StorageImpl;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.DatagramPacket;
+import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,15 +39,15 @@ public class RoutingTableSender {
         List<RoutingEntry> allEntries = routingTable.getAllEntries();
         List<RoutingEntry> directNeighboursEntries = routingTable.getAllDirectNeighbours();
         Map<RoutingEntry, byte[]> allRoutingTablePackets = new HashMap<>();
+        ByteBuffer buffer = ByteBuffer.allocate(routingTableEntrySize);
 
         for(RoutingEntry entry : allEntries){
-            byte[] routingEntryPayload = new byte[routingTableEntrySize];
 
-            BCPPacket.addLong(0, entry.getNodeId(), routingEntryPayload);
-            routingEntryPayload[8] = entry.getHops();
-            BCPPacket.addLong(9, entry.getLastSeen(), routingEntryPayload);
+            buffer.putLong(entry.getNodeId());
+            buffer.put(entry.getHops());
+            buffer.putLong(entry.getLastSeen());
 
-            allRoutingTablePackets.put(entry, routingEntryPayload);
+            allRoutingTablePackets.put(entry, buffer.array());
 
             log.debug("RoutingEntry added to Map: {}", entry.getNodeId());
         }
@@ -64,7 +64,7 @@ public class RoutingTableSender {
             for(int i = 0; i < countEntries; i++){
                 if(i != 0 && i % maxAmountOfRoutingTableEntries == 0){
 
-                    BCPPacket bcpPacket = new BCPPacket(
+                    BCPPacketImpl bcpPacket = new BCPPacketImpl(
                             (byte) 1, //version
                             PacketTypes.ROUTINGTABLE, //type
                             (byte) 1, // ttl
@@ -94,7 +94,7 @@ public class RoutingTableSender {
                 System.arraycopy(allRoutingTablePackets.get(relevantEntries.get(i)), 0, payload, (i % maxAmountOfRoutingTableEntries) * routingTableEntrySize, routingTableEntrySize);
             }
 
-            BCPPacket bcpPacket = new BCPPacket(
+            BCPPacketImpl bcpPacket = new BCPPacketImpl(
                     (byte) 1, //version
                     PacketTypes.ROUTINGTABLE, //type
                     (byte) 1, // ttl

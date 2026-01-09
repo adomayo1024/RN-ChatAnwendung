@@ -4,7 +4,6 @@ import ChatAnwendung.persistence.Api.RoutingEntry;
 import ChatAnwendung.persistence.Api.RoutingTable;
 import ChatAnwendung.logic.Enums.PacketTypes;
 import ChatAnwendung.persistence.Api.Storage;
-import ChatAnwendung.persistence.Impl.StorageImpl;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.DatagramPacket;
@@ -34,7 +33,7 @@ public class HearbeatSender{
             for(RoutingEntry entry : routingTable.getAllDirectNeighbours()){
                 if(entry.getRoutable()){
                     byte[] payload = new byte[0];
-                    BCPPacket bcpPacket = new BCPPacket(
+                    BCPPacketImpl bcpPacket = new BCPPacketImpl(
                             (byte) 1, //version
                             PacketTypes.HEARTBEAT, //type
                             (byte) 1, // ttl

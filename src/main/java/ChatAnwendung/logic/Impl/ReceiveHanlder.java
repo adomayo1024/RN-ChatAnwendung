@@ -6,7 +6,6 @@ import ChatAnwendung.Exceptions.ExceptionHandler;
 import ChatAnwendung.logic.Enums.PacketTypes;
 import ChatAnwendung.persistence.Impl.FileImpl;
 import ChatAnwendung.persistence.Impl.RoutingEntryImpl;
-import ChatAnwendung.persistence.Impl.StorageImpl;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -54,7 +53,7 @@ public class ReceiveHanlder implements Runnable {
                continue;
             }
 
-            BCPPacket bcpPacket = new BCPPacket(packet);
+            BCPPacketImpl bcpPacket = new BCPPacketImpl(packet);
 
             if(!storage.isLogin()){
                 log.debug("Packet throw away from: {} because not logged in", packet.getSocketAddress());
@@ -90,7 +89,7 @@ public class ReceiveHanlder implements Runnable {
 
     }
 
-    private void handleRoutingTable(BCPPacket packet) {
+    private void handleRoutingTable(BCPPacketImpl packet) {
         log.debug("Received Routing Table");
 
         InetAddress srcAdress = packet.getAddress();
@@ -101,7 +100,7 @@ public class ReceiveHanlder implements Runnable {
         for(int offset = 0; offset < payloadLength; offset += routingEntrySize){
             long uID = packet.getNodeIdFromRoutingTableEntry(offset);
             byte hops = packet.getHopsFromRoutingTableEntry(offset);
-            long lastSeen = packet.getLastSeenFromRoutinTableEntry(offset);
+            long lastSeen = packet.getLastSeenFromRoutingTableEntry(offset);
 
             RoutingEntry entry = new RoutingEntryImpl(uID, srcAdress, srcPort, (byte) (hops + 1), lastSeen);
             routingTable.add(entry);
@@ -112,7 +111,7 @@ public class ReceiveHanlder implements Runnable {
         }
     }
 
-    private void handleHeartbeat(BCPPacket packet) {
+    private void handleHeartbeat(BCPPacketImpl packet) {
         log.debug("Received Heartbeat");
 
 
@@ -122,7 +121,7 @@ public class ReceiveHanlder implements Runnable {
         log.debug("Last seen set for {}", Long.toUnsignedString(srcNodeId));
     }
 
-    private void handleMessage(BCPPacket packet) {
+    private void handleMessage(BCPPacketImpl packet) {
         log.debug("Received Message");
 
         String terminalOutput = "You received a message from: " +
@@ -135,7 +134,7 @@ public class ReceiveHanlder implements Runnable {
         log.debug("Message received end");
     }
 
-    private void handleResendRequest(BCPPacket packet) {
+    private void handleResendRequest(BCPPacketImpl packet) {
         log.debug("Received Request");
 
 
@@ -199,7 +198,7 @@ public class ReceiveHanlder implements Runnable {
         return chunk;
     }
 
-    private void handleFileEnd(BCPPacket packet) {
+    private void handleFileEnd(BCPPacketImpl packet) {
 
         log.debug("Received File End from User: {} and File: {}", packet.getSrcNodeId(), packet.getFileId());
 
@@ -209,7 +208,7 @@ public class ReceiveHanlder implements Runnable {
 
     }
 
-    private void handleFileInit(BCPPacket packet) {
+    private void handleFileInit(BCPPacketImpl packet) {
         log.debug("Received File Init");
 
         int anzahlChunks = packet.getSequenz();
@@ -238,7 +237,7 @@ public class ReceiveHanlder implements Runnable {
 
     }
 
-    private void handleFileData(BCPPacket packet) {
+    private void handleFileData(BCPPacketImpl packet) {
         log.debug("Received File Data");
 
         long srcUID = packet.getSrcNodeId();
@@ -266,7 +265,7 @@ public class ReceiveHanlder implements Runnable {
         }
     }
 
-    private void handleGoodbye(BCPPacket packet) {
+    private void handleGoodbye(BCPPacketImpl packet) {
         log.debug("Received Goodbye");
 
         long srcNodeId = packet.getSrcNodeId();
@@ -279,7 +278,7 @@ public class ReceiveHanlder implements Runnable {
         System.out.println("User: " + Long.toUnsignedString(srcNodeId) + " left the Chat");
     }
 
-    private void handleWelcome(BCPPacket packet) {
+    private void handleWelcome(BCPPacketImpl packet) {
         log.debug("Received Welcome");
 
         long srcNodeId = packet.getSrcNodeId();
@@ -303,7 +302,7 @@ public class ReceiveHanlder implements Runnable {
         System.out.println("User: " + Long.toUnsignedString(srcNodeId) + " is available for Chatting");
     }
 
-    private void handleHello(BCPPacket packet) {
+    private void handleHello(BCPPacketImpl packet) {
         log.debug("Received Hello");
 
         long srcNodeId = packet.getSrcNodeId();
@@ -324,6 +323,8 @@ public class ReceiveHanlder implements Runnable {
         packet.setSequenz(0);
         packet.setPayloadLength((short)0);
         packet.setPayload(new byte[0]);
+        packet.setAddress(srcAddress);
+        packet.setPort(srcPort);
 
         DatagramPacket welcomePacket = packet.makeDatagramPacket();
 
@@ -336,7 +337,7 @@ public class ReceiveHanlder implements Runnable {
         System.out.println("User: " + Long.toUnsignedString(srcNodeId) + " joined the Chat");
     }
 
-    private void handleFeedForwading(BCPPacket packet){
+    private void handleFeedForwading(BCPPacketImpl packet){
         log.debug("Start with feed forwarding");
 
         packet.dekrementTtl();
