@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
 
 @Slf4j
-public class ConnectionsList implements ConnectionList {
+public class ConnectionListImpl implements ConnectionList {
 
     // Liste aller connections
     private List<Connection> connections;
@@ -16,7 +16,7 @@ public class ConnectionsList implements ConnectionList {
     // Mutex für den Zugriff
     private ReentrantLock mutex;
 
-    public ConnectionsList(){
+    public ConnectionListImpl(){
         connections = new ArrayList<>();
         mutex = new ReentrantLock();
     }

@@ -1,13 +1,13 @@
 package ChatAnwendung.logic.Impl;
 
 import ChatAnwendung.Exceptions.*;
+import ChatAnwendung.persistence.Api.ConnectionList;
 import ChatAnwendung.persistence.Api.RoutingEntry;
 import ChatAnwendung.persistence.Api.RoutingTable;
 import ChatAnwendung.Exceptions.ExceptionHandler;
 import ChatAnwendung.logic.Enums.InputCommands;
 import ChatAnwendung.logic.Enums.PacketTypes;
 import ChatAnwendung.persistence.Impl.Connection;
-import ChatAnwendung.persistence.Impl.ConnectionsList;
 import ChatAnwendung.persistence.Impl.Storage;
 import ChatAnwendung.persistence.Impl.ThreadPools;
 import lombok.extern.slf4j.Slf4j;
@@ -18,23 +18,21 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
 public class InputHandler implements Runnable {
 
     private final BlockingQueue<String> inputQueue;
     private final RoutingTable routingTable;
-    private final ConnectionsList connectionList;
+    private final ConnectionList connectionList;
     private final Storage storage;
     private final BlockingQueue<DatagramPacket> senderQueue;
     private final ThreadPools threadPools;
 
 
-    public InputHandler(BlockingQueue<String> inputQueue, RoutingTable routingTabl, ConnectionsList connectionList, Storage storage, BlockingQueue<DatagramPacket> senderQueue, ThreadPools threadPools) {
+    public InputHandler(BlockingQueue<String> inputQueue, RoutingTable routingTabl, ConnectionList connectionList, Storage storage, BlockingQueue<DatagramPacket> senderQueue, ThreadPools threadPools) {
         this.inputQueue = inputQueue;
         this.routingTable = routingTabl;
         this.connectionList = connectionList;
@@ -259,13 +257,13 @@ public class InputHandler implements Runnable {
         }
 
         for(RoutingEntry entry : routingTable.getAllEntries()){
-            if(entry.isRoutable() || allFlagSet){
-                System.out.println(Long.toUnsignedString(entry.getUID()) +
+            if(entry.getRoutable() || allFlagSet){
+                System.out.println(Long.toUnsignedString(entry.getNodeId()) +
                         " | Hops: " + entry.getHops() +
-                        " | next Hop Address: " + entry.getNextHopAdress() +
+                        " | next Hop Address: " + entry.getNextHopAddress() +
                         " | next Hop port: " +
                         entry.getNextHopPort() +
-                        " | is routable: " + entry.isRoutable() +
+                        " | is routable: " + entry.getRoutable() +
                         "| last seen:" + (int) entry.getLastSeenShort() + "ms");
             }
         }
@@ -497,7 +495,7 @@ public class InputHandler implements Runnable {
 
         for (RoutingEntry neighbour : routingTable.getAllDirectNeighbours()) {
 
-            if(routingTable.isUIDavailable(neighbour.getUID())){
+            if(routingTable.isUIDavailable(neighbour.getNodeId())){
                 byte[] payload = new byte[0];
                 BCPPacket bcpPacket = new BCPPacket(
                         (byte) 1,
@@ -505,20 +503,20 @@ public class InputHandler implements Runnable {
                         (byte) 32,
                         (byte) 0,
                         storage.getID(),
-                        neighbour.getUID(),
+                        neighbour.getNodeId(),
                         0,
                         0,
                         0L,
                         (short)payload.length,
                         payload,
-                        neighbour.getNextHopAdress(),
+                        neighbour.getNextHopAddress(),
                         neighbour.getNextHopPort());
 
                 DatagramPacket packet = bcpPacket.makeDatagramPacket();
 
                senderQueue.add(packet);
 
-                log.debug("Goodbye packet send to {}", Long.toUnsignedString(neighbour.getUID()));
+                log.debug("Goodbye packet send to {}", Long.toUnsignedString(neighbour.getNodeId()));
             }
         }
 

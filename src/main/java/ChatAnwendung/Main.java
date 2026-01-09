@@ -1,5 +1,6 @@
 package ChatAnwendung;
 
+import ChatAnwendung.persistence.Api.ConnectionList;
 import ChatAnwendung.persistence.Api.DownloadFiles;
 import ChatAnwendung.persistence.Api.RoutingTable;
 import ChatAnwendung.logic.Impl.InputHandler;
@@ -24,7 +25,7 @@ public class Main {
         log.info( "Starting ChatAnwendung");
 
         ThreadPools threadPools = new ThreadPools();
-        ConnectionsList connectionsList = new ConnectionsList();
+        ConnectionList connectionsList = new ConnectionListImpl();
         DownloadFiles downloadFiles = new DownloadFilesImpl(threadPools.getFileRequestTimer());
         RoutingTable routingTable = new RoutingTableImpl();
         Storage storage;
