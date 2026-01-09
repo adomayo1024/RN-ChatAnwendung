@@ -19,8 +19,12 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class InputHandler implements Runnable {
@@ -55,7 +59,7 @@ public class InputHandler implements Runnable {
 
             try {
                 input = inputQueue.take();
-                command = input.split(" ");
+                command = wrap(Arrays.stream(input.split(" ")).collect(Collectors.toList()));
                 commandType = InputCommands.valueOf(command[0].toUpperCase());
             } catch (InterruptedException e) {
                 interrupted = true;
@@ -66,6 +70,11 @@ public class InputHandler implements Runnable {
             }
 
             if(!storage.isLogin() && !commandType.isLogOutCommand()){
+                ExceptionHandler.handle(new LoginException("You are not logged in"), this.getClass());
+                continue;
+            }
+            if(!rightAmountOfArguments(command, commandType)){
+                ExceptionHandler.handle(new ArgumentException("Wrong amount of arguments"), this.getClass());
                 continue;
             }
 
@@ -93,6 +102,106 @@ public class InputHandler implements Runnable {
 
         }
 
+    }
+
+    private String[] wrap(List<String> s) {
+        boolean find = false;
+        int pos = 0;
+        List<Integer> removedPositions = new ArrayList<>();
+
+        for(int i = 0; i < s.size(); i++){
+
+            if(s.get(i).contains("\"")){
+                if(!find){
+                    pos = i;
+                    s.set(i, "");
+                } else {
+                    removedPositions.add(i);
+                }
+                find =!find;
+            } else {
+                if(find){
+                    s.set(pos, s.get(pos) + s.get(i));
+                    removedPositions.add(i);
+                }
+            }
+        }
+
+        for(Integer i : removedPositions.reversed()){
+            s.remove(i.intValue());
+        }
+
+
+        return s.toArray(String[]::new);
+    }
+
+    private boolean rightAmountOfArguments(String[] command, InputCommands commandType) {
+
+        boolean result = true;
+
+        switch (commandType){
+            case InputCommands.CONNECT -> {
+                if(command.length != 3){
+                    result = false;
+                }
+            }
+
+            case InputCommands.DISCONNECT -> {
+                if(command.length != 3){
+                    result = false;
+                }
+            }
+
+            case InputCommands.HELLO -> {
+                if(command.length != 1){
+                    result = false;
+                }
+            }
+
+            case InputCommands.BYE -> {
+                if(command.length != 1){
+                    result = false;
+                }
+            }
+
+            case InputCommands.SEND -> {
+                if(command.length < 3){
+                    result = false;
+                }
+            }
+
+            case InputCommands.FILE -> {
+                if(command.length < 3){
+                    result = false;
+                }
+            }
+
+            case InputCommands.LIST -> {
+                if(command.length != 1){
+                    result = false;
+                }
+            }
+
+            case InputCommands.EXIT -> {
+                if(command.length != 1){
+                    result = false;
+                }
+            }
+
+            case InputCommands.HELP -> {
+                if(command.length < 1 || command.length > 2){
+                    result = false;
+                }
+            }
+
+            case InputCommands.INFO -> {
+                if(command.length != 1){
+                    result = false;
+                }
+            }
+        }
+
+        return result;
     }
 
     private void handleHelp(String[] command) {
