@@ -8,21 +8,27 @@ import java.util.concurrent.*;
 
 @Getter
 @Slf4j
-public class ThreadPools {
+public class ThreadPools implements ChatAnwendung.persistence.Api.ThreadPools {
 
+    // Executor Services für die RequestSender
     private final ScheduledExecutorService fileRequestTimer;
 
+    // Executor Service für alle Services, die in einem Intervall passieren
     private final ScheduledExecutorService scheduleServices;
 
+    // Executor Service für den Sender
     private final ExecutorService senderThreadPool;
 
+    // Executor Service für den InputHandler
     private final ExecutorService inputHandlerThreadPool;
 
+    // Executor Service für den Receiver
     private final ExecutorService receiverThreadPool;
 
+    // Executor Service für den InputHandler und den ReceiveHandler
     private final ExecutorService workerThreadPool;
 
-    @Setter
+    // Future des ScheduleServices Threads
     private ScheduledFuture<?> scheduleServicesFuture;
 
     public ThreadPools(){
@@ -46,5 +52,10 @@ public class ThreadPools {
             scheduleServicesFuture.cancel(true);
         }
 
+    }
+
+    @Override
+    public void setScheduleServicesFuture(ScheduledFuture<?> scheduleServicesFuture) {
+        this.scheduleServicesFuture = scheduleServicesFuture;
     }
 }
