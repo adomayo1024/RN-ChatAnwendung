@@ -14,12 +14,10 @@ import java.util.concurrent.locks.ReentrantLock;
 @Slf4j
 public class RoutingTableImpl implements RoutingTable {
 
-    // TODO ändern wenn andere 18 verwenden
-
-    private static final int routingEntrySize = 17;
-
+    // Map NodeIds zu RoutingEntries
     private final Map<Long, RoutingEntry> entries;
 
+    //Mutex für die entries Map
     private final ReentrantLock mutex;
 
     public RoutingTableImpl() {
@@ -30,11 +28,15 @@ public class RoutingTableImpl implements RoutingTable {
     @Override
     public void add(RoutingEntry entry) {
         mutex.lock();
+
+        //Prüft, ob der Eintrag bereits vorhanden ist (wichtig fürs Hinzufügen)
         if(entries.containsKey(entry.getNodeId())) {
+            //Prüft, ob der neue Eintrag "besser" ist als der alte
             if(newEntryIsBetter(entry)) {
                 entries.put(entry.getNodeId(), entry);
             }
         }
+        // Der Eintrag ist komplett neu und kann hinzugefügt werden.
         else {
             entries.put(entry.getNodeId(),entry);
             System.out.println("User: " + Long.toUnsignedString(entry.getNodeId()) + " is available for Chatting");
@@ -44,18 +46,33 @@ public class RoutingTableImpl implements RoutingTable {
         log.debug("Added new Entry to RoutingTable: {}", this);
     }
 
+    /**
+     * Prüft, ob ein neuer Eintrag "besser" ist als der alte. Um zu gucken, ob er den Alten ersetzen sollte.
+     * Er ist besser, wenn:
+     * a: Der Alte nicht erreichbar ist.
+     * b: Der Alte hat eine höhere Hops Anzahl als der Neue.
+     * c: Der Neue hat eine andere nextIp als der Alte oder eine andere nextPort als der Alte.
+     * @param newEntry Der neue Eintrag, der überprüft werden soll.
+     * @return True, wenn der neue Eintrag besser ist als der alte, sonst false.
+     */
     private boolean newEntryIsBetter(RoutingEntry newEntry) {
         RoutingEntry oldEntry = entries.get(newEntry.getNodeId());
         boolean result;
 
+        //Prüft, ob Alter überhaupt noch da ist
         if(oldEntry == null){
          return true;
         }
+        //Prüft, ob der alte Eintrag nicht erreichbar ist
         else if(!oldEntry.getRoutable()){
             result = true;
-        } else if(oldEntry.getHops() > newEntry.getHops()) {
+        }
+        //Prüft, ob der Alte eine höhere Hops Anzahl hat
+        else if(oldEntry.getHops() > newEntry.getHops()) {
             result = true;
-        } else {
+        }
+        //Prüft, ob der neue Eintrag eine andere IP als der alte hat oder einen anderen Port als der alte hat.
+        else {
             result = oldEntry.getNextHopAddress().equals(newEntry.getNextHopAddress()) &&
                     oldEntry.getNextHopPort() == newEntry.getNextHopPort();
         }
@@ -63,9 +80,8 @@ public class RoutingTableImpl implements RoutingTable {
     }
 
     @Override
-    public boolean isNodeIdAvailable(long uid) {
-
-        return entries.containsKey(uid) && entries.get(uid).getRoutable();
+    public boolean isNodeIdAvailable(long nodeId) {
+        return entries.containsKey(nodeId) && entries.get(nodeId).getRoutable();
     }
 
     @Override
@@ -74,6 +90,7 @@ public class RoutingTableImpl implements RoutingTable {
         List<RoutingEntry> result = new ArrayList<>();
 
         mutex.lock();
+        //Kopiert alle Einträge in die Result Liste
         for(long keys : entries.keySet()){
             result.add(entries.get(keys));
         }
@@ -85,33 +102,37 @@ public class RoutingTableImpl implements RoutingTable {
     }
 
     @Override
-    public InetAddress getNextHopAddressForUID(long uID) {
-        if(entries.containsKey(uID)){
-            return entries.get(uID).getNextHopAddress();
+    public InetAddress getNextHopAddressForUID(long nodeId) {
+        if(entries.containsKey(nodeId)){
+            return entries.get(nodeId).getNextHopAddress();
         }
         return null;
     }
 
     @Override
-    public void removeUID(long uID) {
+    public void removeUID(long NodeId) {
         mutex.lock();
-        entries.remove(uID);
+        entries.remove(NodeId);
 
-        log.debug("Removed UID: {} from RoutingTable: {}", Long.toUnsignedString(uID), this);
+        log.debug("Removed UID: {} from RoutingTable: {}", Long.toUnsignedString(NodeId), this);
 
         mutex.unlock();
     }
 
     @Override
-    public void removeUIDThroughGoodbye(long uID){
+    public void removeUIDThroughGoodbye(long nodeId){
 
-        if(entries.containsKey(uID)) {
-            InetAddress addressFromUID = entries.get(uID).getNextHopAddress();
-            int portFromUID = entries.get(uID).getNextHopPort();
+        //Prüft, ob es einen Eintrag für die nodeId gibt
+        if(entries.containsKey(nodeId)) {
+            InetAddress addressFromUID = entries.get(nodeId).getNextHopAddress();
+            int portFromUID = entries.get(nodeId).getNextHopPort();
+
             mutex.lock();
+            //Geht alle Einträge durch und guckt, ob der User der next Hop wäre für die Einträge
             for(Long key: entries.keySet() ){
                 RoutingEntry entry = entries.get(key);
                 if(addressFromUID.equals(entry.getNextHopAddress()) && entry.getNextHopPort() == portFromUID){
+                    //Setzt den Eintrag auf nicht erreichbar
                     entry.setNextHopPort(-1);
                     entry.setNextHopAddress(null);
                     entry.setHops((byte)-1);
@@ -121,20 +142,22 @@ public class RoutingTableImpl implements RoutingTable {
                 }
             }
             mutex.unlock();
-            removeUID(uID);
 
-            log.info("User {} logged out", Long.toUnsignedString(uID));
-            System.out.println("User " + Long.toUnsignedString(uID) + " logged out");
+            //Entfernt den Eintrag aus der Routing Tabelle
+            removeUID(nodeId);
 
-            log.debug("Removed UID: {} from RoutingTable: {}", Long.toUnsignedString(uID), this);
+            log.info("User {} logged out", Long.toUnsignedString(nodeId));
+            System.out.println("User " + Long.toUnsignedString(nodeId) + " logged out");
+
+            log.debug("Removed UID: {} from RoutingTable: {}", Long.toUnsignedString(nodeId), this);
         }
 
     }
 
     @Override
-    public int getNextHopPortForUID(long uID) {
-        if(entries.containsKey(uID)){
-            return entries.get(uID).getNextHopPort();
+    public int getNextHopPortForUID(long nodeId) {
+        if(entries.containsKey(nodeId)){
+            return entries.get(nodeId).getNextHopPort();
         }
         return -1;
     }
@@ -145,6 +168,7 @@ public class RoutingTableImpl implements RoutingTable {
         List<RoutingEntry> result = new ArrayList<>();
 
         mutex.lock();
+        //Kopiert alle direkten Nachbarn (hops == 1) in die result Liste
         for(long key: entries.keySet()){
             RoutingEntry entry = entries.get(key);
             if(entry.getHops() == 1) {
@@ -159,14 +183,14 @@ public class RoutingTableImpl implements RoutingTable {
     }
 
     @Override
-    public void setLastSeen(long uID){
+    public void setLastSeen(long nodeId){
         mutex.lock();
-        if(entries.containsKey(uID)){
-            entries.get(uID).setLastSeen();
+        if(entries.containsKey(nodeId)){
+            entries.get(nodeId).setLastSeen();
         }
         mutex.unlock();
 
-        log.debug("Set LastSeen for UID: {} in RoutingTable: {}", Long.toUnsignedString(uID), this);
+        log.debug("Set LastSeen for UID: {} in RoutingTable: {}", Long.toUnsignedString(nodeId), this);
     }
 
     @Override
