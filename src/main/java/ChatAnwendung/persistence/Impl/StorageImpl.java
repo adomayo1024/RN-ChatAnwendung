@@ -36,7 +36,7 @@ public class StorageImpl implements Storage {
     @Getter
     private BufferedReader reader;
 
-    // Speichert alle Datei Pfade die dieser Host gesendet hat, gemappt auf die File ID
+    // Speichert alle Datei Pfade, die dieser Host gesendet hat, gemappt auf die File ID
     private final Map<Integer, String> openSendFiles;
 
     // Wie viele Dateien gesendet wurden, dadurch wird die File ID der nächsten zu senden Dateien ermittelt

@@ -5,7 +5,6 @@ import ChatAnwendung.logic.Api.InputHandler;
 import ChatAnwendung.persistence.Api.ConnectionList;
 import ChatAnwendung.persistence.Api.RoutingEntry;
 import ChatAnwendung.persistence.Api.RoutingTable;
-import ChatAnwendung.Exceptions.ExceptionHandler;
 import ChatAnwendung.logic.Enums.InputCommands;
 import ChatAnwendung.logic.Enums.PacketTypes;
 import ChatAnwendung.persistence.Api.Storage;
@@ -370,7 +369,7 @@ public class InputHandlerImpl implements InputHandler {
                 long length = file.length();
                 int anzahlChunks = (int) Math.ceil(length / (float) BCPPacketImpl.MAXIMUM_PAYLOAD_SIZE);
                 int fileId = storage.getNextFileID();
-                InetAddress address = routingTable.getNextHopAdressForUID(destNodeId);
+                InetAddress address = routingTable.getNextHopAddressForUID(destNodeId);
                 int port = routingTable.getNextHopPortForUID(destNodeId);
                 storage.addSendOpenFile(fileId, path);
 
@@ -431,7 +430,7 @@ public class InputHandlerImpl implements InputHandler {
         try {
             //Prüft, ob die Sequenz korrekt ist.
             if(anzahlChunks <= sequenz || sequenz < 0){
-                throw new IllegalSequnzNumberException(sequenz);
+                throw new IllegalSequenzNumberException(sequenz);
             }
             //Prüft, ob es der letzte Chunk ist.
             else if(anzahlChunks - 1 == sequenz){
@@ -444,7 +443,7 @@ public class InputHandlerImpl implements InputHandler {
             //List den Chunk aus der Datei.
             file.seek((long) sequenz * BCPPacketImpl.MAXIMUM_PAYLOAD_SIZE);
             file.read(chunk);
-        } catch (IOException | IllegalSequnzNumberException e) {
+        } catch (IOException | IllegalSequenzNumberException e) {
             ExceptionHandler.handle(e, this.getClass());
         }
         return chunk;
@@ -575,7 +574,7 @@ public class InputHandlerImpl implements InputHandler {
 
 
         byte[] payload = msg.toString().getBytes(StandardCharsets.UTF_8);
-        InetAddress address = routingTable.getNextHopAdressForUID(destNodeId);
+        InetAddress address = routingTable.getNextHopAddressForUID(destNodeId);
         int port = routingTable.getNextHopPortForUID(destNodeId);
 
         //Erstellung des Packets
@@ -622,7 +621,7 @@ public class InputHandlerImpl implements InputHandler {
         for (RoutingEntry neighbour : routingTable.getAllDirectNeighbours()) {
 
             //Prüft, ob der direkte Nachbar noch erreichbar ist.
-            if(routingTable.isUIDavailable(neighbour.getNodeId())){
+            if(routingTable.isNodeIdAvailable(neighbour.getNodeId())){
                 byte[] payload = new byte[0];
                 BCPPacketImpl bcpPacket = new BCPPacketImpl(
                         (byte) 1,
@@ -763,7 +762,7 @@ public class InputHandlerImpl implements InputHandler {
      * @return True, wenn die NodeId bekannt ist, sonst false.
      */
     private boolean validNodeId(Long nodeId) {
-        return routingTable.isUIDavailable(nodeId);
+        return routingTable.isNodeIdAvailable(nodeId);
     }
 
     /**

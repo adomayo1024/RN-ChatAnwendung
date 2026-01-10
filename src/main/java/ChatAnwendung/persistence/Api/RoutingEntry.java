@@ -12,7 +12,7 @@ public interface RoutingEntry {
 
     InetAddress getNextHopAddress();
 
-    void setNextHopAddress(InetAddress adress);
+    void setNextHopAddress(InetAddress address);
 
     byte getHops();
 

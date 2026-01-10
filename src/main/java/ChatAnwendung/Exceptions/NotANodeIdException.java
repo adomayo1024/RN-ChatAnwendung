@@ -2,7 +2,7 @@ package ChatAnwendung.Exceptions;
 
 public class NotANodeIdException extends RuntimeException {
 
-    private String msg;
+    private final String msg;
 
     public NotANodeIdException(String message) {
         msg = message;

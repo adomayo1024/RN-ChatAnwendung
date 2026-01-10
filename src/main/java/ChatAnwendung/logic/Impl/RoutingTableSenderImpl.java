@@ -1,5 +1,6 @@
 package ChatAnwendung.logic.Impl;
 
+import ChatAnwendung.logic.Api.BCPPacket;
 import ChatAnwendung.logic.Api.RoutingTableSender;
 import ChatAnwendung.persistence.Api.RoutingEntry;
 import ChatAnwendung.persistence.Api.RoutingTable;
@@ -16,10 +17,6 @@ import java.util.concurrent.BlockingQueue;
 
 @Slf4j
 public class RoutingTableSenderImpl implements RoutingTableSender {
-
-
-    //Die Größe eines RoutingTableEntries, welches versendet wird.
-    private final int routingTableEntrySize = 17;
 
     //Maximale Anzahl an RoutingTableEntries, die mit einem Paket versendet werden dürfen.
     private final int maxAmountOfRoutingTableEntries = 54;
@@ -51,7 +48,7 @@ public class RoutingTableSenderImpl implements RoutingTableSender {
 
         //Alle einzelnen Byte-Arrays der RoutingTableEntries
         Map<RoutingEntry, byte[]> allRoutingTablePackets = new HashMap<>();
-        ByteBuffer buffer = ByteBuffer.allocate(routingTableEntrySize);
+        ByteBuffer buffer = ByteBuffer.allocate(BCPPacket.ROUTING_TABLE_ENTRY_SIZE);
 
         //Es wird für alle RoutingTableEntries das ByteArray vor erstellt.
         for(RoutingEntry entry : allEntries){
@@ -69,7 +66,7 @@ public class RoutingTableSenderImpl implements RoutingTableSender {
         //Es werden an alle direkten Nachbarn die RoutingTable gesendet, mit Split Horizon Regel.
         for(RoutingEntry entry : directNeighboursEntries){
 
-            //Es werden nur die relevanten RoutingTableEntries aus alle herausgenommen, die wo der next Hop nicht das Ziel
+            //Es werden nur die relevanten RoutingTableEntries aus allen herausgenommen, die wo der next Hop nicht das Ziel
             //dieses RoutingTable Packets ist.
             List<RoutingEntry> relevantEntries = allEntries.stream()
                     .filter((r) -> !(r.getNextHopAddress().equals(entry.getNextHopAddress())) || r.getNextHopPort()!= entry.getNextHopPort())
@@ -77,7 +74,7 @@ public class RoutingTableSenderImpl implements RoutingTableSender {
             int countEntries = relevantEntries.size();
 
 
-            byte[] payload = new byte[Math.min(countEntries, maxAmountOfRoutingTableEntries) * routingTableEntrySize];
+            byte[] payload = new byte[Math.min(countEntries, maxAmountOfRoutingTableEntries) * BCPPacket.ROUTING_TABLE_ENTRY_SIZE];
 
             //Es werden alle, für diesen Nachbarn, relevanten RoutingTableEntries gesendet.
             for(int i = 0; i < countEntries; i++){
@@ -93,7 +90,11 @@ public class RoutingTableSenderImpl implements RoutingTableSender {
                 }
 
                 // Es wird der RoutingTableEntrie in den Payload an die nächste Position kopiert.
-                System.arraycopy(allRoutingTablePackets.get(relevantEntries.get(i)), 0, payload, (i % maxAmountOfRoutingTableEntries) * routingTableEntrySize, routingTableEntrySize);
+                System.arraycopy(allRoutingTablePackets.get(relevantEntries.get(i)),
+                        0,
+                        payload,
+                        (i % maxAmountOfRoutingTableEntries) * BCPPacket.ROUTING_TABLE_ENTRY_SIZE,
+                        BCPPacket.ROUTING_TABLE_ENTRY_SIZE);
             }
 
             // Die restlichen RoutingTableEntries werden in einem neuen Paket gesendet.
@@ -129,7 +130,7 @@ public class RoutingTableSenderImpl implements RoutingTableSender {
     private void sendRoutingTablePacket(RoutingEntry entry, byte[] payload) {
         BCPPacketImpl bcpPacket = new BCPPacketImpl(
                 (byte) 1, //version
-                PacketTypes.ROUTINGTABLE, //type
+                PacketTypes.ROUTING_TABLE, //type
                 (byte) 1, // ttl
                 (byte) 0, // hops
                 storage.getID(), //srcNodId

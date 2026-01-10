@@ -18,9 +18,9 @@ public class RoutingTableImpl implements RoutingTable {
 
     private static final int routingEntrySize = 17;
 
-    private  Map<Long, RoutingEntry> entries;
+    private final Map<Long, RoutingEntry> entries;
 
-    private ReentrantLock mutex;
+    private final ReentrantLock mutex;
 
     public RoutingTableImpl() {
         entries = new HashMap<>();
@@ -63,13 +63,9 @@ public class RoutingTableImpl implements RoutingTable {
     }
 
     @Override
-    public boolean isUIDavailable(long uid) {
-        boolean result = false;
+    public boolean isNodeIdAvailable(long uid) {
 
-        if(entries.containsKey(uid) && entries.get(uid).getRoutable()){
-            result = true;
-        }
-        return result;
+        return entries.containsKey(uid) && entries.get(uid).getRoutable();
     }
 
     @Override
@@ -89,7 +85,7 @@ public class RoutingTableImpl implements RoutingTable {
     }
 
     @Override
-    public InetAddress getNextHopAdressForUID(long uID) {
+    public InetAddress getNextHopAddressForUID(long uID) {
         if(entries.containsKey(uID)){
             return entries.get(uID).getNextHopAddress();
         }
@@ -99,10 +95,7 @@ public class RoutingTableImpl implements RoutingTable {
     @Override
     public void removeUID(long uID) {
         mutex.lock();
-        if(entries.containsKey(uID)){
-            entries.remove(uID);
-
-        }
+        entries.remove(uID);
 
         log.debug("Removed UID: {} from RoutingTable: {}", Long.toUnsignedString(uID), this);
 
@@ -113,12 +106,12 @@ public class RoutingTableImpl implements RoutingTable {
     public void removeUIDThroughGoodbye(long uID){
 
         if(entries.containsKey(uID)) {
-            InetAddress adressFromUID = entries.get(uID).getNextHopAddress();
+            InetAddress addressFromUID = entries.get(uID).getNextHopAddress();
             int portFromUID = entries.get(uID).getNextHopPort();
             mutex.lock();
             for(Long key: entries.keySet() ){
                 RoutingEntry entry = entries.get(key);
-                if(adressFromUID.equals(entry.getNextHopAddress()) && entry.getNextHopPort() == portFromUID){
+                if(addressFromUID.equals(entry.getNextHopAddress()) && entry.getNextHopPort() == portFromUID){
                     entry.setNextHopPort(-1);
                     entry.setNextHopAddress(null);
                     entry.setHops((byte)-1);
@@ -180,10 +173,5 @@ public class RoutingTableImpl implements RoutingTable {
     public void removeAll() {
         entries.clear();
         log.debug("Removed all Entries from RoutingTable: {}", this);
-    }
-
-    @Override
-    public int getRoutingEntrySize() {
-        return routingEntrySize;
     }
 }

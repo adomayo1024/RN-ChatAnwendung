@@ -1,7 +1,7 @@
 package ChatAnwendung.facade.impl;
 
 
-import ChatAnwendung.facade.Api.Reciever;
+import ChatAnwendung.facade.Api.Receiver;
 import ChatAnwendung.Exceptions.ExceptionHandler;
 import lombok.extern.slf4j.Slf4j;
 
@@ -12,15 +12,15 @@ import java.net.SocketException;
 import java.util.concurrent.BlockingQueue;
 
 @Slf4j
-public class RecieverImpl implements Reciever {
+public class ReceiverImpl implements Receiver {
 
     private final DatagramSocket socket;
 
-    private final int PACKETSIZE = 1400;
+    private final int PACKET_SIZE = 1400;
 
     private final BlockingQueue<DatagramPacket> queue;
 
-    public RecieverImpl(DatagramSocket socket, BlockingQueue<DatagramPacket> queue) {
+    public ReceiverImpl(DatagramSocket socket, BlockingQueue<DatagramPacket> queue) {
         this.socket = socket;
         this.queue = queue;
 
@@ -35,7 +35,7 @@ public class RecieverImpl implements Reciever {
 
 
             try {
-                DatagramPacket request = new DatagramPacket(new byte[PACKETSIZE], PACKETSIZE);
+                DatagramPacket request = new DatagramPacket(new byte[PACKET_SIZE], PACKET_SIZE);
 
                 log.debug( "Waiting for new package");
 

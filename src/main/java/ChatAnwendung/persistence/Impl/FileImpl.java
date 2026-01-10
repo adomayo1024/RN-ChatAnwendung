@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -50,11 +49,8 @@ public class FileImpl implements File {
     // Zeitpunkt des neuesten empfangenen Chunks
     private final AtomicLong receivedLastChunk;
 
-    // Future des RequestSender Threads
-    private ScheduledFuture<?> requestFuture;
-
     /**
-     * Konstruktor, welcher ein File erstellt, welches heruntergelandet werden soll.
+     * Konstruktor, welcher ein File erstellt, welche heruntergeladen werden soll.
      * @param anzahlChunks Die Anzahl der Chunks, welche die Datei haben wird
      * @param length die Länge der Datei in Bytes
      * @param name der Dateiname
@@ -79,14 +75,14 @@ public class FileImpl implements File {
 
         writtenChunksMutex.readLock().lock();
 
-        // prüft, ob der Chunk schon gespeichert wurde
+        // Prüft, ob der Chunk schon gespeichert wurde
         if(!writtenChunks[sequenz]){
 
             writtenChunksMutex.readLock().unlock();
             writtenChunksMutex.writeLock().lock();
 
-            // speichert den chunk
-            System.arraycopy(chunk, 0, chunksSent, sequenz * BCPPacketImpl.getMaximumPayloadSize(), chunk.length);
+            // Speichert den Chunk
+            System.arraycopy(chunk, 0, chunksSent, sequenz * BCPPacketImpl.MAXIMUM_PAYLOAD_SIZE, chunk.length);
             writtenChunks[sequenz] = true;
             added = true;
 
@@ -103,7 +99,7 @@ public class FileImpl implements File {
     }
     @Override
     public void safeFile(){
-        // prüft, ob alle Chunks gespeichert wurden
+        // Prüft, ob alle Chunks gespeichert wurden
         if(finished()){
 
 

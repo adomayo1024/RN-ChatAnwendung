@@ -38,29 +38,29 @@ public class RoutingEntryImpl implements RoutingEntry {
     private final ReentrantLock mutex;
 
     /**
-     *
-     * @param NodeId
-     * @param address
-     * @param nextHopPort
-     * @param hops
-     * @param lastSeen
+     * Konstruktor der RoutingEntryImpl.
+     * @param NodeId Die NodeId des User.
+     * @param address Die NextHop-Adresse des Users.
+     * @param nextHopPort Der NextHopPort des Users.
+     * @param hops Wie viel Hops der User entfernt ist.
+     * @param lastSeen Der Zeitpunkt, zu dem der User zuletzt gesehen wurde.
      */
     public RoutingEntryImpl(long NodeId, InetAddress address, int nextHopPort, byte hops, long lastSeen) {
         this(NodeId, address, nextHopPort, hops, lastSeen, true);
     }
 
     /**
-     *
-     * @param NodeId
-     * @param adress
-     * @param nextHopPort
-     * @param hops
-     * @param lastSeen
-     * @param routable
+     * Konstruktor der RoutingEntryImpl.
+     * @param NodeId Die NodeId des User.
+     * @param address Die NextHop-Adresse des Users.
+     * @param nextHopPort Der NextHopPort des Users.
+     * @param hops Wie viel Hops der User entfernt ist.
+     * @param lastSeen Der Zeitpunkt, zu dem der User zuletzt gesehen wurde.
+     * @param routable Ob der User zurzeit erreichbar ist.
      */
-    public RoutingEntryImpl(long NodeId, InetAddress adress, int nextHopPort, byte hops, long lastSeen, boolean routable){
+    public RoutingEntryImpl(long NodeId, InetAddress address, int nextHopPort, byte hops, long lastSeen, boolean routable){
         this.NodeId = NodeId;
-        this.nextHopAddress = adress;
+        this.nextHopAddress = address;
         this.nextHopPort = nextHopPort;
         this.hops = hops;
         this.lastSeen = lastSeen;
@@ -76,9 +76,9 @@ public class RoutingEntryImpl implements RoutingEntry {
     }
 
     @Override
-    public void setNextHopAddress(InetAddress adress){
+    public void setNextHopAddress(InetAddress address){
         mutex.lock();
-        nextHopAddress = adress;
+        nextHopAddress = address;
         mutex.unlock();
     }
 

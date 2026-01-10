@@ -11,10 +11,10 @@ import java.util.concurrent.locks.ReentrantLock;
 public class ConnectionListImpl implements ConnectionList {
 
     // Liste aller connections
-    private List<Connection> connections;
+    private final List<Connection> connections;
 
     // Mutex für den Zugriff
-    private ReentrantLock mutex;
+    private final ReentrantLock mutex;
 
     public ConnectionListImpl(){
         connections = new ArrayList<>();

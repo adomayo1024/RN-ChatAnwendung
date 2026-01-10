@@ -25,7 +25,7 @@ public class HeartbeatSenderImpl implements HeartBeatSender {
 
     /**
      * Konstruktor vom Heartbeat Sender.
-     * @param routingTable Die Routingtable, damit alle direkten Nachbarn nach geschaut werden können.
+     * @param routingTable Die RoutingTable, damit alle direkten Nachbarn nach geschaut werden können.
      * @param storage Der Storage um die eigene NodeId zu ermitteln.
      * @param sendeQueue Die Sendequeue damit der Sender die Pakete senden kann.
      */
@@ -39,7 +39,7 @@ public class HeartbeatSenderImpl implements HeartBeatSender {
 
         log.debug("Start with heartbeat sending");
 
-        // Prüft ob man eingeloggt ist, wenn nicht wird nichts gesendet
+        // Prüft, ob man eingeloggt ist, wenn nicht, wird nichts gesendet
         if(storage.isLogin()){
 
             // Es wird ein Heartbeat an alle direkten Nachbarn gesendet

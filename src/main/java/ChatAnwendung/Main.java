@@ -8,7 +8,7 @@ import ChatAnwendung.persistence.Api.RoutingTable;
 import ChatAnwendung.logic.Impl.InputHandlerImpl;
 import ChatAnwendung.logic.Impl.ReceiveHandlerImpl;
 import ChatAnwendung.facade.impl.InputReaderImpl;
-import ChatAnwendung.facade.impl.RecieverImpl;
+import ChatAnwendung.facade.impl.ReceiverImpl;
 import ChatAnwendung.facade.impl.SenderImpl;
 import ChatAnwendung.persistence.Api.Storage;
 import ChatAnwendung.persistence.Impl.*;
@@ -58,7 +58,7 @@ public class Main {
             System.out.println("You got the ID: " + storage.getUnsignedID());
 
             CompletableFuture<Void> inputReader = CompletableFuture.runAsync(new InputReaderImpl(inputQueue, storage), threadPools.getInputHandlerThreadPool());
-            CompletableFuture<Void> receiver = CompletableFuture.runAsync(new RecieverImpl(socket, receiveQueue), threadPools.getReceiverThreadPool());
+            CompletableFuture<Void> receiver = CompletableFuture.runAsync(new ReceiverImpl(socket, receiveQueue), threadPools.getReceiverThreadPool());
             CompletableFuture<Void> sender = CompletableFuture.runAsync(new SenderImpl(socket, sendeQueue), threadPools.getSenderThreadPool());
 
             CompletableFuture<Void> inputHandlerFuture = CompletableFuture.runAsync(inputHandler, threadPools.getWorkerThreadPool());

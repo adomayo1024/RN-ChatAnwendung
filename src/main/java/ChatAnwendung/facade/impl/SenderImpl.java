@@ -12,7 +12,7 @@ import java.util.concurrent.BlockingQueue;
 @Slf4j
 public class SenderImpl implements Sender {
 
-    private DatagramSocket socket;
+    private final DatagramSocket socket;
 
     private final BlockingQueue<DatagramPacket> sendeQueue;
 

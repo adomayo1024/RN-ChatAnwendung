@@ -3,7 +3,7 @@ package ChatAnwendung.logic.Impl;
 import ChatAnwendung.logic.Api.BCPPacket;
 import ChatAnwendung.logic.Api.ReceiveHandler;
 import ChatAnwendung.persistence.Api.*;
-import ChatAnwendung.Exceptions.IllegalSequnzNumberException;
+import ChatAnwendung.Exceptions.IllegalSequenzNumberException;
 import ChatAnwendung.Exceptions.ExceptionHandler;
 import ChatAnwendung.logic.Enums.PacketTypes;
 import ChatAnwendung.persistence.Impl.FileImpl;
@@ -90,13 +90,13 @@ public class ReceiveHandlerImpl implements ReceiveHandler {
 
                     case PacketTypes.File_End -> handleFileEnd(bcpPacket);
 
-                    case PacketTypes.RESENDREQUEST -> handleResendRequest(bcpPacket);
+                    case PacketTypes.RESEND_REQUEST -> handleResendRequest(bcpPacket);
 
                     case PacketTypes.MESSAGE -> handleMessage(bcpPacket);
 
                     case PacketTypes.HEARTBEAT -> handleHeartbeat(bcpPacket);
 
-                    case PacketTypes.ROUTINGTABLE -> handleRoutingTable(bcpPacket);
+                    case PacketTypes.ROUTING_TABLE -> handleRoutingTable(bcpPacket);
                 }
             }
             //Paket wird weitergeleitet
@@ -116,10 +116,9 @@ public class ReceiveHandlerImpl implements ReceiveHandler {
         InetAddress srcAddress = packet.getAddress();
         int srcPort = packet.getPort();
         int payloadLength = packet.getPayloadLength();
-        int routingEntrySize = routingTable.getRoutingEntrySize();
 
         //Es werden alle RoutingTableEinträge im Payload verarbeitet.
-        for(int offset = 0; offset < payloadLength; offset += routingEntrySize){
+        for(int offset = 0; offset < payloadLength; offset += BCPPacket.ROUTING_TABLE_ENTRY_SIZE){
             long nodeId = packet.getNodeIdFromRoutingTableEntry(offset);
             byte hops = packet.getHopsFromRoutingTableEntry(offset);
             long lastSeen = packet.getLastSeenFromRoutingTableEntry(offset);
@@ -229,7 +228,7 @@ public class ReceiveHandlerImpl implements ReceiveHandler {
         try {
             //Prüft, ob die Sequenz korrekt ist.
             if(anzahlChunks <= sequenz || sequenz < 0){
-                throw new IllegalSequnzNumberException(sequenz);
+                throw new IllegalSequenzNumberException(sequenz);
             }
             //Prüft, ob es der letzte Chunk ist.
             else if(anzahlChunks - 1 == sequenz){
@@ -242,7 +241,7 @@ public class ReceiveHandlerImpl implements ReceiveHandler {
             //List den Chunk aus der Datei.
             file.seek((long) sequenz * BCPPacket.MAXIMUM_PAYLOAD_SIZE);
             file.read(chunk);
-        } catch (IOException | IllegalSequnzNumberException e) {
+        } catch (IOException | IllegalSequenzNumberException e) {
             ExceptionHandler.handle(e, this.getClass());
         }
         return chunk;
@@ -443,7 +442,7 @@ public class ReceiveHandlerImpl implements ReceiveHandler {
 
         packet.dekrementTtl();
         long destId = packet.getDestNodeId();
-        InetAddress nextHopAddress = routingTable.getNextHopAdressForUID(destId);
+        InetAddress nextHopAddress = routingTable.getNextHopAddressForUID(destId);
         int nextHopPort = routingTable.getNextHopPortForUID(destId);
 
         //Prüft, ob es weitergeleitet werden soll/kann

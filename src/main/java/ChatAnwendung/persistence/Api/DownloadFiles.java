@@ -1,10 +1,7 @@
 package ChatAnwendung.persistence.Api;
 
-import ChatAnwendung.persistence.Impl.FileImpl;
-
 import java.net.DatagramPacket;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ScheduledExecutorService;
 
 /**
  * DownloadFiles speichert alle bisher eingegangenen Pakete, der Files, die gerade heruntergeladen werden.

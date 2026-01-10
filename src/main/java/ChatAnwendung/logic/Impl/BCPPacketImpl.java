@@ -140,7 +140,7 @@ public class BCPPacketImpl implements BCPPacket {
     }
 
     public long getNodeIdFromRoutingTableEntry(int offset) {
-        if(type != PacketTypes.ROUTINGTABLE){
+        if(type != PacketTypes.ROUTING_TABLE){
             return -1;
         }
 
@@ -149,7 +149,7 @@ public class BCPPacketImpl implements BCPPacket {
     }
 
     public long getLastSeenFromRoutingTableEntry(int offset) {
-        if(type != PacketTypes.ROUTINGTABLE){
+        if(type != PacketTypes.ROUTING_TABLE){
             return -1;
         }
 
@@ -157,7 +157,7 @@ public class BCPPacketImpl implements BCPPacket {
     }
 
     public byte getHopsFromRoutingTableEntry(int offset) {
-        if(type != PacketTypes.ROUTINGTABLE){
+        if(type != PacketTypes.ROUTING_TABLE){
             return -1;
         }
         return payload[offset + BCPPacket.DEST_NODE_SIZE];

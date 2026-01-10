@@ -17,11 +17,11 @@ public class ExceptionHandler implements Handler {
 
     @Override
     public void run() {
-        log.warn( thrower.getName() + " hat Fehler gemeldet: " +  exception.getMessage());
+        log.warn("{} hat Fehler gemeldet: {}", thrower.getName(), exception.getMessage());
     }
 
     public static void handle(Throwable exception, Class<?> thrower){
-        log.warn( thrower.getName() + " hat Fehler gemeldet: " +  exception.getMessage());
+        log.warn("{} hat Fehler gemeldet: {}", thrower.getName(), exception.getMessage());
         System.out.println(exception.getMessage());
     }
 }

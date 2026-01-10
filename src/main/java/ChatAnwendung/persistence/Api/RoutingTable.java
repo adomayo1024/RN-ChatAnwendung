@@ -7,11 +7,11 @@ public interface RoutingTable {
 
     void add(RoutingEntry entry);
 
-    boolean isUIDavailable(long uid);
+    boolean isNodeIdAvailable(long uid);
 
     List<RoutingEntry> getAllEntries();
 
-    InetAddress getNextHopAdressForUID(long uID);
+    InetAddress getNextHopAddressForUID(long uID);
 
     void removeUID(long uID);
 
@@ -24,6 +24,4 @@ public interface RoutingTable {
     void setLastSeen(long uID);
 
     void removeAll();
-
-    int getRoutingEntrySize();
 }

@@ -5,7 +5,6 @@ import ChatAnwendung.persistence.Api.DownloadFiles;
 import ChatAnwendung.persistence.Api.File;
 import ChatAnwendung.persistence.Api.RoutingTable;
 import ChatAnwendung.persistence.Api.Storage;
-import ChatAnwendung.persistence.Impl.FileImpl;
 import ChatAnwendung.logic.Enums.PacketTypes;
 import lombok.extern.slf4j.Slf4j;
 
@@ -76,12 +75,12 @@ public class RequestSenderImpl implements RequestSender {
         for(int sequenz : missingChunks){
             byte[] payload = new byte[0];
             long destUID = file.getSrcNodeId();
-            InetAddress destAddress = routingTable.getNextHopAdressForUID(destUID);
+            InetAddress destAddress = routingTable.getNextHopAddressForUID(destUID);
             int destPort = routingTable.getNextHopPortForUID(destUID);
             int fileID = file.getFileId();
             BCPPacketImpl bcpPacket = new BCPPacketImpl(
                     (byte) 1, //version
-                    PacketTypes.RESENDREQUEST, //type
+                    PacketTypes.RESEND_REQUEST, //type
                     (byte) 32, // ttl
                     (byte) 0, // hops
                     storage.getID(), //srcNodId
