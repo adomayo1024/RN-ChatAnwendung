@@ -12,7 +12,6 @@ import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 
 @Setter
 @Slf4j
@@ -41,143 +40,6 @@ public class BCPPacketImpl implements BCPPacket {
             TABLE[i] = crc;
         }
     }
-
-    //------ BCP-Header Variablen ------
-
-    // Größe des BCP-Headers
-    @Getter
-    private static final int headerSize = 38;
-
-    //Größe des Versionsfeldes im BCP-Header in Bytes
-    @Getter
-    private static final int versionSize = 1;
-
-    //Größe des Typs Feldes im BCP-Header in Bytes
-    @Getter
-    private static final int typeSize = 1;
-
-    //Größe des TTL Feldes im BCP-Header in Bytes
-    @Getter
-    private static final int ttlSize = 1;
-
-    //Größe des Hops Feldes im BCP-Header in Bytes
-    @Getter
-    private static final int hopsSize = 1;
-
-    //Größe des SrcNode Feldes im BCP-Header in Bytes
-    @Getter
-    private static final int srcNodeSize = 8;
-
-    //Größe des DesNode Feldes im BCP-Header in Bytes
-    @Getter
-    private static final int destNodeSize = 8;
-
-    //Größe des Sequenzfeldes im BCP-Header in Bytes
-    @Getter
-    private static final int sequenzSize = 4;
-
-    //Größe des FileId Feldes im BCP-Header in Bytes
-    @Getter
-    private static final int fileIdSize = 4;
-
-    //Größe des CRC Feldes im BCP-Header in Bytes
-    @Getter
-    private static final int crcSize = 8;
-
-    //Größe des PayloadLength Feldes im BCP-Header in Bytes
-    @Getter
-    private static final int payloadLengthSize = 2;
-
-    //Position des Versionsfeldes im BCP-Header
-    @Getter
-    private static final int versionPos = 0;
-
-    //Position des Typ Feldes im BCP-Header
-    @Getter
-    private static final int typePos = versionPos + versionSize;
-
-    //Position des TTL Feldes im BCP-Header
-    @Getter
-    private static final int ttlPos = typePos + typeSize;
-
-    //Position des Hops Feldes im BCP-Header
-    @Getter
-    private static final int hopsPos = ttlPos + ttlSize;
-
-    //Position des SrcNode Feldes im BCP-Header
-    @Getter
-    private static final int srcNodeIdPos = hopsPos + hopsSize;
-
-    //Position des DestNode Feldes im BCP-Header
-    @Getter
-    private static final int destNodeIdPos = srcNodeIdPos + srcNodeSize;
-
-    //Position des Sequenz Feldes im BCP-Header
-    @Getter
-    private static final int sequenzPos = destNodeIdPos + destNodeSize;
-
-    //Position des FileId Feldes im BCP-Header
-    @Getter
-    private static final int fileIdPos = sequenzPos + sequenzSize;
-
-    //Position des CRC Feldes im BCP-Header
-    @Getter
-    private static final int crcPos = fileIdPos + fileIdSize;
-
-    //Position des PayloadLength Feldes im BCP-Header
-    @Getter
-    private static final int payloadLengthPos = crcPos + crcSize;
-
-    //Position des Payloads
-    @Getter
-    private static final int payloadPos = payloadLengthPos + payloadLengthSize;
-
-    // Maximale Größe des Payloads in Bytes
-    @Getter
-    private static final int maximumPayloadSize = 1300;
-
-
-    //------ BCP-FILE_INIT Payload Variablen ------
-
-    //Größe des Dateinamens im BCP-FILE_INIT-Payload in Bytes
-    @Getter
-    private static final int FileInitFileSizeSize = 4;
-
-    // Position der Dateigröße im BCP-FILE_INIT-Payload
-    @Getter
-    private static final int FileInitFileSizePos = 0;
-
-    //Position des Dateinamens im BCP-FILE_INIT-Payload
-    @Getter
-    private static final int routingTableFileNamePos = FileInitFileSizePos + FileInitFileSizeSize;
-
-    //------ BCP-ROUTINGTABLE Payload Variablen ------
-
-    @Getter
-    private static final int routingTableDestNodeIdSize = 8;
-
-    @Getter
-    private static final int routingTableHopsSize = 1;
-
-    @Getter
-    private static final int routingTableLastSeenSize = 8;
-
-    @Getter
-    private static final int routingTableEntrySize = routingTableDestNodeIdSize+ routingTableHopsSize + routingTableLastSeenSize;
-
-    @Getter
-    private static final int routingTableDestNodeIdPos = 0;
-
-    @Getter
-    private static final int routingTableHopsPos = routingTableDestNodeIdPos + routingTableDestNodeIdSize;
-
-    @Getter
-    private static final int routingTableLastSeenPos = routingTableHopsPos + routingTableHopsSize;
-
-
-
-
-
 
     // Version
     @Getter
@@ -263,8 +125,8 @@ public class BCPPacketImpl implements BCPPacket {
             return null;
         }
 
-        byte[] name = new byte[payloadLength - FileInitFileSizeSize];
-        System.arraycopy(payload, routingTableFileNamePos, name, 0, name.length);
+        byte[] name = new byte[payloadLength - BCPPacket.FILE_INIT_FILE_SIZE_SIZE];
+        System.arraycopy(payload, BCPPacket.ROUTING_TABLE_FILE_NAME_POS, name, 0, name.length);
 
         return new String(name, StandardCharsets.UTF_8);
     }
@@ -274,7 +136,7 @@ public class BCPPacketImpl implements BCPPacket {
             return -1;
         }
 
-        return ByteBuffer.wrap(payload, FileInitFileSizePos, FileInitFileSizeSize).getInt();
+        return ByteBuffer.wrap(payload, BCPPacket.FILE_INIT_FILE_SIZE_POS, BCPPacket.FILE_INIT_FILE_SIZE_SIZE).getInt();
     }
 
     public long getNodeIdFromRoutingTableEntry(int offset) {
@@ -282,7 +144,7 @@ public class BCPPacketImpl implements BCPPacket {
             return -1;
         }
 
-        return ByteBuffer.wrap(payload, offset, routingTableDestNodeIdSize).getLong();
+        return ByteBuffer.wrap(payload, offset, BCPPacket.ROUTING_TABLE_DEST_NODE_ID_SIZE).getLong();
 
     }
 
@@ -291,14 +153,14 @@ public class BCPPacketImpl implements BCPPacket {
             return -1;
         }
 
-        return ByteBuffer.wrap(payload, offset + routingTableLastSeenPos, routingTableLastSeenSize).getLong();
+        return ByteBuffer.wrap(payload, offset + BCPPacket.ROUTING_TABLE_LAST_SEEN_POS, BCPPacket.ROUTING_TABLE_LAST_SEEN_SIZE).getLong();
     }
 
     public byte getHopsFromRoutingTableEntry(int offset) {
         if(type != PacketTypes.ROUTINGTABLE){
             return -1;
         }
-        return payload[offset + destNodeSize];
+        return payload[offset + BCPPacket.DEST_NODE_SIZE];
     }
 
     public void dekrementTtl() {
@@ -321,7 +183,7 @@ public class BCPPacketImpl implements BCPPacket {
 
         byte[] data = makeBCPPacketIntoBytes();
 
-        long calculateCrc = ByteBuffer.wrap(data, crcPos, crcSize).getLong();
+        long calculateCrc = ByteBuffer.wrap(data, BCPPacket.CRC_POS, BCPPacket.CRC_SIZE).getLong();
 
         crc = tempCrc;
 
@@ -334,7 +196,7 @@ public class BCPPacketImpl implements BCPPacket {
      */
     private byte[] makeBCPPacketIntoBytes(){
 
-        ByteBuffer buffer = ByteBuffer.allocate(payloadLength + headerSize);
+        ByteBuffer buffer = ByteBuffer.allocate(payloadLength + BCPPacket.HEADER_SIZE);
         buffer.order(ByteOrder.BIG_ENDIAN);
         buffer.put(version);
         buffer.put((byte)type.ordinal());
@@ -347,7 +209,7 @@ public class BCPPacketImpl implements BCPPacket {
         buffer.putLong(0L);
         buffer.putShort(payloadLength);
         buffer.put(payload);
-        buffer.putLong(crcPos, makeChecksum(buffer.array()));
+        buffer.putLong(BCPPacket.CRC_POS, makeChecksum(buffer.array()));
         return buffer.array();
     }
 
@@ -374,7 +236,7 @@ public class BCPPacketImpl implements BCPPacket {
      * @return Der Wert, der im Versionsfeld des Headers steht.
      */
     private byte getVersion(DatagramPacket packet) {
-        return packet.getData()[versionPos];
+        return packet.getData()[BCPPacket.VERSION_POS];
     }
 
     /**
@@ -384,7 +246,7 @@ public class BCPPacketImpl implements BCPPacket {
      * @return Der Wert, der im PayloadLength Feld des Headers steht.
      */
     private short getPayloadLength(DatagramPacket packet){
-        return ByteBuffer.wrap(packet.getData(), payloadLengthPos, payloadLengthSize).getShort();
+        return ByteBuffer.wrap(packet.getData(), BCPPacket.PAYLOAD_LENGTH_POS, BCPPacket.PAYLOAD_LENGTH_SIZE).getShort();
     }
 
 
@@ -395,7 +257,7 @@ public class BCPPacketImpl implements BCPPacket {
      * @return Der Wert, der im SrcNodeId Feld des Headers steht.
      */
     private long getSrcNodeId(DatagramPacket packet){
-        return ByteBuffer.wrap(packet.getData(), srcNodeIdPos, srcNodeSize).getLong();
+        return ByteBuffer.wrap(packet.getData(), BCPPacket.SRC_NODE_ID_POS, BCPPacket.SRC_NODE_SIZE).getLong();
     }
 
     /**
@@ -405,17 +267,17 @@ public class BCPPacketImpl implements BCPPacket {
      * @return Der Wert, der im DestNodeId Feld des Headers steht.
      */
     private long getDestNodeId(DatagramPacket packet){
-        return ByteBuffer.wrap(packet.getData(), destNodeIdPos, destNodeSize).getLong();
+        return ByteBuffer.wrap(packet.getData(), BCPPacket.DEST_NODE_ID_POS, BCPPacket.DEST_NODE_SIZE).getLong();
     }
 
     /**
-     * Gibt den Wert zurück, der in dem Type Feld des BCP-Headers, von dem Packet, steht.
+     * Gibt den Wert zurück, der in dem Type-Feld des BCP-Headers, von dem Packet, steht.
      * Wenn das Packet kein BCP-Packet darstellt, gibt es irgendetwas zurück.
      * @param packet Das Datagram Packet, welches ein BCP-Packet darstellt.
      * @return Der Wert, der im Type Feld des Headers steht.
      */
     private PacketTypes getType(DatagramPacket packet){
-        return PacketTypes.values()[ByteBuffer.wrap(packet.getData(), typePos, typeSize).get()];
+        return PacketTypes.values()[ByteBuffer.wrap(packet.getData(), BCPPacket.TYPE_POS, BCPPacket.TYPE_SIZE).get()];
     }
 
     /**
@@ -425,7 +287,7 @@ public class BCPPacketImpl implements BCPPacket {
      * @return Der Wert, der im TTL Feld des Headers steht.
      */
     private byte getTtl(DatagramPacket packet){
-        return ByteBuffer.wrap(packet.getData(), ttlPos, ttlSize).get();
+        return ByteBuffer.wrap(packet.getData(), BCPPacket.TTL_POS, BCPPacket.TTL_SIZE).get();
     }
 
     /**
@@ -435,17 +297,17 @@ public class BCPPacketImpl implements BCPPacket {
      * @return Der Wert, der im Hops Feld des Headers steht.
      */
     private byte getHops(DatagramPacket packet){
-        return ByteBuffer.wrap(packet.getData(), hopsPos, hopsSize).get();
+        return ByteBuffer.wrap(packet.getData(), BCPPacket.HOPS_POS, BCPPacket.HOPS_SIZE).get();
     }
 
     /**
-     * Gibt den Wert zurück, der in dem Sequenz Feld des BCP-Headers, von dem Packet, steht.
+     * Gibt den Wert zurück, der in dem Sequenzfeld des BCP-Headers, von dem Packet, steht.
      * Wenn das Packet kein BCP-Packet darstellt, gibt es irgendetwas zurück.
      * @param packet Das Datagram Packet, welches ein BCP-Packet darstellt.
      * @return Der Wert, der im Sequenz Feld des Headers steht.
      */
     private int getSequenz(DatagramPacket packet){
-        return ByteBuffer.wrap(packet.getData(), sequenzPos, sequenzSize).getInt();
+        return ByteBuffer.wrap(packet.getData(), BCPPacket.SEQUENZ_POS, BCPPacket.SEQUENZ_SIZE).getInt();
     }
 
     /**
@@ -455,7 +317,7 @@ public class BCPPacketImpl implements BCPPacket {
      * @return Der Wert, der im FileId Feld des Headers steht.
      */
     private int getFileId(DatagramPacket packet){
-        return ByteBuffer.wrap(packet.getData(), fileIdPos, fileIdSize).getInt();
+        return ByteBuffer.wrap(packet.getData(), BCPPacket.FILE_ID_POS, BCPPacket.FILE_ID_SIZE).getInt();
     }
 
     /**
@@ -465,7 +327,7 @@ public class BCPPacketImpl implements BCPPacket {
      * @return Der Wert, der im Crc Feld des Headers steht.
      */
     private long getCrc(DatagramPacket packet){
-        return ByteBuffer.wrap(packet.getData(), crcPos, crcSize).getLong();
+        return ByteBuffer.wrap(packet.getData(), BCPPacket.CRC_POS, BCPPacket.CRC_SIZE).getLong();
     }
 
     /**
@@ -476,7 +338,7 @@ public class BCPPacketImpl implements BCPPacket {
      */
     private byte[] getPayload(DatagramPacket packet){
         byte[] payload = new byte[payloadLength];
-        System.arraycopy(packet.getData(), payloadPos, payload, 0, payloadLength);
+        System.arraycopy(packet.getData(), BCPPacket.PAYLOAD_POS, payload, 0, payloadLength);
         return payload;
     }
 
@@ -489,10 +351,10 @@ public class BCPPacketImpl implements BCPPacket {
      */
     @Deprecated
     private byte[] extractChecksum(byte[] header){
-        byte[] headerWithoutChecksum = new byte[headerSize - crcSize];
-        System.arraycopy(header, 0, headerWithoutChecksum, 0, headerSize - crcSize - payloadLengthSize);
-        headerWithoutChecksum[headerWithoutChecksum.length - payloadLengthSize] = header[payloadLengthPos];
-        headerWithoutChecksum[headerWithoutChecksum.length - 1] = header[payloadLengthPos + 1];
+        byte[] headerWithoutChecksum = new byte[BCPPacket.HEADER_SIZE - BCPPacket.CRC_SIZE];
+        System.arraycopy(header, 0, headerWithoutChecksum, 0, BCPPacket.HEADER_SIZE - BCPPacket.CRC_SIZE - BCPPacket.PAYLOAD_LENGTH_SIZE);
+        headerWithoutChecksum[headerWithoutChecksum.length - BCPPacket.PAYLOAD_LENGTH_SIZE] = header[BCPPacket.PAYLOAD_LENGTH_POS];
+        headerWithoutChecksum[headerWithoutChecksum.length - 1] = header[BCPPacket.PAYLOAD_LENGTH_POS + 1];
 
         return headerWithoutChecksum;
 
