@@ -1,10 +1,12 @@
 package ChatAnwendung;
 
+import ChatAnwendung.logic.Api.InputHandler;
+import ChatAnwendung.logic.Api.ReceiveHandler;
 import ChatAnwendung.persistence.Api.ConnectionList;
 import ChatAnwendung.persistence.Api.DownloadFiles;
 import ChatAnwendung.persistence.Api.RoutingTable;
-import ChatAnwendung.logic.Impl.InputHandler;
-import ChatAnwendung.logic.Impl.ReceiveHanlder;
+import ChatAnwendung.logic.Impl.InputHandlerImpl;
+import ChatAnwendung.logic.Impl.ReceiveHandlerImpl;
 import ChatAnwendung.facade.impl.InputReaderImpl;
 import ChatAnwendung.facade.impl.RecieverImpl;
 import ChatAnwendung.facade.impl.SenderImpl;
@@ -40,8 +42,8 @@ public class Main {
         BlockingQueue<DatagramPacket> sendeQueue = new ArrayBlockingQueue<>(10000);
         BlockingQueue<String> inputQueue = new ArrayBlockingQueue<>(50);
 
-        InputHandler inputHandler = new InputHandler(inputQueue, routingTable, connectionsList, storage, sendeQueue, threadPools);
-        ReceiveHanlder receiveHanlder = new ReceiveHanlder(receiveQueue, sendeQueue, routingTable, storage, downloadFiles);
+        InputHandler inputHandler = new InputHandlerImpl(inputQueue, routingTable, connectionsList, storage, sendeQueue, threadPools);
+        ReceiveHandler receiveHandler = new ReceiveHandlerImpl(receiveQueue, sendeQueue, routingTable, storage, downloadFiles);
 
 
 
@@ -60,8 +62,8 @@ public class Main {
             CompletableFuture<Void> sender = CompletableFuture.runAsync(new SenderImpl(socket, sendeQueue), threadPools.getSenderThreadPool());
 
             CompletableFuture<Void> inputHandlerFuture = CompletableFuture.runAsync(inputHandler, threadPools.getWorkerThreadPool());
-            CompletableFuture<Void> receiveHandlerFuture1 = CompletableFuture.runAsync(receiveHanlder, threadPools.getWorkerThreadPool());
-            CompletableFuture<Void> receiveHandlerFuture2 = CompletableFuture.runAsync(receiveHanlder, threadPools.getWorkerThreadPool());
+            CompletableFuture<Void> receiveHandlerFuture1 = CompletableFuture.runAsync(receiveHandler, threadPools.getWorkerThreadPool());
+            CompletableFuture<Void> receiveHandlerFuture2 = CompletableFuture.runAsync(receiveHandler, threadPools.getWorkerThreadPool());
 
             inputReader.join();
 
