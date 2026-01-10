@@ -337,6 +337,10 @@ public class ReceiveHandlerImpl implements ReceiveHandler {
                 log.debug("File: {} from User: {} is not finished yet", file.getName(), Long.toUnsignedString(srcUID));
                 log.debug("Missing Chunks: {}" , file.getMissingChunks().getFirst());
             }
+
+            if((file.getProzent() == 25 || file.getProzent() == 50 || file.getProzent() == 75)){
+                log.info("File: {} downloaded to {}", fileId, file.getProzent());
+            }
         }
         else{
             log.debug("Failed to receive the file: {} from the user: {} ", fileId, srcUID);

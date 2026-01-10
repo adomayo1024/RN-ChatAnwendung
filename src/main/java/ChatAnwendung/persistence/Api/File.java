@@ -39,6 +39,12 @@ public interface File {
      */
     long getReceivedLastChunk();
 
+    /**
+     * Gibt die Prozent wieder, wie viel der File bereits heruntergeladen wurde.
+     * @return Die Prozentzahl als Ganzzahl zwischen 0 und 100.
+     */
+    int getProzent();
+
     //-------------- GETTER---------------------
 
     long getSrcNodeId();
@@ -46,4 +52,6 @@ public interface File {
     int getFileId();
 
     String getName();
+
+    int getAnzahlChunks();
 }
