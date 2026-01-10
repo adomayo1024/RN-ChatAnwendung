@@ -1,8 +1,13 @@
 package ChatAnwendung.persistence.Impl;
 
+import ChatAnwendung.logic.Impl.RequestSenderImpl;
+import ChatAnwendung.persistence.Api.DownloadFiles;
 import ChatAnwendung.persistence.Api.File;
+import ChatAnwendung.persistence.Api.RoutingTable;
+import ChatAnwendung.persistence.Api.Storage;
 import lombok.extern.slf4j.Slf4j;
 
+import java.net.DatagramPacket;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.*;
@@ -11,22 +16,25 @@ import java.util.concurrent.*;
 public class DownloadFilesImpl implements ChatAnwendung.persistence.Api.DownloadFiles {
 
     // spezieller Pfad für Linux zum Download Ordner
-    private static String filePathLin = "Downloads/";
+    private static final String filePathLin = "Downloads/";
 
     // spezieller Pfad für Windows zum Download Ordner
-    private static String filePathWin = "Downloads\\";
+    private static final String filePathWin = "Downloads\\";
 
     //Der Pfad, der zur Laufzeit benutzt werden soll, abhängig vom Betriebssystem
-    private static String filePath = System.getProperty("os.name").toLowerCase().contains("windows") ? filePathWin : filePathLin;
+    private static final String filePath = System.getProperty("os.name").toLowerCase().contains("windows") ? filePathWin : filePathLin;
 
     // Der ExecutorService für die request Sender der Dateien
-    private ScheduledExecutorService timer;
+    private final ScheduledExecutorService timer;
 
-    // Speichert alle zur Zeit gedownloaded Files, zu der NodeId des Senders und der File ID
-    private Map<Long, Map<Integer, File>> downloadedFiles;
+    // alle Request Sende Tasks
+    private final Map<File, ScheduledFuture<?>> scheduledFileRequests;
 
-    // Speichert ob die Datei mit der File ID schon heruntergeladen wurde vom Sender mit der NodeId
-    private Map<Long, Map<Integer, Boolean>> finishedFiles;
+    // Speichert alle zurzeit gedownloaded Files, zu der NodeId des Senders und der File ID
+    private final Map<Long, Map<Integer, File>> downloadedFiles;
+
+    // Speichert, ob die Datei mit der File ID schon heruntergeladen wurde vom Sender mit der NodeId
+    private final Map<Long, Map<Integer, Boolean>> finishedFiles;
 
     /**
      * Konstruktor der DownloadFilesImpl.
@@ -36,6 +44,7 @@ public class DownloadFilesImpl implements ChatAnwendung.persistence.Api.Download
         this.timer = timer;
         downloadedFiles = new ConcurrentHashMap<>();
         finishedFiles = new ConcurrentHashMap<>();
+        scheduledFileRequests = new ConcurrentHashMap<>();
 
         new java.io.File(filePath).mkdirs();
     }
@@ -48,7 +57,7 @@ public class DownloadFilesImpl implements ChatAnwendung.persistence.Api.Download
             return null;
         }
 
-        // Prüft, ob die Datei als wird heruntergeladen gespeichert wird
+        // Prüft, ob die Datei als heruntergeladen gespeichert wird
         if(!downloadedFiles.containsKey(NodeId) || !downloadedFiles.get(NodeId).containsKey(fileID)){
             return null;
         }
@@ -69,13 +78,16 @@ public class DownloadFilesImpl implements ChatAnwendung.persistence.Api.Download
         log.debug("Added new File: {} to User: {} to DownloadFiles: {}", fileID, Long.toUnsignedString(nodeId), this);
     }
 
-    public ScheduledExecutorService getScheduledThreadPool(){
-        return timer;
+    @Override
+    public void startRequesting(File file, DownloadFiles downloadFiles, RoutingTable routingTable, Storage storage, BlockingQueue<DatagramPacket> sendeQueue) {
+        ScheduledFuture<?> future = timer.scheduleAtFixedRate(new RequestSenderImpl(file, downloadFiles, routingTable, storage, sendeQueue), 3, 1, TimeUnit.SECONDS);
+        scheduledFileRequests.put(file, future);
     }
 
-    public void removeAll(){
-        downloadedFiles.clear();
-        finishedFiles.clear();
+    @Override
+    public void stopRequesting(File file) {
+        scheduledFileRequests.get(file).cancel(true);
+        scheduledFileRequests.remove(file);
     }
 
     public void removeFile(long nodeId, int fileId) {
@@ -83,5 +95,10 @@ public class DownloadFilesImpl implements ChatAnwendung.persistence.Api.Download
         downloadedFiles.get(nodeId).remove(fileId);
 
         log.debug("Removed File: {} from User: {} from DownloadFiles: {}", fileId, Long.toUnsignedString(nodeId), this);
+    }
+
+    public void removeAll(){
+        downloadedFiles.clear();
+        finishedFiles.clear();
     }
 }

@@ -43,20 +43,6 @@ public interface File {
      */
     long getReceivedLastChunk();
 
-    /**
-     * Startet Requesting nach fehlenden chunks dieser Datei.
-     * @param downloadFiles Damit der Requester die Datei entfernen kann, aus den DownloadFiles.
-     * @param routingTable Damit der Requester nach gucken kann, wo er den Request senden soll.
-     * @param storage Damit der Request die NodeId des Hosts herausfinden kann.
-     * @param sendeQueue Die Queue, wo der Request das Request Packet packen, soll damit es verschickt werden.
-     */
-    void startRequesting(DownloadFiles downloadFiles, RoutingTable routingTable, Storage storage, BlockingQueue<DatagramPacket> sendeQueue);
-
-    /**
-     * Beendet das Requesting nach fehlenden chunks dieser Datei.
-     */
-    void stopRequesting();
-
     //-------------- GETER---------------------
 
     long getSrcNodeId();

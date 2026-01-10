@@ -216,19 +216,17 @@ public class ReceiveHanlder implements Runnable {
         long srcUID = packet.getSrcNodeId();
         String fileName = packet.getFileName();
         int size = packet.getFileSize();
-        ScheduledExecutorService timer = downloadFiles.getScheduledThreadPool();
 
         FileImpl file = new FileImpl(
                 anzahlChunks,
                 size,
                 fileName,
                 fileID,
-                srcUID,
-                timer);
+                srcUID);
 
         downloadFiles.setNewFile(srcUID, fileID, file);
 
-        file.startRequesting(downloadFiles, routingTable, storage, senderQueue);
+        downloadFiles.startRequesting(file, downloadFiles, routingTable, storage, senderQueue);
 
         log.debug("Created new File{} for: {} from User: {}", fileName, fileID, Long.toUnsignedString(srcUID));
 
@@ -254,7 +252,7 @@ public class ReceiveHanlder implements Runnable {
             }
             if(file.finished()){
                 file.safeFile();
-                file.stopRequesting();
+                downloadFiles.stopRequesting(file);
                 downloadFiles.removeFile(srcUID, fileId);
                 log.info("Finished downloading File: {} from User: {}", file.getName(), Long.toUnsignedString(srcUID));
                 System.out.println("Finished downloading File: " + file.getName() + " from User: " + Long.toUnsignedString(srcUID));

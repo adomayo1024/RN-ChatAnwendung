@@ -2,6 +2,8 @@ package ChatAnwendung.persistence.Api;
 
 import ChatAnwendung.persistence.Impl.FileImpl;
 
+import java.net.DatagramPacket;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
 
 /**
@@ -33,15 +35,23 @@ public interface DownloadFiles {
     void setNewFile(long nodeId, int fileID, File file);
 
     /**
-     * Entfernt alle Datei aus dem DownloadFiles.
+     * Startet Requesting nach fehlenden Chunks der Datei mit der File ID, vom User mit der NodeId.
+     * @param file Die Datei, wo das Requesting gestartet werden soll.
+     * @param downloadFiles Damit der Requester die Datei entfernen kann, aus den DownloadFiles.
+     * @param routingTable Damit der Requester nach gucken kann, wo er den Request senden soll.
+     * @param storage Damit der Request die NodeId des Hosts herausfinden kann.
+     * @param sendeQueue Die Queue, wo der Request das Request Packet packen, soll damit es verschickt werden.
      */
-    void removeAll();
-
-    //------------- GETER -------------
+    void startRequesting(File file, DownloadFiles downloadFiles, RoutingTable routingTable, Storage storage, BlockingQueue<DatagramPacket> sendeQueue);
 
     /**
-     * Gibt den Executor Service wieder, über den die RequestSender laufen.
-     * @return Der Executor Service.
+     * Beendet das Requesting nach fehlenden Chunks der Datei mit der File ID, vom User mit der NodeId.
+     * @param file Die Datei, wo das Requesting beendet werden soll.
      */
-    ScheduledExecutorService getScheduledThreadPool();
+    void stopRequesting(File file);
+
+    /**
+     * Entfernt alle Dateien aus dem DownloadFiles.
+     */
+    void removeAll();
 }

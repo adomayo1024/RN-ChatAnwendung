@@ -38,7 +38,7 @@ public class RequestSenderImpl implements RequestSender {
     //Die Sendequeue so das der Sender die Request Pakete senden kann.
     private final BlockingQueue<DatagramPacket> sendeQueue;
 
-    public RequestSenderImpl(FileImpl file, DownloadFiles downloadFiles, RoutingTable routingTable, Storage storage, BlockingQueue<DatagramPacket> sendeQueue) {
+    public RequestSenderImpl(File file, DownloadFiles downloadFiles, RoutingTable routingTable, Storage storage, BlockingQueue<DatagramPacket> sendeQueue) {
         this.file = file;
         this.downloadFiles = downloadFiles;
         this.routingTable = routingTable;
@@ -65,7 +65,7 @@ public class RequestSenderImpl implements RequestSender {
         // Wenn seid den letzten 3 Request kein neues Paket ankam, wird der Download abgebrochen.
         else if (timesOfRequestWithoutAnAnswer >= 3) {
 
-            file.stopRequesting();
+            downloadFiles.stopRequesting(file);
             downloadFiles.removeFile(file.getSrcNodeId(), file.getFileId());
             log.info("Removed File because of 3 Request of the same chunk in a row without an answer");
             System.out.println("Removed File because of 3 Request of the same chunk in a row without an answer");

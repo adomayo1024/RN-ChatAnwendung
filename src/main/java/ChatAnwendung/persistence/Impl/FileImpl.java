@@ -26,22 +26,18 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 @Slf4j
 public class FileImpl implements File {
 
-    private int anzahlChunks;
-
-    private int length;
-
     // Dateiname
     @Getter
     private String name;
 
     //spezieller Pfad für Linux zu den Downloads Ordner
-    private static String filePathLin = "Downloads/";
+    private static final String filePathLin = "Downloads/";
 
     //spezieller Pfad für Windows zu den Downloads Ordner
-    private static String filePathWin = "Downloads\\";
+    private static final String filePathWin = "Downloads\\";
 
     //Der Pfad, der zur Laufzeit benutzt werden soll, abhängig vom Betriebssystem
-    private static String filePath = System.getProperty("os.name").toLowerCase().contains("windows") ? filePathWin : filePathLin;
+    private static final String filePath = System.getProperty("os.name").toLowerCase().contains("windows") ? filePathWin : filePathLin;
 
     // die Id des files
     @Getter
@@ -51,42 +47,35 @@ public class FileImpl implements File {
     @Getter
     private long srcNodeId;
 
-    // welche chunks schon gespeichert wurden
-    private boolean[] writedChunks;
+    // Welche Chunks schon gespeichert wurden
+    private final boolean[] writedChunks;
 
-    // array wo alle chunks temporär gespeichert werden, bis alle empfangen wurden
-    private byte[] chunksSended;
-
-    // der executor für den ReuqestSender, dieses files
-    private final ScheduledExecutorService executor;
+    // Array, wo alle Chunks temporär gespeichert werden, bis alle empfangen wurden
+    private final byte[] chunksSended;
 
     // Mutex für den Zugrif von writedChunks und chunksSended
-    private ReentrantReadWriteLock writedChunksMutex;
+    private final ReentrantReadWriteLock writedChunksMutex;
 
-    // Zeitpunkt des neuesten empfangenen chunks
-    private AtomicLong recievedLastChunk;
+    // Zeitpunkt des neuesten empfangenen Chunks
+    private final AtomicLong recievedLastChunk;
 
     // Future des RequestSender Threads
     private ScheduledFuture<?> requestFuture;
 
     /**
-     * Konstruktor welcher ein File erstellt werlches heruntergelanden werden soll.
-     * @param anzahlChunks die Anzahl der chunks welche die Datei haben wird
-     * @param length die länge der Datei in Bytes
+     * Konstruktor, welcher ein File erstellt, welches heruntergelandet werden soll.
+     * @param anzahlChunks Die Anzahl der Chunks, welche die Datei haben wird
+     * @param length die Länge der Datei in Bytes
      * @param name der Dateiname
      * @param fileId die Id des Files
      * @param srcNodeId die NodeId des Senders
-     * @param executor der Executor für den RequestSender
      */
-    public FileImpl(int anzahlChunks, int length, String name, int fileId, long srcNodeId, ScheduledExecutorService executor){
-        this.anzahlChunks = anzahlChunks;
-        this.length = length;
+    public FileImpl(int anzahlChunks, int length, String name, int fileId, long srcNodeId){
         this.name = name;
         this.fileId = fileId;
         this.writedChunks = new boolean[anzahlChunks];
         this.chunksSended = new byte[length];
         this.srcNodeId = srcNodeId;
-        this.executor = executor;
         this.writedChunksMutex = new ReentrantReadWriteLock(true);
         recievedLastChunk = new AtomicLong(System.currentTimeMillis());
         log.debug("Created File: {}", this);
@@ -99,7 +88,7 @@ public class FileImpl implements File {
 
         writedChunksMutex.readLock().lock();
 
-        // prüft, ob der chunk schon gespeichert wurde
+        // prüft, ob der Chunk schon gespeichert wurde
         if(!writedChunks[sequenz]){
 
             writedChunksMutex.readLock().unlock();
@@ -123,17 +112,15 @@ public class FileImpl implements File {
     }
     @Override
     public void safeFile(){
-        // prüft, ob alle chunks gespeichert wurden
+        // prüft, ob alle Chunks gespeichert wurden
         if(finished()){
 
 
             writedChunksMutex.readLock().lock();
 
-            //schreibt alle chunks in eine Datei
+            //Schreibt alle Chunks in eine Datei
             try(RandomAccessFile file = new RandomAccessFile(filePath + name, "rw")){
                 file.write(chunksSended);
-            } catch (FileNotFoundException e) {
-                ExceptionHandler.handle(e, this.getClass());
             } catch (IOException e) {
                 ExceptionHandler.handle(e, this.getClass());
             }
@@ -153,7 +140,7 @@ public class FileImpl implements File {
 
         writedChunksMutex.readLock().lock();
 
-        // Prüft ob alle chunks auf gespeichert gesetzt wurden
+        // Prüft, ob alle Chunks aufgespeichert gesetzt wurden
         do{
             result = writedChunks[i++];
         }while(i < writedChunks.length && result);
@@ -168,7 +155,7 @@ public class FileImpl implements File {
 
         writedChunksMutex.readLock().lock();
 
-        //prüft welche chunks nocht nicht auf gespeichert gesetzt wurden
+        //Prüft, welche Chunks noch nicht aufgespeichert gesetzt wurden
         List<Integer> missingChunks = new ArrayList<>();
         for(int i = 0; i < writedChunks.length; i++){
             if(!writedChunks[i]){
@@ -186,17 +173,6 @@ public class FileImpl implements File {
     @Override
     public long getReceivedLastChunk(){
         return recievedLastChunk.get();
-    }
-
-
-    @Override
-    public void startRequesting(DownloadFiles downloadFiles, RoutingTable routingTable, Storage storage, BlockingQueue<DatagramPacket> sendeQueue){
-        requestFuture = executor.scheduleAtFixedRate(new RequestSenderImpl(this, downloadFiles, routingTable, storage, sendeQueue), 3, 1, TimeUnit.SECONDS);
-    }
-
-    @Override
-    public void stopRequesting() {
-        requestFuture.cancel(true);
     }
 }
 
