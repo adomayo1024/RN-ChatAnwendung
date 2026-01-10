@@ -148,10 +148,14 @@ public class FileImpl implements File {
             if(!writtenChunks[i]){
                 missingChunks.add(i);
             }
+            //Prüft, ob 1000 Chunks erreicht wurde
+            if(missingChunks.size() >= 1000){
+                break;
+            }
         }
         writtenChunksMutex.readLock().unlock();
 
-        log.debug("Next needed Chunks: {}", missingChunks);
+        log.debug("Next needed Chunks: {}", missingChunks.getFirst());
 
         return missingChunks;
 
