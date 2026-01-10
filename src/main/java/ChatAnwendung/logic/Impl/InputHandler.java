@@ -19,8 +19,6 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
@@ -61,6 +59,8 @@ public class InputHandler implements Runnable {
     //Die ThreadPolls um Task zu starten und zu stoppen.
     private final ThreadPools threadPools;
 
+    private boolean finished;
+
 
     public InputHandler(BlockingQueue<String> inputQueue, RoutingTable routingTabl, ConnectionList connectionList, Storage storage, BlockingQueue<DatagramPacket> senderQueue, ThreadPools threadPools) {
         this.inputQueue = inputQueue;
@@ -69,16 +69,16 @@ public class InputHandler implements Runnable {
         this.storage = storage;
         this.senderQueue = senderQueue;
         this.threadPools = threadPools;
+        this.finished = false;
     }
 
     @Override
     public void run() {
 
-        boolean interrupted = false;
         String input;
 
         //Loop wo Inputs verarbeitet werden.
-        while (!interrupted){
+        while (!finished){
 
             String[] command = new String[1];
             InputCommands commandType;
@@ -90,7 +90,7 @@ public class InputHandler implements Runnable {
                 commandType = InputCommands.valueOf(command[0].toUpperCase());
             } catch (InterruptedException e) {
                 //Loop für das Verarbeiten von Inputs soll beendet werden.
-                interrupted = true;
+                finished = true;
                 continue;
             } catch (IllegalArgumentException e){
                 log.info("Unknown Command: {}", command[0]);
@@ -103,7 +103,7 @@ public class InputHandler implements Runnable {
                 ExceptionHandler.handle(new LoginException("You are not logged in"), this.getClass());
                 continue;
             }
-            //Prüft ob die Anzahl der Argumente korrekt ist, für den jeweiligen Command stimmt.
+            //Prüft, ob die Anzahl der Argumente korrekt ist, für den jeweiligen Command stimmt.
             if(!rightAmountOfArguments(command, commandType)){
                 ExceptionHandler.handle(new ArgumentException("Wrong amount of arguments"), this.getClass());
                 continue;
@@ -188,7 +188,7 @@ public class InputHandler implements Runnable {
             }
 
             case InputCommands.LIST -> {
-                if(command.length != AMOUNT_OF_ARGUMENTS_FOR_LIST){
+                if(command.length < AMOUNT_OF_ARGUMENTS_FOR_LIST){
                     result = false;
                 }
             }
@@ -216,7 +216,7 @@ public class InputHandler implements Runnable {
     }
 
     /**
-     * Verarbeitet den Help Command. Welcher auf der Konsole Information zu allen verfügbaren Commands ausgibt.
+     * Verarbeitet den Help Command. Welcher auf der Konsole Informationen zu allen verfügbaren Commands ausgibt.
      * Man kann als Argumente auch einzelnen Command dazugeben, damit nur Informationen zu diesem Command ausgegeben werden
      * und nicht zu allen.
      * @param command Der Input des Users, welcher mit einem Help Command beginnt.
@@ -249,34 +249,61 @@ public class InputHandler implements Runnable {
         System.out.println(builder);
     }
 
+    /**
+     * Verarbeitet den Exit Command, wo das Programm beendet wird.
+     * Wenn man noch angemeldet ist, wird erstmal {@code handleGoodbye()} ausgeführt, damit man abgemeldet wird.
+     * @param command Der Command der Exit enthält
+     */
     private void handleExit(String[] command) {
         log.debug("Start with shutdown");
 
+        // Wenn der User noch angemeldet ist, wird er erstmal abgemeldet.
+        if(storage.isLogin()){
+            String[] byeCommand = {"bye"};
+            handleGoodbye(byeCommand);
+        }
+
+        //Schließt den InputStream vom InputReader, womit das Schließen des Programms beginnt.
         try {
-            if(storage.isLogin()){
-                handleGoodbye(command);
-            }
             System.in.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+        finally {
+            finished = true;
         }
 
         log.debug("Initialization finished");
 
     }
 
+    /**
+     * Gibt Informationen über den Node aus.
+     * - NodeId
+     * - Port
+     * @param command Der Command der Info enthält.
+     */
     private void handleInfo(String[] command) {
 
+        log.info("You have the ID: {}\nPort: {}", storage.getUnsignedID(), storage.getPort());
         System.out.println("You have the ID: " + storage.getUnsignedID() + "\n" +
                 "Port: " + storage.getPort());
     }
 
+    /**
+     * Verarbeitet den List command. Wo alle Einträge der routbaren Routingeinträge auflistet.
+     * Mögliche Flags:
+     * - --all: es werden Routingeinträge aufgelistet, auch diese, welche gerade nicht routbar sind.
+     * - --connect: Es werden zusätzlich alle vorhandenen Verbindungen aufgelistet.
+     * @param command Der Command der mit dem list command beginnt, und mit zusätzlichen Flags versehen ist.
+     */
     private void handleList(String[] command) {
         log.debug("Start with list");
 
         boolean allFlagSet = false;
         boolean connectionFlagSet = false;
 
+        //Prüft, ob --all oder --connect Flag gesetzt sind.
         for(String flag: command){
             switch (flag){
                 case "--all":
@@ -289,6 +316,7 @@ public class InputHandler implements Runnable {
             }
         }
 
+        //Gibt alle Routingeinträge aus, die routbar sind, oder alle, wenn --all Flag gesetzt ist.
         for(RoutingEntry entry : routingTable.getAllEntries()){
             if(entry.getRoutable() || allFlagSet){
                 System.out.println(Long.toUnsignedString(entry.getNodeId()) +
@@ -301,6 +329,7 @@ public class InputHandler implements Runnable {
             }
         }
 
+        //Gibt alle Verbindungen aus, wenn --connect Flag gesetzt ist.
         if(connectionFlagSet){
             for(Connection connection : connectionList.getAllConnections()){
                 System.out.println(connection.address().toString() + ":" + connection.port());
@@ -310,39 +339,46 @@ public class InputHandler implements Runnable {
         log.debug("End with list");
     }
 
+    /**
+     * Verarbeitet den File Command, wo eine Datei an einen anderen Nutzer verschickt wird.
+     * @param command Der command beginnend mit file und danach dem file pfad und der NodeId des Users an der die Datei verschickt werden soll.
+     */
     private void handleFile(String[] command) {
         log.debug("Start with file transfer");
 
         String path = command[1];
 
-        long uID = 0;
+        long destNodeId;
+        //Parst die NodeId vom Input
         try {
-            uID = Long.parseUnsignedLong(command[2]);
+            destNodeId = Long.parseUnsignedLong(command[2]);
         } catch (NumberFormatException e) {
-            ExceptionHandler.handle(new NotAUIDException(e.getMessage()), this.getClass());
-            return;
-        } catch (ArrayIndexOutOfBoundsException e) {
-            ExceptionHandler.handle(new ArgumentException("Sender UID is missing"), this.getClass());
+            ExceptionHandler.handle(new NotANodeIdException(e.getMessage()), this.getClass());
             return;
         }
 
-        if(!validUID(uID))  {
-            ExceptionHandler.handle(new UnknowUIDException(uID), this.getClass());
+        //Prüft, ob die NodeId bekannt ist.
+        if(!validNodeId(destNodeId))  {
+            ExceptionHandler.handle(new UnknowNodeIdException(destNodeId), this.getClass());
         }
         else {
+            //File-Init,File-Data und File-End werden verschickt.
             try (RandomAccessFile file = new RandomAccessFile(path, "r")){
 
+                //Gebrauchte Variablen
                 long length = file.length();
                 int anzahlChunks = (int) Math.ceil(length / (float) BCPPacketImpl.getMaximumPayloadSize());
                 int fileId = storage.getNextFileID();
-                InetAddress address = routingTable.getNextHopAdressForUID(uID);
-                int port = routingTable.getNextHopPortForUID(uID);
+                InetAddress address = routingTable.getNextHopAdressForUID(destNodeId);
+                int port = routingTable.getNextHopPortForUID(destNodeId);
                 storage.addSendOpenFile(fileId, path);
 
-                sendFileInitPacket(anzahlChunks, length, path, uID, fileId, address, port);
+                // Es wird das FileInitPacket gesendet.
+                sendFileInitPacket(anzahlChunks, length, path, destNodeId, fileId, address, port);
 
                 log.debug("File init packet send");
 
+                //Es werden alle Chunks in einzelnen Paketen versendet.
                 for(int sequenz = 0; sequenz < anzahlChunks; sequenz++){
                     byte[] payload = split(file, sequenz, anzahlChunks);
                     BCPPacketImpl bcpPacket = new BCPPacketImpl(
@@ -351,7 +387,7 @@ public class InputHandler implements Runnable {
                             (byte) 32, // ttl
                             (byte) 0, // hops
                             storage.getID(), //srcNodId
-                            uID, //destNodeId
+                            destNodeId, //destNodeId
                             sequenz, //sequenz
                             fileId, //fileId
                             0L, //crc
@@ -366,13 +402,14 @@ public class InputHandler implements Runnable {
                     log.debug("File data packet number {} send", sequenz);
                 }
 
-                sendFileEnd(uID, fileId, address, port);
-                System.out.println("File send");
+                //File-End wird gesendet.
+                sendFileEnd(destNodeId, fileId, address, port);
 
                 log.debug("End with file transfer");
 
-                log.info("File send to User: {}", Long.toUnsignedString(uID));
-                System.out.println("File send to User: " + Long.toUnsignedString(uID));
+                log.info("File send to User: {}", Long.toUnsignedString(destNodeId));
+
+                System.out.println("File send to User: " + Long.toUnsignedString(destNodeId));
             } catch (IOException e) {
                 ExceptionHandler.handle(e, this.getClass());
             }
@@ -469,7 +506,7 @@ public class InputHandler implements Runnable {
         try {
             destNodeId = Long.parseUnsignedLong(command[1]);
         } catch (NumberFormatException e) {
-            ExceptionHandler.handle(new NotAUIDException(e.getMessage()), this.getClass());
+            ExceptionHandler.handle(new NotANodeIdException(e.getMessage()), this.getClass());
             return;
         }
         StringBuilder msg = new StringBuilder(command[2]);
@@ -478,8 +515,8 @@ public class InputHandler implements Runnable {
         }
 
 
-        if(!validUID(destNodeId)) {
-            ExceptionHandler.handle(new UnknowUIDException(destNodeId), this.getClass());
+        if(!validNodeId(destNodeId)) {
+            ExceptionHandler.handle(new UnknowNodeIdException(destNodeId), this.getClass());
             return;
         }
         else if(!validMessage(msg.toString())){
@@ -649,7 +686,7 @@ public class InputHandler implements Runnable {
      * @param nodeId Die NodeId die überprüft werden soll.
      * @return True, wenn die NodeId bekannt ist, sonst false.
      */
-    private boolean validUID(Long nodeId) {
+    private boolean validNodeId(Long nodeId) {
         return routingTable.isUIDavailable(nodeId);
     }
 

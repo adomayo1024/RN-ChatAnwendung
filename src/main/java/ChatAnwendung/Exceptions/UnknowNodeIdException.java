@@ -1,11 +1,11 @@
 package ChatAnwendung.Exceptions;
 
-public class UnknowUIDException extends Throwable {
+public class UnknowNodeIdException extends Throwable {
 
 
     private final Long uID;
 
-    public UnknowUIDException(Long uID) {
+    public UnknowNodeIdException(Long uID) {
         this.uID = uID;
     }
 

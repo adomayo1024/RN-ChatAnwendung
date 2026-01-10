@@ -1,10 +1,10 @@
 package ChatAnwendung.Exceptions;
 
-public class NotAUIDException extends RuntimeException {
+public class NotANodeIdException extends RuntimeException {
 
     private String msg;
 
-    public NotAUIDException(String message) {
+    public NotANodeIdException(String message) {
         msg = message;
     }
 

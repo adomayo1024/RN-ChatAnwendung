@@ -89,15 +89,15 @@ public enum InputCommands {
 
     private String listHelp() {
         return """
-                list: Listet alle momentan erreichabren Nutzer auf, oder alle derzeitigen Connections
+                list: Listet alle momentan erreichbaren Nutzer auf, oder alle derzeitigen Connections
                 \tAufbau: list <<--all>> <<--connect>>
                 """;
     }
 
     private String disconnectHelp() {
         return """
-                disconnect: Disconnect diese Anwendung mit einer physischen Addresse und Port.
-                \tAufbau: disconnect [ip-Addresse im Format xxx.xxx.xxx.xxx] [port]
+                disconnect: Disconnected diese Anwendung mit einer physischen Adresse und Port.
+                \tAufbau: disconnect [ip-Address im Format xxx.xxx.xxx.xxx] [port]
                 \tFehler: ungültige Ip-Adresse oder port, ungültige Formatierung
                 """;
     }
@@ -106,7 +106,8 @@ public enum InputCommands {
         return """
                 connect: Verbindet diesen User direkt mit einen anderen
                 \tAufbau: connect [ip-Adresse im Format xxx.xxx.xxx.xxx] [port]
-                \tFehler: ungültige Ip-Adresse oder port, ungültige Formatierung""";
+                \tFehler: ungültige Ip-Adresse oder port, ungültige Formatierung
+                """;
 
     }
 
@@ -123,7 +124,7 @@ public enum InputCommands {
         return """
                 hello: Der Hello command führt eine neu anmeldung durch. Dieser darf nur ausgeführt werden wenn man sich vorher abgemeldet hat mit den "bye" command.
                 \tAufbau: hello
-                \tFehler: Wenn man schon angemeldet ist, passiert nichts und dem User wird durch eine Nachricht in Kenntniss gesetzt
+                \tFehler: Wenn man schon angemeldet ist, passiert nichts und dem User wird das durch eine Nachricht in Kenntnisse gesetzt
                 """;
 
 
@@ -131,7 +132,7 @@ public enum InputCommands {
 
     private String exitHelp() {
         return """
-                exit: Meldet den User ab und beendet das Programm kommplett
+                exit: Meldet den User ab und beendet das Programm
                 \tAufbau: exit
                 \tFehler:
                 """;
@@ -140,7 +141,7 @@ public enum InputCommands {
 
     private String helpHelp() {
         return """
-                help: Gibt infos über die vorhanden Commands oder ausgewählt eines einzlenen.
+                help: Gibt infos über die vorhanden Commands oder ausgewählt eines einzelnen.
                 \tAufbau: help <<command>>
                 """;
     }
