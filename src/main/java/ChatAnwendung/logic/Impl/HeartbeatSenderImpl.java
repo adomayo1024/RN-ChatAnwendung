@@ -1,5 +1,6 @@
 package ChatAnwendung.logic.Impl;
 
+import ChatAnwendung.Exceptions.ExceptionHandler;
 import ChatAnwendung.logic.Api.HeartBeatSender;
 import ChatAnwendung.persistence.Api.RoutingEntry;
 import ChatAnwendung.persistence.Api.RoutingTable;
@@ -9,6 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.net.DatagramPacket;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.LinkedBlockingQueue;
 
 @Slf4j
 public class HeartbeatSenderImpl implements HeartBeatSender {
@@ -65,7 +68,12 @@ public class HeartbeatSenderImpl implements HeartBeatSender {
                             entry.getNextHopAddress(), //address
                             entry.getNextHopPort());//port
                     DatagramPacket packet = bcpPacket.makeDatagramPacket();
-                    sendeQueue.add(packet);
+                    try {
+                        //Packt Packet an den Anfang, weil Heartbeat oberste Priorität hat.
+                        ((LinkedBlockingDeque<DatagramPacket>)sendeQueue).putFirst(packet);
+                    } catch (InterruptedException e) {
+                        ExceptionHandler.handle(e, this.getClass());
+                    }
 
                     log.debug("Heartbeat packet send to {}", Long.toUnsignedString(entry.getNodeId()));
                 }
