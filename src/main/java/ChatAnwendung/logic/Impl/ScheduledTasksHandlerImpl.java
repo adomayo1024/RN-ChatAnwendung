@@ -1,6 +1,7 @@
 package ChatAnwendung.logic.Impl;
 
 import ChatAnwendung.logic.Api.HeartBeatSender;
+import ChatAnwendung.logic.Api.RoutingTableSender;
 import ChatAnwendung.logic.Api.ScheduledTaskHandler;
 import ChatAnwendung.logic.Api.TimeOutHandler;
 import ChatAnwendung.persistence.Api.RoutingTable;
@@ -27,26 +28,27 @@ public class ScheduledTasksHandlerImpl implements ScheduledTaskHandler {
     private final TimeOutHandler timeoutHandler;
 
     // Boolean, ob 10 Sekunden vergangen sind, seit dem letzten RoutingTableSending/TimeoutHandling
-    private boolean tenSecoundsAgo;
+    private boolean tenSecondsAgo;
 
     public ScheduledTasksHandlerImpl(RoutingTable routingTable, Storage storage, BlockingQueue<DatagramPacket> sendeQueue){
         heartbeatSender = new HeartbeatSenderImpl(routingTable, storage, sendeQueue);
-        routingTableSender = new RoutingTableSender(routingTable, sendeQueue, storage);
+        routingTableSender = new RoutingTableSenderImpl(routingTable, sendeQueue, storage);
         timeoutHandler = new TimeoutHandlerImpl(routingTable);
-        tenSecoundsAgo = false;
+        tenSecondsAgo = false;
     }
 
     @Override
     public void run(){
 
         // Prüft, ob RoutingTableSending/TimeoutHandling in diesen run dran sind.
-        if(tenSecoundsAgo){
+        if(tenSecondsAgo){
             routingTableSender.run();
             timeoutHandler.checkTimeouts();
         }
 
         heartbeatSender.sendHeartbeat();
 
-        tenSecoundsAgo = !tenSecoundsAgo;
+
+        tenSecondsAgo = !tenSecondsAgo;
     }
 }
