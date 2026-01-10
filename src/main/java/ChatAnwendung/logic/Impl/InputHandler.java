@@ -53,18 +53,18 @@ public class InputHandler implements Runnable {
     //Der storage um Informationen über sich selbst zu erhalten und zu speicher.
     private final Storage storage;
 
-    //Die Sendequeue damit der Sender, der zu versenden  Packete versendet.
+    //Die Sendequeue damit der Sender, die zu versenden Packete versendet.
     private final BlockingQueue<DatagramPacket> senderQueue;
 
-    //Die ThreadPolls um Task zu starten und zu stoppen.
+    //Die ThreadPools, um Task zu starten und zu stoppen.
     private final ThreadPools threadPools;
 
     private boolean finished;
 
 
-    public InputHandler(BlockingQueue<String> inputQueue, RoutingTable routingTabl, ConnectionList connectionList, Storage storage, BlockingQueue<DatagramPacket> senderQueue, ThreadPools threadPools) {
+    public InputHandler(BlockingQueue<String> inputQueue, RoutingTable routingTable, ConnectionList connectionList, Storage storage, BlockingQueue<DatagramPacket> senderQueue, ThreadPools threadPools) {
         this.inputQueue = inputQueue;
-        this.routingTable = routingTabl;
+        this.routingTable = routingTable;
         this.connectionList = connectionList;
         this.storage = storage;
         this.senderQueue = senderQueue;
@@ -117,7 +117,7 @@ public class InputHandler implements Runnable {
 
                 case InputCommands.HELLO -> handleHello(command);
 
-                case InputCommands.BYE -> handleGoodbye(command);
+                case InputCommands.BYE -> handleBye(command);
 
                 case InputCommands.SEND -> handleSend(command);
 
@@ -260,7 +260,7 @@ public class InputHandler implements Runnable {
         // Wenn der User noch angemeldet ist, wird er erstmal abgemeldet.
         if(storage.isLogin()){
             String[] byeCommand = {"bye"};
-            handleGoodbye(byeCommand);
+            handleBye(byeCommand);
         }
 
         //Schließt den InputStream vom InputReader, womit das Schließen des Programms beginnt.
@@ -295,7 +295,7 @@ public class InputHandler implements Runnable {
      * Mögliche Flags:
      * - --all: es werden Routingeinträge aufgelistet, auch diese, welche gerade nicht routbar sind.
      * - --connect: Es werden zusätzlich alle vorhandenen Verbindungen aufgelistet.
-     * @param command Der Command der mit dem list command beginnt, und mit zusätzlichen Flags versehen ist.
+     * @param command Der Command, der mit dem list command beginnt, und mit zusätzlichen Flags versehen ist.
      */
     private void handleList(String[] command) {
         log.debug("Start with list");
@@ -341,7 +341,7 @@ public class InputHandler implements Runnable {
 
     /**
      * Verarbeitet den File Command, wo eine Datei an einen anderen Nutzer verschickt wird.
-     * @param command Der command beginnend mit file und danach dem file pfad und der NodeId des Users an der die Datei verschickt werden soll.
+     * @param command Der command beginnend mit file und danach dem file Pfad und der NodeId des Users, an der die Datei verschickt werden soll.
      */
     private void handleFile(String[] command) {
         log.debug("Start with file transfer");
@@ -380,7 +380,7 @@ public class InputHandler implements Runnable {
 
                 //Es werden alle Chunks in einzelnen Paketen versendet.
                 for(int sequenz = 0; sequenz < anzahlChunks; sequenz++){
-                    byte[] payload = split(file, sequenz, anzahlChunks);
+                    byte[] payload = getChunk(file, sequenz, anzahlChunks);
                     BCPPacketImpl bcpPacket = new BCPPacketImpl(
                             (byte) 1, //version
                             PacketTypes.FILE_DATA, //type
@@ -416,13 +416,23 @@ public class InputHandler implements Runnable {
         }
     }
 
-    private byte[] split(RandomAccessFile file, int sequenz, int anzahlChunks) {
+    /**
+     * Gibt den Chunk, der File wieder, von der angegebenen Position. Wenn es der letzte Chunk der file ist,
+     * kann es sein, dass das Byte-Array kleiner ist als {@code BCPPacketImpl.getMaximumPayloadSize()}
+     * @param file Die File, von der der Chunk geholt werden soll.
+     * @param sequenz Die Position des Chunks in der Datei.
+     * @param anzahlChunks Die Anzahl der Chunks in der Datei.
+     * @return Byte-Array des Chunks, oder null, wenn die Sequenz fehlerhaft ist, oder es zu einem IO/Error kommt.
+     */
+    private byte[] getChunk(RandomAccessFile file, int sequenz, int anzahlChunks) {
         byte[] chunk = null;
 
         try {
+            //Prüft, ob die Sequenz korrekt ist.
             if(anzahlChunks <= sequenz || sequenz < 0){
                 throw new IllegalSequnzNumberException(sequenz);
             }
+            //Prüft, ob es der letzte Chunk ist.
             else if(anzahlChunks - 1 == sequenz){
                 int size = (int)(file.length() % BCPPacketImpl.getMaximumPayloadSize());
                 chunk = new byte[size];
@@ -430,6 +440,7 @@ public class InputHandler implements Runnable {
             else{
                 chunk = new byte[BCPPacketImpl.getMaximumPayloadSize()];
             }
+            //List den Chunk aus der Datei.
             file.seek((long) sequenz * BCPPacketImpl.getMaximumPayloadSize());
             file.read(chunk);
         } catch (IOException | IllegalSequnzNumberException e) {
@@ -438,16 +449,24 @@ public class InputHandler implements Runnable {
         return chunk;
     }
 
-    private void sendFileEnd(long uID, int fileId, InetAddress address, int port) {
+    /**
+     * Versendet das File-End Paket, der Datei mit der {@code fileId} an den User.
+     * @param nodeId Die NodeId des Users an der das File-End Paket gesendet werden soll.
+     * @param fileId Die FileId der Datei, zu dem das File-End Paket gehört.
+     * @param address Die Adresse des Users.
+     * @param port Der Port des Users.
+     */
+    private void sendFileEnd(long nodeId, int fileId, InetAddress address, int port) {
         byte[] payload = new byte[0];
 
+        //Paket wird erstellt.
         BCPPacketImpl bcpPacket = new BCPPacketImpl(
                 (byte) 1, //version
                 PacketTypes.File_End, //type
                 (byte) 32, // ttl
                 (byte) 0, // hops
                 storage.getID(), //srcNodId
-                uID, //destNodeId
+                nodeId, //destNodeId
                 0, //sequenz
                 fileId, //fileId
                 0L, //crc
@@ -460,16 +479,28 @@ public class InputHandler implements Runnable {
         senderQueue.add(packet);
     }
 
-    private void sendFileInitPacket(int anzahlChunks, long length, String path, long uID, int fileId, InetAddress address, int port) {
+    /**
+     * Versendet das File-Init Paket, der Datei mit der {@code fileId} an den User mit der {@code nodeId}.
+     * @param anzahlChunks Wie viele Chunks besitzt die Datei, wie viele File-Data Packete danach versendet werden.
+     * @param length Die Größe der Datei in Bytes.
+     * @param path Der Pfad zur Datei.
+     * @param nodeId Die NodeId des Users der das File-Init Paket erhalten soll.
+     * @param fileId Die FileId der Datei
+     * @param address Die Adresse des Users.
+     * @param port Der Port des Users.
+     */
+    private void sendFileInitPacket(int anzahlChunks, long length, String path, long nodeId, int fileId, InetAddress address, int port) {
+        //Es wird der Payload erzeugt
         byte[] payload = makeDataInitPayload(length, path);
 
+        //Es wird das Paket erstellt.
         BCPPacketImpl bcpPacket = new BCPPacketImpl(
                 (byte) 1, //version
                 PacketTypes.FILE_INIT, //type
                 (byte) 32, // ttl
                 (byte) 0, // hops
                 storage.getID(), //srcNodId
-                uID, //destNodeId
+                nodeId, //destNodeId
                 anzahlChunks, //sequenz
                 fileId, //fileId
                 0L, //crc
@@ -482,9 +513,16 @@ public class InputHandler implements Runnable {
         senderQueue.add(packet);
     }
 
+    /**
+     * Erstellt den Payload, für ein File-Init Packet, welcher die Größe und den Namen der Datei enthält.
+     * @param length Die Größe der Datei in Bytes.
+     * @param path Der Pfad zur Datei.
+     * @return Byte-Array wo der Payload gespeichert ist.
+     */
     private byte[] makeDataInitPayload(long length, String path) {
         String[] splitPath;
 
+        //Prüft, wo nach separiert werden soll, je nach Betriebssystem.
         if(System.getProperty("os.name").toLowerCase().contains("win")){
             splitPath = path.split("\\\\");
         }
@@ -492,6 +530,7 @@ public class InputHandler implements Runnable {
             splitPath = path.split("/");
         }
 
+        //Erzeugt konkret den Payload.
         String fileName = splitPath[splitPath.length - 1];
         ByteBuffer payload = ByteBuffer.allocate(fileName.getBytes().length + 4);
         payload.putInt((int)length);
@@ -499,26 +538,35 @@ public class InputHandler implements Runnable {
         return payload.array();
     }
 
+    /**
+     * Verarbeitet den Send command, wo eine Nachricht an einen anderen Nutzer verschickt wird.
+     * @param command Der Command, welcher mit Send beginnt, danach die NodeId des Users, welcher die Nachricht erhalten soll
+     * und danach die Nachricht enthält.
+     */
     private void handleSend(String[] command) {
         log.debug("Start with Message sending");
 
-        long destNodeId = 0;
+        long destNodeId;
+
+        //Parst die DestNodeId aus Command
         try {
             destNodeId = Long.parseUnsignedLong(command[1]);
         } catch (NumberFormatException e) {
             ExceptionHandler.handle(new NotANodeIdException(e.getMessage()), this.getClass());
             return;
         }
+        //Baut die Nachricht wieder zusammen
         StringBuilder msg = new StringBuilder(command[2]);
         for(int i = 3; i < command.length; i++){
             msg.append(" ").append(command[i]);
         }
 
-
+        //Prüft, ob die destNodeId bekannt ist.
         if(!validNodeId(destNodeId)) {
             ExceptionHandler.handle(new UnknowNodeIdException(destNodeId), this.getClass());
             return;
         }
+        //Prüft, ob die Nachricht valide ist.
         else if(!validMessage(msg.toString())){
             ExceptionHandler.handle(new InvalidMessageException(msg.toString()), this.getClass());
             return;
@@ -526,9 +574,10 @@ public class InputHandler implements Runnable {
 
 
         byte[] payload = msg.toString().getBytes(StandardCharsets.UTF_8);
-        InetAddress adress = routingTable.getNextHopAdressForUID(destNodeId);
+        InetAddress address = routingTable.getNextHopAdressForUID(destNodeId);
         int port = routingTable.getNextHopPortForUID(destNodeId);
 
+        //Erstellung des Packets
         BCPPacketImpl bcpPacket = new BCPPacketImpl(
                 (byte) 1,
                 PacketTypes.MESSAGE,
@@ -541,7 +590,7 @@ public class InputHandler implements Runnable {
                 0L,
                 (short)payload.length,
                 payload,
-                adress,
+                address,
                 port);
 
         DatagramPacket packet = bcpPacket.makeDatagramPacket();
@@ -554,17 +603,24 @@ public class InputHandler implements Runnable {
         System.out.println("Message send to " + Long.toUnsignedString(destNodeId));
     }
 
-    private void handleGoodbye(String[] command) {
+    /**
+     * Verarbeitet den Bye Command, wo der User abgemeldet wird.
+     * @param command Der Command mit "bye" beginnend.
+     */
+    private void handleBye(String[] command) {
         log.debug("Start logout");
 
+        //Es werden die ScheduledServices beendet (TimeoutHandler, HeartbeatSender, RoutingTableSender)
         threadPools.getScheduleServicesFuture().cancel(true);
-        storage.logout();
         threadPools.setScheduleServicesFuture(null);
+        storage.logout();
 
         log.debug("Finished with canceling heartbeats and timeout");
 
+        //Verschickt ein Bye-Paket an alle direkten Nachbarn.
         for (RoutingEntry neighbour : routingTable.getAllDirectNeighbours()) {
 
+            //Prüft, ob der direkte Nachbar noch erreichbar ist.
             if(routingTable.isUIDavailable(neighbour.getNodeId())){
                 byte[] payload = new byte[0];
                 BCPPacketImpl bcpPacket = new BCPPacketImpl(
@@ -596,14 +652,20 @@ public class InputHandler implements Runnable {
         routingTable.removeAll();
     }
 
+    /**
+     * Verarbeitet hello Command. Der den User anmeldet. Und an alle Connections ein Hello Paket sendet.
+     * @param command Der Command beginnend mit hello.
+     */
     private void handleHello(String[] command) {
 
+        //Prüft, ob man schon angemeldet ist.
         if(storage.isLogin()){
             ExceptionHandler.handle(new LoginException("Your are already logged in"), this.getClass());
         }
         else {
             storage.login();
 
+            //Schickt an alle Connections ein Hello-Paket, mit der BroadCast-Id
             for (Connection connection : connectionList.getAllConnections()) {
                 byte[] payload = new byte[0];
                 BCPPacketImpl bcpPacket = new BCPPacketImpl(
@@ -628,6 +690,7 @@ public class InputHandler implements Runnable {
                 log.debug("Hello packet send to {}", connection.address());
             }
 
+            //Start die ScheduledServices (TimeoutHandler, HeartbeatSender, RoutingTableSender)
             threadPools.setScheduleServicesFuture(threadPools.getScheduleServices().scheduleWithFixedDelay(new ScheduledTasksHandlerImpl(routingTable, storage, senderQueue), 1, 5, TimeUnit.SECONDS));
             log.debug("Finished with login");
 
@@ -637,17 +700,23 @@ public class InputHandler implements Runnable {
 
     }
 
+    /**
+     * Verarbeitet den disconnect command. Dadurch wird eine Connection entfernt.
+     * @param command Command mit "connect" beginnend, danach die Ip-Adresse und der Port der Connection.
+     */
     private void handleDisconnect(String[] command) {
         log.debug("start with disconnect: {} : {}", command[1], command[2]);
 
         InetAddress address;
         int port;
 
+        //Parst die Ip-Adresse und den Port aus dem Command.
         try {
             address = InetAddress.getByName(command[1]);
             port = Integer.parseInt(command[2]);
             Connection connection = new Connection(address, port);
 
+            //Entfernt die connection aus der Liste.
             connectionList.remove(connection);
 
             log.info("Disconnect with: {}:{}", command[1], command[2]);
@@ -659,17 +728,23 @@ public class InputHandler implements Runnable {
 
     }
 
+    /**
+     * Verarbeitet den Connect Command. Welcher eine neue Connection erstellt.
+     * @param command Der Command beginnend mit "connect" danach die Ip-Adresse und der Port der Connection.
+     */
     private void handleConnect(String[] command) {
         log.debug("start with connect: {} : {}", command[1], command[2]);
 
         InetAddress address;
         int port;
 
+        //Parst die Ip-Adresse und den Port aus dem Command.
         try {
             address = InetAddress.getByName(command[1]);
             port = Integer.parseInt(command[2]);
             Connection connection = new Connection(address, port);
 
+            //Fügt die Connection zur Liste hinzu.
             connectionList.add(connection);
 
             log.info("Connect with: {}:{}", command[1], command[2]);
@@ -692,8 +767,8 @@ public class InputHandler implements Runnable {
 
     /**
      * Überprüft, ob die Nachricht, die versendet werden möchte, eine gültige Nachricht ist.
-     * Gültig ist sie wenn:
-     * - Sie kleiner als 1300 Zeichen ist.
+     * Gültig ist sie, wenn:
+     * - Sie kleiner als 1 300 Zeichen ist.
      * @param msg Die Nachricht, die überprüft werden soll.
      * @return True, wenn sie gültig ist, sonst false.
      */

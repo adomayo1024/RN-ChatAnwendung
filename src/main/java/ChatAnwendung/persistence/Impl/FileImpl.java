@@ -1,25 +1,16 @@
 package ChatAnwendung.persistence.Impl;
 
 import ChatAnwendung.logic.Impl.BCPPacketImpl;
-import ChatAnwendung.persistence.Api.DownloadFiles;
 import ChatAnwendung.persistence.Api.File;
-import ChatAnwendung.persistence.Api.RoutingTable;
 import ChatAnwendung.Exceptions.ExceptionHandler;
-import ChatAnwendung.logic.Impl.RequestSenderImpl;
-import ChatAnwendung.persistence.Api.Storage;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.net.DatagramPacket;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -48,16 +39,16 @@ public class FileImpl implements File {
     private long srcNodeId;
 
     // Welche Chunks schon gespeichert wurden
-    private final boolean[] writedChunks;
+    private final boolean[] writtenChunks;
 
     // Array, wo alle Chunks temporär gespeichert werden, bis alle empfangen wurden
-    private final byte[] chunksSended;
+    private final byte[] chunksSent;
 
-    // Mutex für den Zugrif von writedChunks und chunksSended
-    private final ReentrantReadWriteLock writedChunksMutex;
+    // Mutex für den Zugriff von writtenChunks und chunksSent
+    private final ReentrantReadWriteLock writtenChunksMutex;
 
     // Zeitpunkt des neuesten empfangenen Chunks
-    private final AtomicLong recievedLastChunk;
+    private final AtomicLong receivedLastChunk;
 
     // Future des RequestSender Threads
     private ScheduledFuture<?> requestFuture;
@@ -73,11 +64,11 @@ public class FileImpl implements File {
     public FileImpl(int anzahlChunks, int length, String name, int fileId, long srcNodeId){
         this.name = name;
         this.fileId = fileId;
-        this.writedChunks = new boolean[anzahlChunks];
-        this.chunksSended = new byte[length];
+        this.writtenChunks = new boolean[anzahlChunks];
+        this.chunksSent = new byte[length];
         this.srcNodeId = srcNodeId;
-        this.writedChunksMutex = new ReentrantReadWriteLock(true);
-        recievedLastChunk = new AtomicLong(System.currentTimeMillis());
+        this.writtenChunksMutex = new ReentrantReadWriteLock(true);
+        receivedLastChunk = new AtomicLong(System.currentTimeMillis());
         log.debug("Created File: {}", this);
     }
 
@@ -86,27 +77,27 @@ public class FileImpl implements File {
 
         boolean added = false;
 
-        writedChunksMutex.readLock().lock();
+        writtenChunksMutex.readLock().lock();
 
         // prüft, ob der Chunk schon gespeichert wurde
-        if(!writedChunks[sequenz]){
+        if(!writtenChunks[sequenz]){
 
-            writedChunksMutex.readLock().unlock();
-            writedChunksMutex.writeLock().lock();
+            writtenChunksMutex.readLock().unlock();
+            writtenChunksMutex.writeLock().lock();
 
             // speichert den chunk
-            System.arraycopy(chunk, 0, chunksSended, sequenz * BCPPacketImpl.getMaximumPayloadSize(), chunk.length);
-            writedChunks[sequenz] = true;
+            System.arraycopy(chunk, 0, chunksSent, sequenz * BCPPacketImpl.getMaximumPayloadSize(), chunk.length);
+            writtenChunks[sequenz] = true;
             added = true;
 
 
-            writedChunksMutex.writeLock().unlock();
-            recievedLastChunk.set(System.currentTimeMillis());
+            writtenChunksMutex.writeLock().unlock();
+            receivedLastChunk.set(System.currentTimeMillis());
 
 
             log.debug("Added Chunk {} to File: {}", sequenz, name);
         }else {
-            writedChunksMutex.readLock().unlock();
+            writtenChunksMutex.readLock().unlock();
         }
         return added;
     }
@@ -116,16 +107,16 @@ public class FileImpl implements File {
         if(finished()){
 
 
-            writedChunksMutex.readLock().lock();
+            writtenChunksMutex.readLock().lock();
 
             //Schreibt alle Chunks in eine Datei
             try(RandomAccessFile file = new RandomAccessFile(filePath + name, "rw")){
-                file.write(chunksSended);
+                file.write(chunksSent);
             } catch (IOException e) {
                 ExceptionHandler.handle(e, this.getClass());
             }
             finally {
-                writedChunksMutex.readLock().unlock();
+                writtenChunksMutex.readLock().unlock();
             }
         }
 
@@ -138,14 +129,14 @@ public class FileImpl implements File {
         boolean result;
         int i = 0;
 
-        writedChunksMutex.readLock().lock();
+        writtenChunksMutex.readLock().lock();
 
         // Prüft, ob alle Chunks aufgespeichert gesetzt wurden
         do{
-            result = writedChunks[i++];
-        }while(i < writedChunks.length && result);
+            result = writtenChunks[i++];
+        }while(i < writtenChunks.length && result);
 
-        writedChunksMutex.readLock().unlock();
+        writtenChunksMutex.readLock().unlock();
 
         return result;
     }
@@ -153,16 +144,16 @@ public class FileImpl implements File {
     @Override
     public List<Integer> getMissingChunks(){
 
-        writedChunksMutex.readLock().lock();
+        writtenChunksMutex.readLock().lock();
 
         //Prüft, welche Chunks noch nicht aufgespeichert gesetzt wurden
         List<Integer> missingChunks = new ArrayList<>();
-        for(int i = 0; i < writedChunks.length; i++){
-            if(!writedChunks[i]){
+        for(int i = 0; i < writtenChunks.length; i++){
+            if(!writtenChunks[i]){
                 missingChunks.add(i);
             }
         }
-        writedChunksMutex.readLock().unlock();
+        writtenChunksMutex.readLock().unlock();
 
         log.debug("Next needed Chunks: {}", missingChunks);
 
@@ -172,7 +163,7 @@ public class FileImpl implements File {
 
     @Override
     public long getReceivedLastChunk(){
-        return recievedLastChunk.get();
+        return receivedLastChunk.get();
     }
 }
 

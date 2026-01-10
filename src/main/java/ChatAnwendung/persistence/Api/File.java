@@ -1,10 +1,6 @@
 package ChatAnwendung.persistence.Api;
 
-import ChatAnwendung.persistence.Impl.StorageImpl;
-
-import java.net.DatagramPacket;
 import java.util.List;
-import java.util.concurrent.BlockingQueue;
 
 /**
  * Repräsentiert eine Datei, die gerade heruntergeladen wird.
@@ -15,12 +11,12 @@ public interface File {
      * Fügt einen neuen Chunk, zum File hinzu.
      * @param chunk Die Bytes des Chunks
      * @param sequenz Die Sequenz des Chunks, welcher angibt, an welcher Position es sich im File befindet.
-     * @return True wenn der Chunk hinzugefügt wurde, sonst false.
+     * @return True, wenn der Chunk hinzugefügt wurde, sonst false.
      */
     boolean addChunk(byte[] chunk, int sequenz);
 
     /**
-     * "Speichert" das File ab, in dem alle Chunks in eine pyhsiche Datei geschrieben wird.
+     * "Speichert" das File ab, in dem alle Chunks in einer physischen Datei geschrieben werden.
      * Wenn es zu IOExceptions kommt, wird das File nicht gespeichert und gelöscht.
      */
     void safeFile();
@@ -43,7 +39,7 @@ public interface File {
      */
     long getReceivedLastChunk();
 
-    //-------------- GETER---------------------
+    //-------------- GETTER---------------------
 
     long getSrcNodeId();
 
