@@ -36,8 +36,8 @@ public class Main {
             throw new RuntimeException(e);
         }
 
-        BlockingQueue<DatagramPacket> receiveQueue = new ArrayBlockingQueue<>(100);
-        BlockingDeque<DatagramPacket> sendeQueue = new LinkedBlockingDeque<>(100);
+        BlockingQueue<DatagramPacket> receiveQueue = new ArrayBlockingQueue<>(10000);
+        BlockingDeque<DatagramPacket> sendeQueue = new LinkedBlockingDeque<>(10000);
         BlockingQueue<String> inputQueue = new ArrayBlockingQueue<>(50);
 
         InputHandler inputHandler = new InputHandlerImpl(inputQueue, routingTable, connectionsList, storage, sendeQueue, threadPools);
