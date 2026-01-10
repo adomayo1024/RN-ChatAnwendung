@@ -20,6 +20,9 @@ public class FileImpl implements File {
     @Getter
     private String name;
 
+    @Getter
+    private int anzahlChunks;
+
     //spezieller Pfad für Linux zu den Downloads Ordner
     private static final String filePathLin = "Downloads/";
 
@@ -59,6 +62,7 @@ public class FileImpl implements File {
      */
     public FileImpl(int anzahlChunks, int length, String name, int fileId, long srcNodeId){
         this.name = name;
+        this.anzahlChunks = anzahlChunks;
         this.fileId = fileId;
         this.writtenChunks = new boolean[anzahlChunks];
         this.chunksSent = new byte[length];
@@ -164,6 +168,17 @@ public class FileImpl implements File {
     @Override
     public long getReceivedLastChunk(){
         return receivedLastChunk.get();
+    }
+
+    @Override
+    public int getProzent() {
+        int countReceived = 0;
+        for(boolean b : writtenChunks){
+            if(b){
+                countReceived++;
+            }
+        }
+        return (int) Math.round((double) countReceived / writtenChunks.length * 100);
     }
 }
 
