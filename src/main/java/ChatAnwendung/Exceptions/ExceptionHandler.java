@@ -22,6 +22,10 @@ public class ExceptionHandler implements Handler {
 
     public static void handle(Throwable exception, Class<?> thrower){
         log.warn("{} hat Fehler gemeldet: {}", thrower.getName(), exception.getMessage());
-        System.out.println(exception.getMessage());
+        //Wenn nicht durch Queue
+        if(!(exception instanceof IllegalStateException)){
+            System.out.println(exception.getMessage());
+        }
+
     }
 }
