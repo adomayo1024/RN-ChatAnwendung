@@ -43,13 +43,13 @@ public class SenderImpl implements Sender {
 
             } catch (IOException e) {
                 System.out.println(e.getMessage());
+                interrupted = true;
             } catch (InterruptedException e){
                 interrupted = true;
             }
-            finally {
-                sendeQueue.clear();
-            }
         }
+
+        sendeQueue.clear();
 
         log.debug( "Sender shutdown");
     }
