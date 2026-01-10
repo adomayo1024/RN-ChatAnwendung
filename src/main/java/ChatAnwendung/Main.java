@@ -16,9 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.net.*;
 import java.security.NoSuchAlgorithmException;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.*;
 
 @Slf4j
 public class Main {
@@ -38,17 +36,18 @@ public class Main {
             throw new RuntimeException(e);
         }
 
-        BlockingQueue<DatagramPacket> receiveQueue = new ArrayBlockingQueue<>(10000);
-        BlockingQueue<DatagramPacket> sendeQueue = new ArrayBlockingQueue<>(10000);
+        BlockingQueue<DatagramPacket> receiveQueue = new ArrayBlockingQueue<>(100);
+        BlockingDeque<DatagramPacket> sendeQueue = new LinkedBlockingDeque<>(100);
         BlockingQueue<String> inputQueue = new ArrayBlockingQueue<>(50);
 
         InputHandler inputHandler = new InputHandlerImpl(inputQueue, routingTable, connectionsList, storage, sendeQueue, threadPools);
         ReceiveHandler receiveHandler = new ReceiveHandlerImpl(receiveQueue, sendeQueue, routingTable, storage, downloadFiles);
 
 
+        int port = args.length > 0 ?Integer.parseInt(args[0]) : 0;
 
 
-        try(DatagramSocket socket = new DatagramSocket(0)){
+        try(DatagramSocket socket = new DatagramSocket(port)){
 
             storage.setPort(socket.getLocalPort());
             log.info("Socket opened on port {}", socket.getLocalPort());
