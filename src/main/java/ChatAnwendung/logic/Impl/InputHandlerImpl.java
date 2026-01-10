@@ -400,8 +400,6 @@ public class InputHandlerImpl implements InputHandler {
                     try{
                         senderQueue.add(packet);
                     } catch (IllegalStateException e) {
-                        Thread.sleep(1);
-                        return;
                     }
 
                     log.debug("File data packet number {} send", sequenz);
@@ -415,7 +413,7 @@ public class InputHandlerImpl implements InputHandler {
                 log.info("File send to User: {}", Long.toUnsignedString(destNodeId));
 
                 System.out.println("File send to User: " + Long.toUnsignedString(destNodeId));
-            }catch (IllegalStateException | IOException | InterruptedException e){
+            }catch (IllegalStateException | IOException e){
                 ExceptionHandler.handle(e, this.getClass());
             }
         }
