@@ -27,6 +27,8 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class InputHandler implements Runnable {
 
+    // Die Anzahl an Argumenten, die erwartet werden, für die jeweiligen Commands.
+    //Bei Send, File und Help ist es die Mindestanzahl
     private static final int AMOUNT_OF_ARGUMENTS_FOR_CONNECT = 3;
     private static final int AMOUNT_OF_ARGUMENTS_FOR_DISCONNECT = 3;
     private static final int AMOUNT_OF_ARGUMENTS_FOR_SEND = 3;
@@ -41,12 +43,22 @@ public class InputHandler implements Runnable {
 
 
 
-
+    //Die Inputqueue wo die Commands landen, die vom InputHandler empfangen werden.
     private final BlockingQueue<String> inputQueue;
+
+    //Die RoutingTable, um nachzuschauen, wo die Pakete hin verschickt werden sollen
     private final RoutingTable routingTable;
+
+    //Die ConnectionList, um nachzuschauen, welche Connections aktuell da sind, und um welche hinzuzufügen oder zu entfernen.
     private final ConnectionList connectionList;
+
+    //Der storage um Informationen über sich selbst zu erhalten und zu speicher.
     private final Storage storage;
+
+    //Die Sendequeue damit der Sender, der zu versenden  Packete versendet.
     private final BlockingQueue<DatagramPacket> senderQueue;
+
+    //Die ThreadPolls um Task zu starten und zu stoppen.
     private final ThreadPools threadPools;
 
 
@@ -65,32 +77,39 @@ public class InputHandler implements Runnable {
         boolean interrupted = false;
         String input;
 
+        //Loop wo Inputs verarbeitet werden.
         while (!interrupted){
 
             String[] command = new String[1];
             InputCommands commandType;
 
+            //Es wird sich der nächste Input geholt.
             try {
                 input = inputQueue.take();
                 command = input.split(" ");
                 commandType = InputCommands.valueOf(command[0].toUpperCase());
             } catch (InterruptedException e) {
+                //Loop für das Verarbeiten von Inputs soll beendet werden.
                 interrupted = true;
                 continue;
             } catch (IllegalArgumentException e){
+                log.info("Unknown Command: {}", command[0]);
                 System.out.print("Unknown Command: " + command[0]);
                 continue;
             }
 
+            //Wenn man nicht eingeloggt ist, dürfen nicht alle Command benutzt werden.
             if(!storage.isLogin() && !commandType.isLogOutCommand()){
                 ExceptionHandler.handle(new LoginException("You are not logged in"), this.getClass());
                 continue;
             }
+            //Prüft ob die Anzahl der Argumente korrekt ist, für den jeweiligen Command stimmt.
             if(!rightAmountOfArguments(command, commandType)){
                 ExceptionHandler.handle(new ArgumentException("Wrong amount of arguments"), this.getClass());
                 continue;
             }
 
+            //Verschiedene Verarbeitung für die jeweiligen Commands.
             switch (commandType){
                 case InputCommands.CONNECT -> handleConnect(command);
 
@@ -115,43 +134,22 @@ public class InputHandler implements Runnable {
 
         }
 
+        log.info("InputHandler finished with work");
+
     }
 
-    private String[] wrap(List<String> s) {
-        boolean find = false;
-        int pos = 0;
-        List<Integer> removedPositions = new ArrayList<>();
-
-        for(int i = 0; i < s.size(); i++){
-
-            if(s.get(i).contains("\"")){
-                if(!find){
-                    pos = i;
-                    s.set(i, "");
-                } else {
-                    removedPositions.add(i);
-                }
-                find =!find;
-            } else {
-                if(find){
-                    s.set(pos, s.get(pos) + " " + s.get(i));
-                    removedPositions.add(i);
-                }
-            }
-        }
-
-        for(Integer i : removedPositions.reversed()){
-            s.remove(i.intValue());
-        }
-
-
-        return s.toArray(String[]::new);
-    }
-
+    /**
+     * Prüft für den gegebenen {@code commandType} ob die Anzahl an Argumenten in {@code command} korrekt ist.
+     * Der Command selber wird dabei mitgezählt.
+     * @param command Der Command mit den Argument
+     * @param commandType Der Typ des Commands
+     * @return True, wenn die Anzahl der Argumente korrekt ist, sonst false.
+     */
     private boolean rightAmountOfArguments(String[] command, InputCommands commandType) {
 
         boolean result = true;
 
+        //Überprüfung der Anzahl der Commands anhand des CommandTyps
         switch (commandType){
             case InputCommands.CONNECT -> {
                 if(command.length != AMOUNT_OF_ARGUMENTS_FOR_CONNECT){
@@ -202,7 +200,7 @@ public class InputHandler implements Runnable {
             }
 
             case InputCommands.HELP -> {
-                if(command.length < AMOUNT_OF_ARGUMENTS_FOR_HELP || command.length > AMOUNT_OF_ARGUMENTS_FOR_HELP + 1){
+                if(command.length < AMOUNT_OF_ARGUMENTS_FOR_HELP){
                     result = false;
                 }
             }
@@ -217,135 +215,38 @@ public class InputHandler implements Runnable {
         return result;
     }
 
+    /**
+     * Verarbeitet den Help Command. Welcher auf der Konsole Information zu allen verfügbaren Commands ausgibt.
+     * Man kann als Argumente auch einzelnen Command dazugeben, damit nur Informationen zu diesem Command ausgegeben werden
+     * und nicht zu allen.
+     * @param command Der Input des Users, welcher mit einem Help Command beginnt.
+     */
     private void handleHelp(String[] command) {
         StringBuilder builder = new StringBuilder();
 
+        // Wenn keine weiteren Argumente, printe zu allen Commands die Informationen aus.
         if(command.length < 2){
-            builder.append(helpHelp());
-            builder.append(exitHelp());
-            builder.append(fileHelp());
-            builder.append(goodbyeHelp());
-            builder.append(helloHelp());
-            builder.append(messageHelp());
-            builder.append(connectHelp());
-            builder.append(disconnectHelp());
-            builder.append(listHelp());
+            builder.append(InputCommands.getAllHelpTexts());
         } else {
             InputCommands commandType;
 
-            try{
-                commandType = InputCommands.valueOf(command[1].toUpperCase());
-            } catch (IllegalArgumentException e){
-                ExceptionHandler.handle(new ArgumentException("Unknown command: " + command[1]), this.getClass());
-                return;
-            }
+            //Gehe alle Argumente durch und printe die Informationen zu diesen Commands.
+            for (int i = 1; i < command.length; i++) {
 
-            switch (commandType){
-                case InputCommands.HELP-> builder.append(helpHelp());
+                try {
+                    // welcher Command als nächstes Argument
+                    commandType = InputCommands.valueOf(command[i].toUpperCase());
+                } catch (IllegalArgumentException e) {
+                    // Unbekannter Command, weiter mit dem nächsten Argument
+                    ExceptionHandler.handle(new ArgumentException("Unknown command: " + command[i]), this.getClass());
+                    continue;
+                }
 
-                case InputCommands.EXIT -> builder.append(exitHelp());
-
-                case InputCommands.FILE -> builder.append(fileHelp());
-
-                case InputCommands.BYE -> builder.append(goodbyeHelp());
-
-                case InputCommands.HELLO -> builder.append(helloHelp());
-
-                case InputCommands.SEND -> builder.append(messageHelp());
-
-                case InputCommands.CONNECT -> builder.append(connectHelp());
-
-                case InputCommands.DISCONNECT -> builder.append(disconnectHelp());
-
-                case InputCommands.LIST -> builder.append(listHelp());
-
-                case InputCommands.INFO -> builder.append(infoHelp());
+                builder.append(commandType.getHelpText());
             }
         }
 
         System.out.println(builder);
-    }
-
-    private String infoHelp() {
-        return """
-                info: Gibt info über die eigene Id und auf welchen port man erreichbar ist.
-                \tAufbau: info
-                """;
-    }
-
-    private String listHelp() {
-        return """
-                list: Listet alle momentan erreichabren Nutzer auf, oder alle derzeitigen Connections
-                \tAufbau: list <<--all>> <<--connect>>
-                """;
-    }
-
-    private String disconnectHelp() {
-        return """
-                disconnect: Disconnect diese Anwendung mit einer physischen Addresse und Port.
-                \tAufbau: disconnect [ip-Addresse im Format xxx.xxx.xxx.xxx] [port]
-                \tFehler: ungültige Ip-Adresse oder port, ungültige Formatierung
-                """;
-    }
-
-    private String connectHelp() {
-        return """
-                connect: Verbindet diesen User direkt mit einen anderen
-                \tAufbau: connect [ip-Adresse im Format xxx.xxx.xxx.xxx] [port]
-                \tFehler: ungültige Ip-Adresse oder port, ungültige Formatierung""";
-
-    }
-
-    private String messageHelp() {
-        return """
-                send: Es wird eine Nachricht an einen bestimmten Teilnehmer geschickt. Die Nachricht darf maximal 1300 zeichen beinhalten (Weißzeichen mitgezählt)
-                \tAufbau: send [EmpfängerID] "[Nachricht]"
-                \tFehler: Wenn die UID falsch ist oder die Nachricht zu lange, wird keine Nachricht verschickt.
-                """;
-
-    }
-
-    private String helloHelp() {
-        return """
-                hello: Der Hello command führt eine neu anmeldung durch. Dieser darf nur ausgeführt werden wenn man sich vorher abgemeldet hat mit den "bye" command.
-                \tAufbau: hello
-                \tFehler: Wenn man schon angemeldet ist, passiert nichts und dem User wird durch eine Nachricht in Kenntniss gesetzt
-                """;
-
-
-    }
-
-    private String exitHelp() {
-        return """
-                exit: Meldet den User ab und beendet das Programm kommplett
-                \tAufbau: exit
-                \tFehler:
-                """;
-
-    }
-
-    private String helpHelp() {
-        return """
-                help: Gibt infos über die vorhanden Commands oder ausgewählt eines einzlenen.
-                \tAufbau: help <<command>>
-                """;
-    }
-
-    private String goodbyeHelp() {
-        return """
-                bye: Meldet den User ab, er kann keine Nachrichten mehr schicken oder empfangen
-                \tAufbau: bye
-                \tFehler: Wenn man schon abgemeldet ist, kann man sich nicht nochmal abmelden
-                """;
-
-    }
-
-    private String fileHelp() {
-        return """
-                file: Verschickt eine Datei die angegeben ist an einen bestimmten User
-                \tAufbau: file  "[absoluter Datei Pfad]" [User Id]
-                \tFehler: Die angegeben Datei gibt es nicht, der angegeben User ist nicht bekannt.\s
-                """;
     }
 
     private void handleExit(String[] command) {
@@ -743,10 +644,22 @@ public class InputHandler implements Runnable {
     }
 
 
-    private boolean validUID(Long uID) {
-        return routingTable.isUIDavailable(uID);
+    /**
+     * Überprüft ob die NodeId bekannt ist.
+     * @param nodeId Die NodeId die überprüft werden soll.
+     * @return True, wenn die NodeId bekannt ist, sonst false.
+     */
+    private boolean validUID(Long nodeId) {
+        return routingTable.isUIDavailable(nodeId);
     }
 
+    /**
+     * Überprüft, ob die Nachricht, die versendet werden möchte, eine gültige Nachricht ist.
+     * Gültig ist sie wenn:
+     * - Sie kleiner als 1300 Zeichen ist.
+     * @param msg Die Nachricht, die überprüft werden soll.
+     * @return True, wenn sie gültig ist, sonst false.
+     */
     private boolean validMessage(String msg){
         return msg.getBytes().length <= BCPPacketImpl.getMaximumPayloadSize();
     }
