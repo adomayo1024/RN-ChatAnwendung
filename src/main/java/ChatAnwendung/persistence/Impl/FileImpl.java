@@ -5,7 +5,7 @@ import ChatAnwendung.persistence.Api.DownloadFiles;
 import ChatAnwendung.persistence.Api.File;
 import ChatAnwendung.persistence.Api.RoutingTable;
 import ChatAnwendung.Exceptions.ExceptionHandler;
-import ChatAnwendung.logic.Impl.RequestSender;
+import ChatAnwendung.logic.Impl.RequestSenderImpl;
 import ChatAnwendung.persistence.Api.Storage;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -191,7 +191,7 @@ public class FileImpl implements File {
 
     @Override
     public void startRequesting(DownloadFiles downloadFiles, RoutingTable routingTable, Storage storage, BlockingQueue<DatagramPacket> sendeQueue){
-        requestFuture = executor.scheduleAtFixedRate(new RequestSender(this, downloadFiles, routingTable, storage, sendeQueue), 3, 1, TimeUnit.SECONDS);
+        requestFuture = executor.scheduleAtFixedRate(new RequestSenderImpl(this, downloadFiles, routingTable, storage, sendeQueue), 3, 1, TimeUnit.SECONDS);
     }
 
     @Override

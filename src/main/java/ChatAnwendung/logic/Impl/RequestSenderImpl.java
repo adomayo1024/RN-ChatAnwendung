@@ -1,5 +1,6 @@
 package ChatAnwendung.logic.Impl;
 
+import ChatAnwendung.logic.Api.RequestSender;
 import ChatAnwendung.persistence.Api.DownloadFiles;
 import ChatAnwendung.persistence.Api.File;
 import ChatAnwendung.persistence.Api.RoutingTable;
@@ -12,21 +13,32 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
-
+/**
+ * Ein RequestSender sendet für eine derzeitig herunterzuladende Datei Request für alle Chunks, die bisher nicht empfangen wurden.
+ */
 @Slf4j
-public class RequestSender implements Runnable {
+public class RequestSenderImpl implements RequestSender {
 
-    private File file;
+    // Die File für die Request gesendet werden sollen.
+    private final File file;
 
-    private int lastSequenz = 0;
+    private int timesOfRequestWithoutAnAnswer = 0;
 
-    private int timesOfRequestOfLastSequenz = 0;
+    long timeStampOfNewestPackageReceivedSinceLastRequest;
+
+    // DownloadFiles um die File zu entfernen, wenn keine Antwort nach 3 Request anfragen kam.
     private final DownloadFiles downloadFiles;
+
+    //Um destAddress und destPort zu erhalten für die Request Pakete .
     private final  RoutingTable routingTable;
+
+    //Um die eigene NodeId zu erhalten für die Request Pakete.
     private final Storage storage;
+
+    //Die Sendequeue so das der Sender die Request Pakete senden kann.
     private final BlockingQueue<DatagramPacket> sendeQueue;
 
-    public RequestSender(FileImpl file, DownloadFiles downloadFiles, RoutingTable routingTable, Storage storage, BlockingQueue<DatagramPacket> sendeQueue) {
+    public RequestSenderImpl(FileImpl file, DownloadFiles downloadFiles, RoutingTable routingTable, Storage storage, BlockingQueue<DatagramPacket> sendeQueue) {
         this.file = file;
         this.downloadFiles = downloadFiles;
         this.routingTable = routingTable;
@@ -41,22 +53,30 @@ public class RequestSender implements Runnable {
 
         List<Integer> missingChunks = file.getMissingChunks();
 
+        //Geprüft wird, ob das neueste Paket vor weniger als einer Sekunde empfangen wurde. Wenn ja kein Request
         if(!timeSinceLastFileDataPackageMoreThanASecond()){
-            timesOfRequestOfLastSequenz = 1;
+            timesOfRequestWithoutAnAnswer = 0;
             return;
         }
-        if (timesOfRequestOfLastSequenz == 3) {
+        // Es wird geprüft, ob seit dem letzten Request neue Pakete empfangen wurden.
+        if(!receivedAnPacketSinceThatTime(timeStampOfNewestPackageReceivedSinceLastRequest)){
+            timesOfRequestWithoutAnAnswer++;
+        }
+        // Wenn seid den letzten 3 Request kein neues Paket ankam, wird der Download abgebrochen.
+        else if (timesOfRequestWithoutAnAnswer >= 3) {
 
+            file.stopRequesting();
             downloadFiles.removeFile(file.getSrcNodeId(), file.getFileId());
             log.info("Removed File because of 3 Request of the same chunk in a row without an answer");
             System.out.println("Removed File because of 3 Request of the same chunk in a row without an answer");
         }
 
 
+        // Es wird für alle fehlenden Chunks eine Request gesendet.
         for(int sequenz : missingChunks){
             byte[] payload = new byte[0];
             long destUID = file.getSrcNodeId();
-            InetAddress destAdress = routingTable.getNextHopAdressForUID(destUID);
+            InetAddress destAddress = routingTable.getNextHopAdressForUID(destUID);
             int destPort = routingTable.getNextHopPortForUID(destUID);
             int fileID = file.getFileId();
             BCPPacketImpl bcpPacket = new BCPPacketImpl(
@@ -71,7 +91,7 @@ public class RequestSender implements Runnable {
                     0L, //crc
                     (short)payload.length, //payloadLength
                     payload, //payload
-                    destAdress, //address
+                    destAddress, //address
                     destPort); //port
             DatagramPacket packet = bcpPacket.makeDatagramPacket();
             sendeQueue.add(packet);
@@ -79,13 +99,25 @@ public class RequestSender implements Runnable {
             log.debug("Sent Request for FileID {} and sequence: {}from the User: {}", fileID, sequenz, Long.toUnsignedString(destUID));
         }
 
-        timesOfRequestOfLastSequenz++;
-
+        timeStampOfNewestPackageReceivedSinceLastRequest = file.getReceivedLastChunk();
 
     }
 
+    /**
+     * Prüft, ob das neueste empfangene Paket vor über einer Sekunde empfangen wurde.
+     * @return True, wenn das neueste Paket vor über einer Sekunde empfangen wurde, sonst false.
+     */
     private boolean timeSinceLastFileDataPackageMoreThanASecond(){
         return System.currentTimeMillis() - file.getReceivedLastChunk() > 1_000;
+    }
+
+    /**
+     * Prüft, seit dem letzten Request neue Pakete empfangen wurden.
+     * @param timeStamp der Zeitpunkt seit dem letzten Request.
+     * @return True, wenn neue Pakete empfangen wurden, sonst false.
+     */
+    private boolean receivedAnPacketSinceThatTime(long timeStamp){
+        return timeStamp < file.getReceivedLastChunk();
     }
 }
 

@@ -80,7 +80,7 @@ public class DownloadFilesImpl implements ChatAnwendung.persistence.Api.Download
 
     public void removeFile(long nodeId, int fileId) {
         finishedFiles.computeIfAbsent(nodeId, k -> new HashMap<>()).put(fileId, true);
-        downloadedFiles.get(nodeId).remove(fileId).stopRequesting();
+        downloadedFiles.get(nodeId).remove(fileId);
 
         log.debug("Removed File: {} from User: {} from DownloadFiles: {}", fileId, Long.toUnsignedString(nodeId), this);
     }
