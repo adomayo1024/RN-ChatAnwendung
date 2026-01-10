@@ -20,11 +20,9 @@ import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 @Slf4j
 public class InputHandler implements Runnable {
@@ -692,7 +690,7 @@ public class InputHandler implements Runnable {
                 log.debug("Hello packet send to {}", connection.address());
             }
 
-            threadPools.setScheduleServicesFuture(threadPools.getScheduleServices().scheduleWithFixedDelay(new loopServices(routingTable, storage, senderQueue), 1, 5, TimeUnit.SECONDS));
+            threadPools.setScheduleServicesFuture(threadPools.getScheduleServices().scheduleWithFixedDelay(new ScheduledTasksHandlerImpl(routingTable, storage, senderQueue), 1, 5, TimeUnit.SECONDS));
             log.debug("Finished with login");
 
             log.info("Login successful");
