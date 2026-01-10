@@ -368,7 +368,7 @@ public class InputHandlerImpl implements InputHandler {
 
                 //Gebrauchte Variablen
                 long length = file.length();
-                int anzahlChunks = (int) Math.ceil(length / (float) BCPPacketImpl.getMaximumPayloadSize());
+                int anzahlChunks = (int) Math.ceil(length / (float) BCPPacketImpl.MAXIMUM_PAYLOAD_SIZE);
                 int fileId = storage.getNextFileID();
                 InetAddress address = routingTable.getNextHopAdressForUID(destNodeId);
                 int port = routingTable.getNextHopPortForUID(destNodeId);
@@ -435,14 +435,14 @@ public class InputHandlerImpl implements InputHandler {
             }
             //Prüft, ob es der letzte Chunk ist.
             else if(anzahlChunks - 1 == sequenz){
-                int size = (int)(file.length() % BCPPacketImpl.getMaximumPayloadSize());
+                int size = (int)(file.length() % BCPPacketImpl.MAXIMUM_PAYLOAD_SIZE);
                 chunk = new byte[size];
             }
             else{
-                chunk = new byte[BCPPacketImpl.getMaximumPayloadSize()];
+                chunk = new byte[BCPPacketImpl.MAXIMUM_PAYLOAD_SIZE];
             }
             //List den Chunk aus der Datei.
-            file.seek((long) sequenz * BCPPacketImpl.getMaximumPayloadSize());
+            file.seek((long) sequenz * BCPPacketImpl.MAXIMUM_PAYLOAD_SIZE);
             file.read(chunk);
         } catch (IOException | IllegalSequnzNumberException e) {
             ExceptionHandler.handle(e, this.getClass());
@@ -774,6 +774,6 @@ public class InputHandlerImpl implements InputHandler {
      * @return True, wenn sie gültig ist, sonst false.
      */
     private boolean validMessage(String msg){
-        return msg.getBytes().length <= BCPPacketImpl.getMaximumPayloadSize();
+        return msg.getBytes().length <= BCPPacketImpl.MAXIMUM_PAYLOAD_SIZE;
     }
 }
