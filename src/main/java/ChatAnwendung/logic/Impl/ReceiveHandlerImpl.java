@@ -15,6 +15,7 @@ import java.io.RandomAccessFile;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
+import java.security.spec.ECField;
 import java.util.concurrent.BlockingQueue;
 
 @Slf4j
@@ -208,9 +209,15 @@ public class ReceiveHandlerImpl implements ReceiveHandler {
 
         DatagramPacket requestPacket = packet.makeDatagramPacket();
 
-        senderQueue.add(requestPacket);
+        try{
+            senderQueue.add(requestPacket);
 
-        log.debug("Send Request for FileID {} and sequence: {} from the User: {}", fileId, sequenz, Long.toUnsignedString(srcNodeId));
+            log.debug("Send Request for FileID {} and sequence: {} from the User: {}", fileId, sequenz, Long.toUnsignedString(srcNodeId));
+
+        } catch (IllegalStateException e){
+            ExceptionHandler.handle(e, this.getClass());
+        }
+
 
     }
 
@@ -326,6 +333,9 @@ public class ReceiveHandlerImpl implements ReceiveHandler {
                 downloadFiles.removeFile(srcUID, fileId);
                 log.info("Finished downloading File: {} from User: {}", file.getName(), Long.toUnsignedString(srcUID));
                 System.out.println("Finished downloading File: " + file.getName() + " from User: " + Long.toUnsignedString(srcUID));
+            } else {
+                log.debug("File: {} from User: {} is not finished yet", file.getName(), Long.toUnsignedString(srcUID));
+                log.debug("Missing Chunks: {}" , file.getMissingChunks().getFirst());
             }
         }
         else{
@@ -423,13 +433,15 @@ public class ReceiveHandlerImpl implements ReceiveHandler {
 
         DatagramPacket welcomePacket = packet.makeDatagramPacket();
 
-        senderQueue.add(welcomePacket);
+        try {
+            senderQueue.put(welcomePacket);
+            log.debug("Send Welcome packet to: {}" , Long.toUnsignedString(srcNodeId));
+            log.info("User {} joined the Chat", Long.toUnsignedString(srcNodeId));
+            System.out.println("User: " + Long.toUnsignedString(srcNodeId) + " joined the Chat");
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
 
-        log.debug("Send Welcome packet to: {}" , Long.toUnsignedString(srcNodeId));
-
-        log.info("User {} joined the Chat", Long.toUnsignedString(srcNodeId));
-
-        System.out.println("User: " + Long.toUnsignedString(srcNodeId) + " joined the Chat");
     }
 
     /**
@@ -451,9 +463,12 @@ public class ReceiveHandlerImpl implements ReceiveHandler {
             packet.setAddress(nextHopAddress);
             packet.setPort(nextHopPort);
             DatagramPacket dP = packet.makeDatagramPacket();
-            senderQueue.add(dP);
-
-            log.debug("Packet forwarded");
+            try {
+                senderQueue.put(dP);
+                log.debug("Packet forwarded");
+            } catch (InterruptedException e) {
+                ExceptionHandler.handle(e, this.getClass());
+            }
         }
         else {
             log.debug("Packet throw away from: {}", destId);

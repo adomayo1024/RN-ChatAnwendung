@@ -49,9 +49,13 @@ public class ReceiverImpl implements Receiver {
             }catch (SocketException e) {
                 interrupted = true;
                 log.debug( "Socket closed");
+            } catch (IllegalArgumentException e){
+                ExceptionHandler.handle(e, this.getClass());
             }
             catch (IOException e) {
                 interrupted = true;
+                ExceptionHandler.handle(e, this.getClass());
+            } catch (Exception e) {
                 ExceptionHandler.handle(e, this.getClass());
             }
         }

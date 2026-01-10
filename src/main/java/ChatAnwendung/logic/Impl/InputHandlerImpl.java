@@ -397,7 +397,12 @@ public class InputHandlerImpl implements InputHandler {
                             port); //port
 
                     DatagramPacket packet = bcpPacket.makeDatagramPacket();
-                    senderQueue.add(packet);
+                    try{
+                        senderQueue.add(packet);
+                    } catch (IllegalStateException e) {
+                        Thread.sleep(1);
+                        return;
+                    }
 
                     log.debug("File data packet number {} send", sequenz);
                 }
@@ -410,7 +415,7 @@ public class InputHandlerImpl implements InputHandler {
                 log.info("File send to User: {}", Long.toUnsignedString(destNodeId));
 
                 System.out.println("File send to User: " + Long.toUnsignedString(destNodeId));
-            } catch (IOException e) {
+            }catch (IllegalStateException | IOException | InterruptedException e){
                 ExceptionHandler.handle(e, this.getClass());
             }
         }
@@ -476,7 +481,13 @@ public class InputHandlerImpl implements InputHandler {
                 port); //port
 
         DatagramPacket packet = bcpPacket.makeDatagramPacket();
-        senderQueue.add(packet);
+
+        try {
+            senderQueue.put(packet);
+        } catch (InterruptedException e) {
+            ExceptionHandler.handle(e, this.getClass());
+        }
+
     }
 
     /**
@@ -489,7 +500,7 @@ public class InputHandlerImpl implements InputHandler {
      * @param address Die Adresse des Users.
      * @param port Der Port des Users.
      */
-    private void sendFileInitPacket(int anzahlChunks, long length, String path, long nodeId, int fileId, InetAddress address, int port) {
+    private void sendFileInitPacket(int anzahlChunks, long length, String path, long nodeId, int fileId, InetAddress address, int port) throws IllegalStateException {
         //Es wird der Payload erzeugt
         byte[] payload = makeDataInitPayload(length, path);
 
@@ -596,7 +607,14 @@ public class InputHandlerImpl implements InputHandler {
         DatagramPacket packet = bcpPacket.makeDatagramPacket();
 
 
-        senderQueue.add(packet);
+        try{
+            senderQueue.add(packet);
+        }catch (IllegalStateException e){
+            ExceptionHandler.handle(e, this.getClass());
+            System.out.println("Error happened by Sending the message. Try again later.");
+            return;
+        }
+
 
         log.debug("Message send to {}", Long.toUnsignedString(destNodeId));
         log.info("Message send to {}", Long.toUnsignedString(destNodeId));
@@ -640,7 +658,12 @@ public class InputHandlerImpl implements InputHandler {
 
                 DatagramPacket packet = bcpPacket.makeDatagramPacket();
 
-               senderQueue.add(packet);
+                try{
+                    senderQueue.add(packet);
+                } catch (IllegalStateException e){
+                    ExceptionHandler.handle(e, this.getClass());
+                }
+
 
                 log.debug("Goodbye packet send to {}", Long.toUnsignedString(neighbour.getNodeId()));
             }
@@ -663,7 +686,6 @@ public class InputHandlerImpl implements InputHandler {
             ExceptionHandler.handle(new LoginException("Your are already logged in"), this.getClass());
         }
         else {
-            storage.login();
 
             //Schickt an alle Connections ein Hello-Paket, mit der BroadCast-Id
             for (Connection connection : connectionList.getAllConnections()) {
@@ -685,11 +707,15 @@ public class InputHandlerImpl implements InputHandler {
 
                 DatagramPacket packet = bcpPacket.makeDatagramPacket();
 
-                senderQueue.add(packet);
-
+                try {
+                    senderQueue.add(packet);
+                } catch (IllegalStateException e) {
+                    ExceptionHandler.handle(e, this.getClass());
+                    System.out.println("Error happened by login. Try again later.");
+                }
                 log.debug("Hello packet send to {}", connection.address());
             }
-
+            storage.login();
             //Start die ScheduledServices (TimeoutHandler, HeartbeatSender, RoutingTableSender)
             threadPools.setScheduleServicesFuture(threadPools.getScheduleServices().scheduleWithFixedDelay(new ScheduledTasksHandlerImpl(routingTable, storage, senderQueue), 1, 5, TimeUnit.SECONDS));
             log.debug("Finished with login");

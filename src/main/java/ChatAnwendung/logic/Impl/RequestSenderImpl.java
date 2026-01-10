@@ -1,10 +1,7 @@
 package ChatAnwendung.logic.Impl;
 
 import ChatAnwendung.logic.Api.RequestSender;
-import ChatAnwendung.persistence.Api.DownloadFiles;
-import ChatAnwendung.persistence.Api.File;
-import ChatAnwendung.persistence.Api.RoutingTable;
-import ChatAnwendung.persistence.Api.Storage;
+import ChatAnwendung.persistence.Api.*;
 import ChatAnwendung.logic.Enums.PacketTypes;
 import lombok.extern.slf4j.Slf4j;
 
@@ -50,6 +47,8 @@ public class RequestSenderImpl implements RequestSender {
     @Override
     public void run() {
 
+        log.debug("Start Requesting");
+
         List<Integer> missingChunks = file.getMissingChunks();
 
         //Geprüft wird, ob das neueste Paket vor weniger als einer Sekunde empfangen wurde. Wenn ja kein Request
@@ -57,11 +56,19 @@ public class RequestSenderImpl implements RequestSender {
             timesOfRequestWithoutAnAnswer = 0;
             return;
         }
+        //Prüft, ob der Sender noch verfügbar ist, wenn nicht, wird der Download abgebrochen.
+        else if(!routingTable.isNodeIdAvailable(file.getSrcNodeId())){
+            downloadFiles.stopRequesting(file);
+            downloadFiles.removeFile(file.getSrcNodeId(), file.getFileId());
+            log.info("Removed File because of sender not available anymore");
+            System.out.println("Removed File because of sender not available anymore");
+        }
         // Es wird geprüft, ob seit dem letzten Request neue Pakete empfangen wurden.
         if(!receivedAnPacketSinceThatTime(timeStampOfNewestPackageReceivedSinceLastRequest)){
             timesOfRequestWithoutAnAnswer++;
+            log.debug("Inkrement of timesOfRequestWithoutAnAnswer: {}", timesOfRequestWithoutAnAnswer);
         }
-        // Wenn seid den letzten 3 Request kein neues Paket ankam, wird der Download abgebrochen.
+        // Wenn seit den letzten 3 Request kein neues Paket ankam, wird der Download abgebrochen.
         else if (timesOfRequestWithoutAnAnswer >= 3) {
 
             downloadFiles.stopRequesting(file);
@@ -93,7 +100,11 @@ public class RequestSenderImpl implements RequestSender {
                     destAddress, //address
                     destPort); //port
             DatagramPacket packet = bcpPacket.makeDatagramPacket();
-            sendeQueue.add(packet);
+            try {
+                sendeQueue.add(packet);
+            } catch (IllegalStateException e) {
+
+            }
 
             log.debug("Sent Request for FileID {} and sequence: {}from the User: {}", fileID, sequenz, Long.toUnsignedString(destUID));
         }

@@ -1,5 +1,6 @@
 package ChatAnwendung.logic.Impl;
 
+import ChatAnwendung.Exceptions.ExceptionHandler;
 import ChatAnwendung.logic.Api.BCPPacket;
 import ChatAnwendung.logic.Api.RoutingTableSender;
 import ChatAnwendung.persistence.Api.RoutingEntry;
@@ -83,7 +84,11 @@ public class RoutingTableSenderImpl implements RoutingTableSender {
                 //Werden die schon mal gesendet und die restlichen kommen in ein neues Paket.
                 if(i != 0 && i % maxAmountOfRoutingTableEntries == 0){
 
-                    sendRoutingTablePacket(entry, payload);
+                    try {
+                        sendRoutingTablePacket(entry, payload);
+                    } catch (IllegalStateException e) {
+                        ExceptionHandler.handle(e, this.getClass());
+                    }
 
                     //Es muss ein neuer Payload allokiert werden, für die restlichen RoutingTableEntries.
                     payload = getNewPayload(countEntries - i);
@@ -98,7 +103,12 @@ public class RoutingTableSenderImpl implements RoutingTableSender {
             }
 
             // Die restlichen RoutingTableEntries werden in einem neuen Paket gesendet.
-            sendRoutingTablePacket(entry, payload);
+            try {
+                sendRoutingTablePacket(entry, payload);
+            } catch (IllegalStateException e) {
+                ExceptionHandler.handle(e, this.getClass());
+                return;
+            }
 
             log.debug("Finished with sending RoutingTable to: {}", entry.getNodeId());
         }
@@ -127,7 +137,7 @@ public class RoutingTableSenderImpl implements RoutingTableSender {
      * @param entry Der RoutingTableEntry des Nachbarn, an den das Packet gesendet wird.
      * @param payload Der Payload der die RoutingTableEntries, die verschickt werden sollen, enthält.
      */
-    private void sendRoutingTablePacket(RoutingEntry entry, byte[] payload) {
+    private void sendRoutingTablePacket(RoutingEntry entry, byte[] payload) throws IllegalStateException {
         BCPPacketImpl bcpPacket = new BCPPacketImpl(
                 (byte) 1, //version
                 PacketTypes.ROUTING_TABLE, //type

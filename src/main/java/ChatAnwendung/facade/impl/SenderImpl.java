@@ -46,6 +46,9 @@ public class SenderImpl implements Sender {
             } catch (InterruptedException e){
                 interrupted = true;
             }
+            finally {
+                sendeQueue.clear();
+            }
         }
 
         log.debug( "Sender shutdown");
