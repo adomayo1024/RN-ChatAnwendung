@@ -80,7 +80,8 @@ public class DownloadFilesImpl implements ChatAnwendung.persistence.Api.Download
 
     @Override
     public void startRequesting(File file, DownloadFiles downloadFiles, RoutingTable routingTable, Storage storage, BlockingQueue<DatagramPacket> sendeQueue) {
-        ScheduledFuture<?> future = timer.scheduleAtFixedRate(new RequestSenderImpl(file, downloadFiles, routingTable, storage, sendeQueue), 3, 1, TimeUnit.SECONDS);
+        int start = file.getAnzahlChunks() / 33;
+        ScheduledFuture<?> future = timer.scheduleAtFixedRate(new RequestSenderImpl(file, downloadFiles, routingTable, storage, sendeQueue), start, 1000, TimeUnit.MILLISECONDS);
         scheduledFileRequests.put(file, future);
     }
 
