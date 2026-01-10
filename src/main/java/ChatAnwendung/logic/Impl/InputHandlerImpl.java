@@ -1,6 +1,7 @@
 package ChatAnwendung.logic.Impl;
 
 import ChatAnwendung.Exceptions.*;
+import ChatAnwendung.logic.Api.InputHandler;
 import ChatAnwendung.persistence.Api.ConnectionList;
 import ChatAnwendung.persistence.Api.RoutingEntry;
 import ChatAnwendung.persistence.Api.RoutingTable;
@@ -23,7 +24,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
-public class InputHandler implements Runnable {
+public class InputHandlerImpl implements InputHandler {
 
     // Die Anzahl an Argumenten, die erwartet werden, für die jeweiligen Commands.
     //Bei Send, File und Help ist es die Mindestanzahl
@@ -62,7 +63,7 @@ public class InputHandler implements Runnable {
     private boolean finished;
 
 
-    public InputHandler(BlockingQueue<String> inputQueue, RoutingTable routingTable, ConnectionList connectionList, Storage storage, BlockingQueue<DatagramPacket> senderQueue, ThreadPools threadPools) {
+    public InputHandlerImpl(BlockingQueue<String> inputQueue, RoutingTable routingTable, ConnectionList connectionList, Storage storage, BlockingQueue<DatagramPacket> senderQueue, ThreadPools threadPools) {
         this.inputQueue = inputQueue;
         this.routingTable = routingTable;
         this.connectionList = connectionList;
