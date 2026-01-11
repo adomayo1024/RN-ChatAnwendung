@@ -44,8 +44,11 @@ public class Main {
         ReceiveHandler receiveHandler = new ReceiveHandlerImpl(receiveQueue, sendeQueue, routingTable, storage, downloadFiles);
 
 
-        int port = args.length > 0 ?Integer.parseInt(args[0]) : 0;
-
+        int port = 0;
+        try {
+            port = args.length > 0 ?Integer.parseInt(args[0]) : 0;
+        } catch (NumberFormatException ignored) {
+        }
 
         try(DatagramSocket socket = new DatagramSocket(port)){
 
