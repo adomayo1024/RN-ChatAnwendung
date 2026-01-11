@@ -246,7 +246,7 @@ public class InputHandlerImpl implements InputHandler {
             }
         }
 
-        System.out.println(builder);
+        log.info(builder.toString());
     }
 
     /**
@@ -286,8 +286,6 @@ public class InputHandlerImpl implements InputHandler {
     private void handleInfo(String[] command) {
 
         log.info("You have the ID: {}\nPort: {}", storage.getUnsignedID(), storage.getPort());
-        System.out.println("You have the ID: " + storage.getUnsignedID() + "\n" +
-                "Port: " + storage.getPort());
     }
 
     /**
@@ -319,20 +317,14 @@ public class InputHandlerImpl implements InputHandler {
         //Gibt alle Routingeinträge aus, die routbar sind, oder alle, wenn --all Flag gesetzt ist.
         for(RoutingEntry entry : routingTable.getAllEntries()){
             if(entry.getRoutable() || allFlagSet){
-                System.out.println(Long.toUnsignedString(entry.getNodeId()) +
-                        " | Hops: " + entry.getHops() +
-                        " | next Hop Address: " + entry.getNextHopAddress() +
-                        " | next Hop port: " +
-                        entry.getNextHopPort() +
-                        " | is routable: " + entry.getRoutable() +
-                        "| last seen:" + (int) entry.getLastSeenShort() + "ms");
+                log.info("{} | Hops: {} | next Hop Address: {} | next Hop port: {} | is routable: {}| last seen:{}ms", Long.toUnsignedString(entry.getNodeId()), entry.getHops(), entry.getNextHopAddress(), entry.getNextHopPort(), entry.getRoutable(), (int) entry.getLastSeenShort());
             }
         }
 
         //Gibt alle Verbindungen aus, wenn --connect Flag gesetzt ist.
         if(connectionFlagSet){
             for(Connection connection : connectionList.getAllConnections()){
-                System.out.println(connection.address().toString() + ":" + connection.port());
+                log.info("{}:{}", connection.address().toString(), connection.port());
             }
         }
 
@@ -411,8 +403,6 @@ public class InputHandlerImpl implements InputHandler {
                 log.debug("End with file transfer");
 
                 log.info("File send to User: {}", Long.toUnsignedString(destNodeId));
-
-                System.out.println("File send to User: " + Long.toUnsignedString(destNodeId));
             }catch (IllegalStateException | IOException e){
                 ExceptionHandler.handle(e, this.getClass());
             }
@@ -609,14 +599,11 @@ public class InputHandlerImpl implements InputHandler {
             senderQueue.add(packet);
         }catch (IllegalStateException e){
             ExceptionHandler.handle(e, this.getClass());
-            System.out.println("Error happened by Sending the message. Try again later.");
+            log.info("Error happened by Sending the message. Try again later.");
             return;
         }
 
-
-        log.debug("Message send to {}", Long.toUnsignedString(destNodeId));
         log.info("Message send to {}", Long.toUnsignedString(destNodeId));
-        System.out.println("Message send to " + Long.toUnsignedString(destNodeId));
     }
 
     /**
@@ -668,7 +655,6 @@ public class InputHandlerImpl implements InputHandler {
         }
 
         log.info("Logout successful");
-        System.out.println("Logout successful");
 
         routingTable.removeAll();
     }
@@ -709,17 +695,15 @@ public class InputHandlerImpl implements InputHandler {
                     senderQueue.add(packet);
                 } catch (IllegalStateException e) {
                     ExceptionHandler.handle(e, this.getClass());
-                    System.out.println("Error happened by login. Try again later.");
+                    log.info("Error happened by login. Try again later.");
                 }
                 log.debug("Hello packet send to {}", connection.address());
             }
             storage.login();
             //Start die ScheduledServices (TimeoutHandler, HeartbeatSender, RoutingTableSender)
             threadPools.setScheduleServicesFuture(threadPools.getScheduleServices().scheduleWithFixedDelay(new ScheduledTasksHandlerImpl(routingTable, storage, senderQueue), 1, 5, TimeUnit.SECONDS));
-            log.debug("Finished with login");
 
             log.info("Login successful");
-            System.out.println("Login successful");
         }
 
     }
@@ -744,8 +728,6 @@ public class InputHandlerImpl implements InputHandler {
             connectionList.remove(connection);
 
             log.info("Disconnect with: {}:{}", command[1], command[2]);
-            System.out.println("Disconnect with: " + command[1] + ":" + command[2]);
-            log.debug("end with disconnect: {} : {}", command[1], command[2]);
         } catch (UnknownHostException | NumberFormatException e ) {
             ExceptionHandler.handle(new ArgumentException(e.getMessage()), this.getClass());
         }
@@ -772,8 +754,6 @@ public class InputHandlerImpl implements InputHandler {
             connectionList.add(connection);
 
             log.info("Connect with: {}:{}", command[1], command[2]);
-            log.debug("end with connect: {} : {}", command[1], command[2]);
-            System.out.println("Connect with: " + command[1] + ":" + command[2]);
         } catch (UnknownHostException | NumberFormatException e) {
             ExceptionHandler.handle(new ArgumentException(e.getMessage()), this.getClass());
         }
