@@ -52,6 +52,15 @@ public class FileImpl implements File {
     // Zeitpunkt des neuesten empfangenen Chunks
     private final AtomicLong receivedLastChunk;
 
+    //Anzahl empfangener Chunks
+    private int receivedChunks = 0;
+
+    //Die Milestones, die dem User angezeigt werden sollen. Integer Max Value damit 100 nicht am Ende ganz häufig ausgegeben wird.
+    private final int[] milestones = {10, 20, 30, 40, 50, 60, 70, 80, 90, 100, Integer.MAX_VALUE};
+
+    //Index des aktuellen Milestones
+    private int i = 0;
+
     /**
      * Konstruktor, welcher ein File erstellt, welche heruntergeladen werden soll.
      * @param anzahlChunks Die Anzahl der Chunks, welche die Datei haben wird
@@ -90,6 +99,7 @@ public class FileImpl implements File {
             writtenChunks[sequenz] = true;
             added = true;
 
+            receivedChunks++;
 
             writtenChunksMutex.writeLock().unlock();
             receivedLastChunk.set(System.currentTimeMillis());
@@ -172,13 +182,17 @@ public class FileImpl implements File {
 
     @Override
     public int getProzent() {
-        int countReceived = 0;
-        for(boolean b : writtenChunks){
-            if(b){
-                countReceived++;
-            }
+
+        return (int) Math.round((double) receivedChunks / writtenChunks.length * 100);
+    }
+
+    @Override
+    public boolean newMilestone(){
+        boolean result = getProzent() >= milestones[i];
+        if(result && i < milestones.length - 1){
+            i++;
         }
-        return (int) Math.round((double) countReceived / writtenChunks.length * 100);
+        return result;
     }
 }
 
