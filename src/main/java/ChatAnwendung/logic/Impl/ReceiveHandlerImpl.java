@@ -162,9 +162,7 @@ public class ReceiveHandlerImpl implements ReceiveHandler {
                 ": " +
                 new String(packet.getPayload(), StandardCharsets.UTF_8);
 
-        System.out.println(terminalOutput);
-
-        log.debug("Message received end");
+        log.info(terminalOutput);
     }
 
     /**
@@ -297,10 +295,7 @@ public class ReceiveHandlerImpl implements ReceiveHandler {
         // Es wird das Requesting gestartet, aber erst nach 3 Sekunden (3 Sekunden ist ein zufallällig gewählter Wert)
         downloadFiles.startRequesting(file, downloadFiles, routingTable, storage, senderQueue);
 
-        log.debug("Created new File{} for: {} from User: {}", fileName, fileID, Long.toUnsignedString(srcUID));
-
         log.info("Starting with downloading of File: {} from User: {}", fileName, Long.toUnsignedString(srcUID));
-        System.out.println("Starting with downloading of File: " + fileName + " from User: " + Long.toUnsignedString(srcUID));
 
     }
 
@@ -332,14 +327,13 @@ public class ReceiveHandlerImpl implements ReceiveHandler {
                 downloadFiles.stopRequesting(file);
                 downloadFiles.removeFile(srcUID, fileId);
                 log.info("Finished downloading File: {} from User: {}", file.getName(), Long.toUnsignedString(srcUID));
-                System.out.println("Finished downloading File: " + file.getName() + " from User: " + Long.toUnsignedString(srcUID));
             } else {
                 log.debug("File: {} from User: {} is not finished yet", file.getName(), Long.toUnsignedString(srcUID));
                 log.debug("Missing Chunks: {}" , file.getMissingChunks().getFirst());
             }
 
-            if((file.getProzent() == 25 || file.getProzent() == 50 || file.getProzent() == 75)){
-                log.info("File: {} downloaded to {}", fileId, file.getProzent());
+            if(file.newMilestone()){
+                log.info("File: {} downloaded to {}%", fileId, file.getProzent());
             }
         }
         else{
@@ -358,11 +352,7 @@ public class ReceiveHandlerImpl implements ReceiveHandler {
         long srcNodeId = packet.getSrcNodeId();
         routingTable.removeUIDThroughGoodbye(srcNodeId);
 
-
-        log.debug("UID: {} removed", Long.toUnsignedString(srcNodeId));
         log.info("User: {} left the Chat", Long.toUnsignedString(srcNodeId));
-
-        System.out.println("User: " + Long.toUnsignedString(srcNodeId) + " left the Chat");
     }
 
     /**
@@ -392,9 +382,7 @@ public class ReceiveHandlerImpl implements ReceiveHandler {
         //Fügt den Eintrag zur RoutingTable hinzu.
         routingTable.add(entry);
 
-        log.debug("Routing Entry added for {}", Long.toUnsignedString(srcNodeId));
         log.info("User: {} is available for Chatting", Long.toUnsignedString(srcNodeId));
-        System.out.println("User: " + Long.toUnsignedString(srcNodeId) + " is available for Chatting");
     }
 
     /**
@@ -441,7 +429,6 @@ public class ReceiveHandlerImpl implements ReceiveHandler {
             senderQueue.put(welcomePacket);
             log.debug("Send Welcome packet to: {}" , Long.toUnsignedString(srcNodeId));
             log.info("User {} joined the Chat", Long.toUnsignedString(srcNodeId));
-            System.out.println("User: " + Long.toUnsignedString(srcNodeId) + " joined the Chat");
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }

@@ -45,6 +45,12 @@ public interface File {
      */
     int getProzent();
 
+    /**
+     * Gibt wieder, ob ein neuer Milestone in den Prozentwert des Downloads erreicht wurde.
+     * @return True, wenn ein neuer Milestone erreicht wurde, sonst false.
+     */
+    boolean newMilestone();
+
     //-------------- GETTER---------------------
 
     long getSrcNodeId();

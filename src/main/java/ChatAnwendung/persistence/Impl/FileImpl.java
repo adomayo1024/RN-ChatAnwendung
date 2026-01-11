@@ -121,7 +121,7 @@ public class FileImpl implements File {
         }
 
         log.debug("File {} saved", name);
-        System.out.println("File " + name + " saved");
+        log.info("File {} saved", name);
     }
 
     @Override

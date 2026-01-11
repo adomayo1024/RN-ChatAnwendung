@@ -26,8 +26,7 @@ public class TimeoutHandlerImpl implements TimeOutHandler {
             int lastSeen = (int)(System.currentTimeMillis() - entry.getLastSeen());
             if(lastSeen >= timeout){
                 routingTable.removeUID(entry.getNodeId());
-                log.debug("RoutingEntry removed for {} because of Timeout", Long.toUnsignedString(entry.getNodeId()));
-                System.out.println("RoutingEntry removed for " + Long.toUnsignedString(entry.getNodeId()) + " because of Timeout");
+                log.info("RoutingEntry removed for {} because of Timeout", Long.toUnsignedString(entry.getNodeId()));
             }
         }
 

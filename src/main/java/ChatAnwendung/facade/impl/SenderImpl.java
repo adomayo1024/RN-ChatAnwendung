@@ -42,7 +42,7 @@ public class SenderImpl implements Sender {
                 log.debug("send a package to the address: {} and to port: {} of Type: {}", p.getAddress(), p.getPort(), PacketTypes.values()[p.getData()[1]]);
 
             } catch (IOException e) {
-                System.out.println(e.getMessage());
+                log.info(e.getMessage());
                 interrupted = true;
             } catch (InterruptedException e){
                 interrupted = true;

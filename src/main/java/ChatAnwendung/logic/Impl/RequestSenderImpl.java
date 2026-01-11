@@ -41,7 +41,7 @@ public class RequestSenderImpl implements RequestSender {
         this.storage = storage;
         this.sendeQueue = sendeQueue;
 
-        System.out.println("Start Requesting for File: " + file.getName() + "in 3 Seconds");
+        log.debug("Start Requesting for File: {}in 3 Seconds", file.getName());
     }
 
     @Override
@@ -61,7 +61,6 @@ public class RequestSenderImpl implements RequestSender {
             downloadFiles.stopRequesting(file);
             downloadFiles.removeFile(file.getSrcNodeId(), file.getFileId());
             log.info("Removed File because of sender not available anymore");
-            System.out.println("Removed File because of sender not available anymore");
         }
         // Es wird geprüft, ob seit dem letzten Request neue Pakete empfangen wurden.
         if(!receivedAnPacketSinceThatTime(timeStampOfNewestPackageReceivedSinceLastRequest)){
@@ -74,7 +73,6 @@ public class RequestSenderImpl implements RequestSender {
             downloadFiles.stopRequesting(file);
             downloadFiles.removeFile(file.getSrcNodeId(), file.getFileId());
             log.info("Removed File because of 3 Request of the same chunk in a row without an answer");
-            System.out.println("Removed File because of 3 Request of the same chunk in a row without an answer");
         }
 
 

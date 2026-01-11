@@ -39,7 +39,7 @@ public class RoutingTableImpl implements RoutingTable {
         // Der Eintrag ist komplett neu und kann hinzugefügt werden.
         else {
             entries.put(entry.getNodeId(),entry);
-            System.out.println("User: " + Long.toUnsignedString(entry.getNodeId()) + " is available for Chatting");
+            log.info("User: {} is available for Chatting", Long.toUnsignedString(entry.getNodeId()));
         }
         mutex.unlock();
 
@@ -147,7 +147,6 @@ public class RoutingTableImpl implements RoutingTable {
             removeUID(nodeId);
 
             log.info("User {} logged out", Long.toUnsignedString(nodeId));
-            System.out.println("User " + Long.toUnsignedString(nodeId) + " logged out");
 
             log.debug("Removed UID: {} from RoutingTable: {}", Long.toUnsignedString(nodeId), this);
         }
