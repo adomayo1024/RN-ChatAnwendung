@@ -54,9 +54,9 @@ public class RoutingTableSenderImpl implements RoutingTableSender {
         //Es wird für alle RoutingTableEntries das ByteArray vor erstellt.
         for(RoutingEntry entry : allEntries){
 
-            buffer.putLong(entry.getNodeId());
-            buffer.put(entry.getHops());
-            buffer.putLong(entry.getLastSeen());
+            buffer.putLong(BCPPacket.ROUTING_TABLE_DEST_NODE_ID_POS, entry.getNodeId());
+            buffer.put(BCPPacket.ROUTING_TABLE_HOPS_POS,entry.getHops());
+            buffer.putLong(BCPPacket.ROUTING_TABLE_LAST_SEEN_POS, entry.getLastSeen());
 
             allRoutingTablePackets.put(entry, buffer.array());
 

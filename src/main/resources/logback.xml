@@ -18,6 +18,9 @@
     <property name="LOGBACK_PATTERN"
               value="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level --- [%thread] %logger{36} : %msg%n"/>
 
+    <property name="CONSOLE_PATTERN"
+              value="%msg%n"/>
+
     <!-- ============================= -->
     <!-- Appender -->
     <!-- ============================= -->
@@ -26,12 +29,12 @@
     <appender name="CONSOLE"
               class="ch.qos.logback.core.ConsoleAppender">
         <filter class="ch.qos.logback.classic.filter.LevelFilter">
-            <level>DEBUG</level>
+            <level>INFO</level>
             <onMatch>ACCEPT</onMatch>
             <onMismatch>DENY</onMismatch>
         </filter>
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <pattern>${LOGBACK_PATTERN}</pattern>
+            <pattern>${CONSOLE_PATTERN}</pattern>
         </encoder>
     </appender>
 
