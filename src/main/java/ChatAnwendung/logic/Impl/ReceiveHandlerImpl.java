@@ -124,10 +124,14 @@ public class ReceiveHandlerImpl implements ReceiveHandler {
             byte hops = packet.getHopsFromRoutingTableEntry(offset);
             long lastSeen = packet.getLastSeenFromRoutingTableEntry(offset);
 
-            RoutingEntry entry = new RoutingEntryImpl(nodeId, srcAddress, srcPort, ++hops, lastSeen);
+            //Prüfen ob es der eintrag von mir selber ist
+            if(nodeId != storage.getID()){
+                RoutingEntry entry = new RoutingEntryImpl(nodeId, srcAddress, srcPort, ++hops, lastSeen);
 
-            //Hinzufüge des Eintrags zur RoutingTable
-            routingTable.add(entry);
+                //Hinzufüge des Eintrags zur RoutingTable
+                routingTable.add(entry);
+            }
+
 
             log.debug("Routing Entry added for {}", Long.toUnsignedString(nodeId));
             log.info("User: {} is available for Chatting", Long.toUnsignedString(nodeId));
