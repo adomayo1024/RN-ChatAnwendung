@@ -56,9 +56,6 @@ public class Main {
             log.info("Socket opened on port {}", socket.getLocalPort());
             log.info("You got the ID: {}", storage.getUnsignedID());
 
-            log.info("Socket opened on port {}", socket.getLocalPort());
-            log.info("You got the ID: {}", storage.getUnsignedID());
-
             CompletableFuture<Void> inputReader = CompletableFuture.runAsync(new InputReaderImpl(inputQueue, storage), threadPools.getInputHandlerThreadPool());
             CompletableFuture<Void> receiver = CompletableFuture.runAsync(new ReceiverImpl(socket, receiveQueue), threadPools.getReceiverThreadPool());
             CompletableFuture<Void> sender = CompletableFuture.runAsync(new SenderImpl(socket, sendeQueue), threadPools.getSenderThreadPool());
